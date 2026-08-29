@@ -1,24 +1,35 @@
 {
-  "name": "ita-browser",
+  "name": "ita-navegador",
   "version": "1.0.0",
-  "description": "ITA Browser - Navegador para jogos e desenvolvimento de jogos",
+  "private": true,
+  "description": "ITA Navegador - app desktop (Electron) + site (Next.js na Vercel)",
   "main": "main.js",
   "scripts": {
-    "start": "cmd /c \"set ELECTRON_RUN_AS_NODE=& electron .\"",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "app": "cmd /c \"set ELECTRON_RUN_AS_NODE=& electron .\"",
     "test": "node validate-project.js",
-    "test:agent": "node validate-agent.js",
-    "build": "node validate-project.js"
+    "test:agent": "node validate-agent.js"
   },
   "author": "ITA Games Studios",
   "license": "MIT",
-  "devDependencies": {
-    "electron": "latest"
-  },
   "dependencies": {
     "electron-store": "^11.0.2",
+    "next": "15.5.24",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "three": "^0.160.0"
   },
-  "allowScripts": {
-    "electron@16.2.8": true
+  "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "electron": "latest",
+    "eslint": "^9.34.0",
+    "eslint-config-next": "15.5.24",
+    "typescript": "^5.9.2"
   }
 }
