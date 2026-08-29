@@ -824,6 +824,51 @@
   }
 
   // =========================================================
+  // TEMAS MENSAIS — a página de nova aba muda o brilho, a
+  // etiqueta e (opcionalmente) a imagem da logo conforme o mês.
+  // Arte customizada: public/brand/themes/tema-<mes>.png
+  // (mês 0-11, igual a new Date().getMonth() — ex.: tema-11.png
+  // aparece em dezembro). Sem arquivo, mantém a logo oficial.
+  // =========================================================
+
+  const SEASONAL_THEMES = {
+    0: { emoji: '🎆', label: 'Ano Novo', glow: 'rgba(110, 168, 255, .30)' },
+    1: { emoji: '🎭', label: 'Carnaval', glow: 'rgba(255, 119, 102, .30)' },
+    5: { emoji: '💛', label: 'Namorados', glow: 'rgba(255, 170, 80, .32)' },
+    6: { emoji: '🌴', label: 'Férias de Julho', glow: 'rgba(64, 196, 140, .30)' },
+    8: { emoji: '🎊', label: 'Independência', glow: 'rgba(110, 168, 255, .30)' },
+    9: { emoji: '🎀', label: 'Outubro Rosa', glow: 'rgba(255, 105, 180, .32)' },
+    10: { emoji: '💙', label: 'Novembro Azul', glow: 'rgba(80, 150, 255, .32)' },
+    11: { emoji: '❄️', label: 'Natal', glow: 'rgba(140, 190, 255, .38)' }
+  }
+
+  function applySeasonalTheme() {
+    try {
+      const month = new Date().getMonth()
+      const theme = SEASONAL_THEMES[month]
+      const page = el('newTabPage')
+      const chip = el('newTabSeason')
+      const logo = page ? page.querySelector('.newtab-logo-img') : null
+
+      if (page && theme) page.style.setProperty('--season-glow', theme.glow)
+
+      if (logo && serverBase) {
+        // Se existir uma arte do mês, ela substitui a logo padrão
+        const custom = new Image()
+        custom.onload = () => { logo.src = custom.src }
+        custom.src = `${serverBase}/brand/themes/tema-${month}.png`
+      }
+
+      if (chip && theme) {
+        chip.textContent = `${theme.emoji} ${theme.label}`
+        chip.hidden = false
+      }
+    } catch {
+      // tema sazonal nunca deve quebrar a página inicial
+    }
+  }
+
+  // =========================================================
   // BOOT — resolve o servidor local e abre a primeira aba
   // =========================================================
 
@@ -846,6 +891,7 @@
         : 'http://localhost:8080'
     }
     el('serverTag').textContent = `ITA Local Server • ${displayHost(serverBase) || serverBase}`
+    applySeasonalTheme()
 
     if (tabOrder.length === 0) createTab(null)
     setStatus('ok', 'Pronto')
