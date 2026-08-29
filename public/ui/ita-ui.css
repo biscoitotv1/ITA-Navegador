@@ -1,0 +1,949 @@
+/* =========================================================
+   ITA NAVEGADOR — Design System da interface principal
+   Tema escuro • Azul profundo + Verde tecnológico
+   Servida por: src/server/LocalServer.js → rota /app
+   ========================================================= */
+
+:root {
+  /* Superfícies */
+  --ita-bg-deep: #060a13;
+  --ita-bg-app: #0a0f1c;
+  --ita-bg-bar: #0d1424;
+  --ita-bg-elev: #121b31;
+  --ita-bg-hover: #182342;
+  --ita-bg-active: #1c2a4e;
+
+  /* Bordas */
+  --ita-border: #1d2a4a;
+  --ita-border-soft: #16203a;
+
+  /* Texto */
+  --ita-text: #e8eef9;
+  --ita-text-dim: #93a3c4;
+  --ita-text-faint: #5d6c8f;
+
+  /* Identidade ITA */
+  --ita-green: #24e58a;
+  --ita-green-deep: #0f9d63;
+  --ita-green-glow: rgba(36, 229, 138, .22);
+  --ita-blue: #2a5298;
+  --ita-blue-deep: #14264d;
+
+  /* Estados */
+  --ita-danger: #ff5d6c;
+  --ita-warn: #ffb454;
+
+  /* Métricas */
+  --ita-radius: 12px;
+  --ita-radius-sm: 8px;
+  --ita-titlebar-h: 38px;
+  --ita-tabs-h: 42px;
+  --ita-navbar-h: 52px;
+  --ita-status-h: 26px;
+
+  --ita-font: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--ita-font);
+  background: var(--ita-bg-deep);
+  color: var(--ita-text);
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Estrutura geral: titlebar | abas | navbar | conteúdo | status */
+.ita-shell {
+  display: grid;
+  grid-template-rows:
+    var(--ita-titlebar-h)
+    var(--ita-tabs-h)
+    var(--ita-navbar-h)
+    1fr
+    var(--ita-status-h);
+  height: 100vh;
+  background: var(--ita-bg-app);
+}
+
+/* Scrollbars no padrão do tema */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #223050;
+  border-radius: 8px;
+  border: 2px solid var(--ita-bg-app);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2c3d66;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ita-green);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   BOTÕES-ÍCONE (base reutilizada em toda a interface)
+   ========================================================= */
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ita-text-dim);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background .15s ease,
+    color .15s ease,
+    border-color .15s ease,
+    transform .1s ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--ita-bg-hover);
+  color: var(--ita-text);
+}
+
+.icon-btn:active:not(:disabled) {
+  transform: scale(.94);
+}
+
+.icon-btn:disabled {
+  opacity: .32;
+  cursor: default;
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* =========================================================
+   BARRA DE TÍTULOS (arrastável — botões nativos no overlay)
+   ========================================================= */
+
+.ita-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 0 0 14px;
+  background: linear-gradient(180deg, #0c1322, #0a0f1c);
+  border-bottom: 1px solid var(--ita-border-soft);
+  -webkit-app-region: drag;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--ita-green) 0%, var(--ita-green-deep) 70%);
+  color: #04160c;
+  font-weight: 800;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px var(--ita-green-glow);
+}
+
+.brand-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  color: var(--ita-text);
+  white-space: nowrap;
+}
+
+.brand-name b {
+  color: var(--ita-green);
+  font-weight: 800;
+}
+
+.titlebar-drag {
+  flex: 1;
+  height: 100%;
+}
+
+.titlebar-tag {
+  font-size: 11px;
+  color: var(--ita-text-faint);
+  letter-spacing: .6px;
+  white-space: nowrap;
+}
+
+/* Espaço reservado aos botões nativos (titleBarOverlay do main.js) */
+.titlebar-overlay-space {
+  width: 150px;
+  height: 100%;
+  flex: 0 0 auto;
+  -webkit-app-region: no-drag;
+}
+
+/* Pré-visualização fora do Electron (navegador comum): sem overlay nativo */
+body.web-preview .titlebar-overlay-space {
+  display: none;
+}
+
+/* =========================================================
+   BARRA DE ABAS
+   ========================================================= */
+
+.tabs-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding: 6px 10px 0;
+  background: var(--ita-bg-bar);
+  border-bottom: 1px solid var(--ita-border-soft);
+}
+
+.tabs-scroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  max-width: 220px;
+  flex: 0 1 auto;
+  padding: 0 10px;
+  height: calc(var(--ita-tabs-h) - 6px);
+  background: #0b111f;
+  border: 1px solid var(--ita-border-soft);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  color: var(--ita-text-dim);
+  font-size: 12px;
+  font-family: var(--ita-font);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background .15s ease,
+    color .15s ease,
+    border-color .15s ease;
+}
+
+.tab:hover {
+  background: #0f1729;
+  color: var(--ita-text);
+}
+
+.tab.active {
+  background: var(--ita-bg-app);
+  color: var(--ita-text);
+  border-color: var(--ita-border);
+}
+
+/* Sublinhado verde "tecnológico" da aba ativa */
+.tab.active::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ita-green);
+  box-shadow: 0 0 10px var(--ita-green-glow);
+}
+
+.tab-favicon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex: 0 0 auto;
+  background-color: #14264d;
+}
+
+/* Tile com a inicial quando não há favicon disponível */
+.tab-favicon.letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  color: #04160c;
+  background: linear-gradient(135deg, var(--ita-green), var(--ita-green-deep));
+  text-transform: uppercase;
+}
+
+.tab-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-close {
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: var(--ita-text-faint);
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  transition:
+    background .12s ease,
+    color .12s ease;
+}
+
+.tab-close:hover {
+  background: var(--ita-bg-hover);
+  color: var(--ita-danger);
+}
+
+.tab-close svg {
+  width: 12px;
+  height: 12px;
+}
+
+.newtab-btn {
+  align-self: center;
+}
+
+.newtab-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* =========================================================
+   BARRA DE NAVEGAÇÃO
+   ========================================================= */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--ita-bg-bar);
+  border-bottom: 1px solid var(--ita-border-soft);
+  -webkit-app-region: no-drag;
+}
+
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Campo de endereço (omnibox) */
+.omnibox {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 6px 0 14px;
+  background: #0a101f;
+  border: 1px solid var(--ita-border);
+  border-radius: 999px;
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease,
+    background .15s ease;
+}
+
+.omnibox:focus-within {
+  border-color: rgba(36, 229, 138, .55);
+  box-shadow:
+    0 0 0 3px var(--ita-green-glow),
+    0 0 24px rgba(36, 229, 138, .08);
+  background: #0b1223;
+}
+
+.omni-lock {
+  display: flex;
+  align-items: center;
+  color: var(--ita-green);
+  flex: 0 0 auto;
+}
+
+.omni-lock svg {
+  width: 14px;
+  height: 14px;
+}
+
+.omni-lock.http {
+  color: var(--ita-warn);
+}
+
+.omni-lock.internal {
+  color: var(--ita-text-faint);
+}
+
+.omnibox input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--ita-text);
+  font-size: 13.5px;
+  font-family: var(--ita-font);
+}
+
+.omnibox input::placeholder {
+  color: var(--ita-text-faint);
+}
+
+.omni-star {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+}
+
+.omni-star.on {
+  color: var(--ita-green);
+}
+
+.omni-star.on svg path {
+  fill: var(--ita-green);
+  stroke: var(--ita-green);
+}
+
+/* Selo de downloads ativos */
+.badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--ita-green);
+  color: #04160c;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px var(--ita-green-glow);
+}
+
+/* Barra de progresso de carregamento (topo do conteúdo) */
+.load-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  z-index: 60;
+  overflow: hidden;
+  display: none;
+  pointer-events: none;
+}
+
+.load-progress.on {
+  display: block;
+}
+
+.load-progress .bar {
+  height: 100%;
+  width: 40%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--ita-green) 40%, #7dffd0);
+  animation: ita-slide 1.1s ease-in-out infinite;
+}
+
+@keyframes ita-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(320%); }
+}
+
+/* =========================================================
+   ÁREA DE CONTEÚDO — webviews empilhados por aba
+   ========================================================= */
+
+.viewport {
+  position: relative;
+  background: var(--ita-bg-deep);
+  overflow: hidden;
+}
+
+.webview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+  background: #ffffff;
+}
+
+.webview.visible {
+  display: inline-flex;
+}
+
+/* =========================================================
+   PÁGINA DE NOVA ABA (busca + atalhos)
+   ========================================================= */
+
+.newtab {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 40px 24px;
+  background:
+    radial-gradient(900px 420px at 50% -10%, rgba(42, 82, 152, .28), transparent 60%),
+    radial-gradient(700px 380px at 85% 110%, rgba(36, 229, 138, .10), transparent 60%),
+    var(--ita-bg-deep);
+}
+
+.newtab.hidden {
+  display: none;
+}
+
+.newtab-logo {
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #6ea8ff 0%, var(--ita-green) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.newtab-sub {
+  font-size: 12px;
+  color: var(--ita-text-dim);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: -14px;
+}
+
+.newtab-search {
+  width: min(640px, 92%);
+  display: flex;
+  gap: 10px;
+  user-select: text;
+}
+
+.newtab-search input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: 1px solid var(--ita-border);
+  background: #0b1223;
+  color: var(--ita-text);
+  font-size: 14px;
+  font-family: var(--ita-font);
+  outline: none;
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease;
+}
+
+.newtab-search input:focus {
+  border-color: rgba(36, 229, 138, .55);
+  box-shadow: 0 0 0 3px var(--ita-green-glow);
+}
+
+.newtab-search button {
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--ita-green), var(--ita-green-deep));
+  color: #04160c;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: var(--ita-font);
+  box-shadow: 0 6px 22px rgba(36, 229, 138, .25);
+  transition:
+    filter .15s ease,
+    transform .1s ease;
+}
+
+.newtab-search button:hover {
+  filter: brightness(1.08);
+}
+
+.newtab-search button:active {
+  transform: scale(.97);
+}
+
+/* Grade de atalhos */
+.shortcuts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(96px, 1fr));
+  gap: 14px;
+  width: min(780px, 94%);
+}
+
+.shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 10px 14px;
+  border-radius: 16px;
+  background: #0b1223;
+  border: 1px solid var(--ita-border-soft);
+  cursor: pointer;
+  transition:
+    transform .15s ease,
+    border-color .15s ease,
+    box-shadow .15s ease;
+}
+
+.shortcut:hover {
+  transform: translateY(-4px);
+  border-color: rgba(36, 229, 138, .4);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, .45),
+    0 0 0 1px rgba(36, 229, 138, .12);
+}
+
+.shortcut-icon {
+  font-size: 24px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: linear-gradient(145deg, var(--ita-blue-deep), #0d1830);
+}
+
+.shortcut-name {
+  font-size: 11.5px;
+  color: var(--ita-text-dim);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shortcut:hover .shortcut-name {
+  color: var(--ita-text);
+}
+
+/* =========================================================
+   PAINEL DE DOWNLOADS
+   ========================================================= */
+
+.downloads-panel {
+  position: fixed;
+  top: calc(var(--ita-titlebar-h) + var(--ita-tabs-h) + var(--ita-navbar-h) + 6px);
+  right: 12px;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: 60vh;
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--ita-bg-elev);
+  border: 1px solid var(--ita-border);
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+  opacity: 0;
+  transform: translateY(-8px) scale(.98);
+  pointer-events: none;
+  transition:
+    opacity .18s ease,
+    transform .18s ease;
+}
+
+.downloads-panel.open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.dl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 10px 16px;
+  border-bottom: 1px solid var(--ita-border-soft);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dl-list {
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dl-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #0b1223;
+  border: 1px solid var(--ita-border-soft);
+  font-size: 12px;
+}
+
+.dl-item .name {
+  color: var(--ita-text);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dl-item .meta {
+  color: var(--ita-text-faint);
+  font-size: 11px;
+  margin-top: 3px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dl-item .meta .st {
+  color: var(--ita-green);
+}
+
+.dl-bar {
+  height: 3px;
+  border-radius: 99px;
+  background: #1a2646;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.dl-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--ita-green);
+  transition: width .25s ease;
+}
+
+.dl-empty {
+  padding: 26px 12px;
+  text-align: center;
+  color: var(--ita-text-faint);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   TOAST DE SEGURANÇA
+   ========================================================= */
+
+.toast {
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--ita-status-h) + 16px);
+  z-index: 500;
+  max-width: 380px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  background: var(--ita-bg-elev);
+  border: 1px solid var(--ita-border);
+  border-left: 3px solid var(--ita-green);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .5);
+  font-size: 12.5px;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition:
+    opacity .2s ease,
+    transform .2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: none;
+}
+
+.toast.error {
+  border-left-color: var(--ita-danger);
+}
+
+.toast.warn {
+  border-left-color: var(--ita-warn);
+}
+
+.toast strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.toast span {
+  color: var(--ita-text-dim);
+  word-break: break-all;
+}
+
+/* =========================================================
+   BARRA DE STATUS
+   ========================================================= */
+
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: var(--ita-bg-bar);
+  border-top: 1px solid var(--ita-border-soft);
+  font-size: 11px;
+  color: var(--ita-text-faint);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ita-green);
+  box-shadow: 0 0 8px var(--ita-green-glow);
+  flex: 0 0 auto;
+}
+
+.status-dot.loading {
+  background: var(--ita-blue);
+  box-shadow: none;
+  animation: ita-pulse 1s ease-in-out infinite;
+}
+
+.status-dot.warn {
+  background: var(--ita-warn);
+  box-shadow: none;
+}
+
+.status-dot.error {
+  background: var(--ita-danger);
+  box-shadow: none;
+}
+
+@keyframes ita-pulse {
+  50% { opacity: .35; }
+}
+
+.status-right {
+  margin-left: auto;
+  letter-spacing: .4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .tab {
+    min-width: 96px;
+    max-width: 170px;
+  }
+
+  .shortcuts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .titlebar-tag {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --ita-navbar-h: 48px;
+    --ita-tabs-h: 38px;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tab {
+    min-width: 72px;
+    max-width: 130px;
+    padding: 0 8px;
+  }
+
+  .shortcuts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .newtab-logo {
+    font-size: 34px;
+  }
+
+  .newtab-search {
+    flex-direction: column;
+  }
+
+  .newtab-search button {
+    width: 100%;
+  }
+
+  .downloads-panel {
+    right: 8px;
+    width: calc(100vw - 16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

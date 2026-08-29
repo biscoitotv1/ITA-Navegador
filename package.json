@@ -1,0 +1,24 @@
+{
+  "name": "ita-browser",
+  "version": "1.0.0",
+  "description": "ITA Browser - Navegador para jogos e desenvolvimento de jogos",
+  "main": "main.js",
+  "scripts": {
+    "start": "cmd /c \"set ELECTRON_RUN_AS_NODE=& electron .\"",
+    "test": "node validate-project.js",
+    "test:agent": "node validate-agent.js",
+    "build": "node validate-project.js"
+  },
+  "author": "ITA Games Studios",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "latest"
+  },
+  "dependencies": {
+    "electron-store": "^11.0.2",
+    "three": "^0.160.0"
+  },
+  "allowScripts": {
+    "electron@16.2.8": true
+  }
+}

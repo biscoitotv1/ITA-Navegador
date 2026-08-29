@@ -1,0 +1,39 @@
+# Dependências
+node_modules/
+
+# Dados internos do ITA AI Agent
+.ita-agent/
+
+# Build
+dist/
+out/
+build_output/
+.next/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Ambiente (Vercel/Next)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.vercel
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Arquivos temporários de teste
+_check*.txt
+_proxy_test.js
+Scripts/
+landing.html

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITA Games Studios - Engine Central</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b0b0b;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-nav {
+            background-color: #121212;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #222;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background-color: #1a1a1a;
+            color: #ccc;
+            border: 1px solid #333;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover { background-color: #252525; color: #fff; }
+        .nav-btn.active { background-color: #f08c00; border-color: #f59f00; color: #000; }
+        .nav-btn.browser-logo { color: #63e6be; border-color: #2b8a3e; }
+
+        .sub-nav {
+            background-color: #0f0f0f;
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-bottom: 1px solid #222;
+            gap: 8px;
+        }
+
+        .view-pane {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .view-pane.active {
+            display: flex;
+        }
+
+        .studio-toolbar {
+            background-color: #0e0e0e;
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-bottom: 1px solid #222;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            background-color: #1a1a1a;
+            color: #ccc;
+            border: 1px solid #333;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .tool-btn:hover { background-color: #2a2a2a; color: #fff; }
+        .tool-separator { width: 1px; height: 20px; background-color: #333; margin: 0 4px; }
+
+        .studio-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr 240px;
+            grid-template-rows: 1fr 180px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel {
+            background-color: #0b0b0b;
+            border: 1px solid #1a1a1a;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            background-color: #141414;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #aaa;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #222;
+        }
+
+        .hierarchy-panel { grid-column: 1; grid-row: 1; }
+        .hierarchy-list {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+            padding: 5px 0;
+        }
+        .hierarchy-item {
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #ccc;
+            cursor: pointer;
+        }
+        .hierarchy-item:hover { background-color: #151515; color: #fff; }
+        .hierarchy-item.selected { background-color: #332714; color: #f59f00; border-left: 3px solid #f08c00; }
+
+        .viewport-panel {
+            grid-column: 2;
+            grid-row: 1;
+            background-color: #111;
+            position: relative;
+            overflow: hidden;
+        }
+        .pixi-canvas-container {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .inspector-panel { grid-column: 3; grid-row: 1 / span 2; }
+        .inspector-content { padding: 15px 10px; color: #777; font-size: 12px; line-height: 1.5; }
+
+        .bottom-panel {
+            grid-column: 1 / span 2;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        .bottom-tabs {
+            display: flex;
+            background-color: #141414;
+            border-bottom: 1px solid #222;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #777;
+            padding: 6px 12px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .tab-btn.active { color: #fff; border-bottom: 2px solid #f08c00; background-color: #0b0b0b; }
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #f59f00;
+            display: none;
+            background-color: #070707;
+        }
+        .tab-content.active { display: block; }
+
+        .browser-home-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #151515 0%, #080808 100%);
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <button class="nav-btn browser-logo" onclick="switchMainView('browser')">ITA BROWSER</button>
+        <button class="nav-btn active" onclick="switchMainView('2d-studio')">ITA GAMES STUDIOS</button>
+    </div>
+
+    <div class="sub-nav">
+        <button class="nav-btn active" onclick="switchMainView('2d-studio')">2D GAME STUDIO</button>
+        <button class="nav-btn" onclick="switchMainView('sim-studio')">SIMULATOR STUDIO</button>
+        <button class="nav-btn" onclick="switchMainView('avia-studio')">AVIATION STUDIO</button>
+    </div>
+
+    <div id="view-2d-studio" class="view-pane active">
+        <div class="studio-toolbar">
+            <button class="tool-btn">SELECIONAR</button>
+            <button class="tool-btn">MOVER</button>
+            <button class="tool-btn">RODAR</button>
+            <div class="tool-separator"></div>
+            <button class="tool-btn" onclick="addGameElement('Sprite')">🖼️ Sprite</button>
+            <button class="tool-btn" onclick="addGameElement('Tilemap')">🧱 Tilemap</button>
+            <button class="tool-btn" onclick="addGameElement('Texto UI')">📝 Texto UI</button>
+            <div class="tool-separator"></div>
+            <button class="tool-btn" style="color: #40c057;" onclick="enginePlay()">▶ Play 2D</button>
+            <button class="tool-btn" onclick="enginePause()">⏸</button>
+            <button class="tool-btn" style="color: #fa5252;" onclick="engineStop()">⏹ Stop</button>
+            <span style="margin-left: auto; color: #888; font-size: 11px; font-weight: bold;">ITA 2D ENGINE</span>
+        </div>
+
+        <div class="studio-layout">
+            <div class="panel hierarchy-panel">
+                <div class="panel-header">HIERARCHY (2D SCENE)</div>
+                <ul class="hierarchy-list" id="hierarchyList">
+                    <li class="hierarchy-item selected" onclick="selectHierarchyItem(this, 'Main Camera 2D')">Main Camera 2D</li>
+                    <li class="hierarchy-item" onclick="selectHierarchyItem(this, 'Background Layer')">Background Layer</li>
+                    <li class="hierarchy-item" onclick="selectHierarchyItem(this, 'Player Sprite')">Player Sprite</li>
+                </ul>
+            </div>
+
+            <div class="viewport-panel" id="viewport2D">
+                <div class="pixi-canvas-container" id="pixiContainer"></div>
+            </div>
+
+            <div class="panel inspector-panel">
+                <div class="panel-header">INSPECTOR</div>
+                <div class="inspector-content" id="inspectorContent">
+                    <strong>Main Camera 2D</strong><br>
+                    Pos X: 0 | Pos Y: 0<br>
+                    Zoom: 1.0<br>
+                    Background: #111111
+                </div>
+            </div>
+
+            <div class="panel bottom-panel">
+                <div class="bottom-tabs">
+                    <button class="tab-btn active" onclick="switchBottomTab(event, 'consoleTab')">CONSOLE</button>
+                    <button class="tab-btn" onclick="switchBottomTab(event, 'assetsTab')">PROJECT / ASSETS</button>
+                </div>
+                <div id="consoleTab" class="tab-content active">
+                    [16:50:00] [INFO] ITA Games Studios Engine inicializada.
+                </div>
+                <div id="assetsTab" class="tab-content" style="color: #aaa;">
+                    📁 /assets<br>
+                    &nbsp;&nbsp;├── 📁 sprites<br>
+                    &nbsp;&nbsp;├── 📁 tilesets<br>
+                    &nbsp;&nbsp;└── 📁 scripts
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-browser" class="view-pane">
+        <div class="browser-home-screen">
+            <h1 style="color: #3b5bdb; font-size: 36px;">ITA Browser</h1>
+            <p style="color: #777;">ITA Games Studios Hub</p>
+            <input type="text" placeholder="Pesquisar ou digitar URL..." style="width: 500px; padding: 12px; background: #151515; border: 1px solid #333; color: #fff; border-radius: 6px;">
+        </div>
+    </div>
+
+    <div id="view-sim-studio" class="view-pane">
+        <div class="studio-toolbar">
+            <span style="color: #888; font-weight: bold; font-size: 11px;">ITA SIMULATOR STUDIO - Painel de Física e Veículos</span>
+        </div>
+        <div class="studio-layout">
+            <div class="panel hierarchy-panel"><div class="panel-header">VEHICLE HIERARCHY</div></div>
+            <div class="viewport-panel" style="display:flex; align-items:center; justify-content:center; color:#555;">Viewport Simulator 3D</div>
+            <div class="panel inspector-panel"><div class="panel-header">PHYSICS INSPECTOR</div><div class="inspector-content">Configurações de motor e suspensão</div></div>
+            <div class="panel bottom-panel"><div class="bottom-tabs"><button class="tab-btn active">TELEMETRIA</button></div><div class="tab-content active">[SIM] Sistema de física pronto.</div></div>
+        </div>
+    </div>
+
+    <div id="view-avia-studio" class="view-pane">
+        <div class="studio-toolbar">
+            <span style="color: #888; font-weight: bold; font-size: 11px;">ITA AVIATION STUDIO - Aerodinâmica & Voo</span>
+        </div>
+        <div class="studio-layout">
+            <div class="panel hierarchy-panel"><div class="panel-header">AIRCRAFT PARTS</div></div>
+            <div class="viewport-panel" style="display:flex; align-items:center; justify-content:center; color:#555;">Wind Tunnel / Flight Viewport</div>
+            <div class="panel inspector-panel"><div class="panel-header">FLIGHT INSPECTOR</div><div class="inspector-content">Superfícies de controle e asas</div></div>
+            <div class="panel bottom-panel"><div class="bottom-tabs"><button class="tab-btn active">FLIGHT LOGS</button></div><div class="tab-content active">[AVIA] Túnel de vento conectado.</div></div>
+        </div>
+    </div>
+
+    <script>
+        function switchMainView(viewId) {
+            document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
+            if (viewId === 'browser') document.getElementById('view-browser').classList.add('active');
+            if (viewId === '2d-studio') document.getElementById('view-2d-studio').classList.add('active');
+            if (viewId === 'sim-studio') document.getElementById('view-sim-studio').classList.add('active');
+            if (viewId === 'avia-studio') document.getElementById('view-avia-studio').classList.add('active');
+        }
+
+        function switchBottomTab(evt, tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function logMsg(text) {
+            const consoleTab = document.getElementById('consoleTab');
+            const time = new Date().toLocaleTimeString();
+            consoleTab.innerHTML += `<br>[${time}] [INFO] ${text}`;
+            consoleTab.scrollTop = consoleTab.scrollHeight;
+        }
+
+        function selectHierarchyItem(element, name) {
+            document.querySelectorAll('.hierarchy-item').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            const inspector = document.getElementById('inspectorContent');
+            if (name === 'Main Camera 2D') {
+                inspector.innerHTML = `<strong>Main Camera 2D</strong><br>Pos X: 0 | Pos Y: 0<br>Zoom: 1.0<br>Background: #111111`;
+            } else if (name === 'Player Sprite') {
+                inspector.innerHTML = `<strong>Player Sprite</strong><br>PosX: Centralizado<br>PosY: Centralizado<br>Scale: (1.0, 1.0)<br>Cor: #f08c00`;
+            } else {
+                inspector.innerHTML = `<strong>${name}</strong><br>Status: Ativo na Cena 2D<br>Camada: Padrão`;
+            }
+            logMsg(`Objeto selecionado: ${name}`);
+        }
+
+        let app2D = null;
+        let worldStage = null;
+        let spawnedObjects = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('pixiContainer');
+            app2D = new PIXI.Application();
+            app2D.init({
+                width: container.clientWidth,
+                height: container.clientHeight,
+                backgroundColor: 0x111111,
+                antialias: true
+            }).then(() => {
+                container.appendChild(app2D.canvas);
+                worldStage = new PIXI.Container();
+                app2D.stage.addChild(worldStage);
+
+                const gridGraphics = new PIXI.Graphics();
+                function drawGrid() {
+                    gridGraphics.clear();
+                    gridGraphics.lineStyle(1, 0x222222, 1);
+                    const step = 40;
+                    for (let x = 0; x < app2D.screen.width; x += step) {
+                        gridGraphics.moveTo(x, 0); gridGraphics.lineTo(x, app2D.screen.height);
+                    }
+                    for (let y = 0; y < app2D.screen.height; y += step) {
+                        gridGraphics.moveTo(0, y); gridGraphics.lineTo(app2D.screen.width, y);
+                    }
+                }
+                drawGrid();
+                worldStage.addChild(gridGraphics);
+
+                const player = new PIXI.Graphics();
+                player.beginFill(0xf08c00);
+                player.drawRect(-25, -25, 50, 50);
+                player.endFill();
+                player.x = app2D.screen.width / 2;
+                player.y = app2D.screen.height / 2;
+                worldStage.addChild(player);
+
+                window.addEventListener('resize', () => {
+                    if (container.clientWidth > 0 && container.clientHeight > 0) {
+                        app2D.renderer.resize(container.clientWidth, container.clientHeight);
+                        drawGrid();
+                    }
+                });
+            });
+        });
+
+        function addGameElement(type) {
+            logMsg(`Criando elemento na cena: ${type}`);
+            const list = document.getElementById('hierarchyList');
+            const newItem = document.createElement('li');
+            newItem.className = 'hierarchy-item';
+            newItem.innerText = `${type}_${list.children.length + 1}`;
+            newItem.onclick = function() { selectHierarchyItem(this, newItem.innerText); };
+            list.appendChild(newItem);
+
+            if (worldStage && app2D) {
+                const shape = new PIXI.Graphics();
+                shape.beginFill(type === 'Sprite' ? 0x40c057 : type === 'Tilemap' ? 0x3b5bdb : 0xfa5252);
+                shape.drawRect(-20, -20, 40, 40);
+                shape.endFill();
+                shape.x = (app2D.screen.width / 2) + (Math.random() * 100 - 50);
+                shape.y = (app2D.screen.height / 2) + (Math.random() * 100 - 50);
+                worldStage.addChild(shape);
+                spawnedObjects.push(shape);
+            }
+        }
+
+        function enginePlay() { logMsg("Play 2D acionado: Executando loop de jogo na viewport."); }
+        function enginePause() { logMsg("Engine pausada."); }
+        function engineStop() { logMsg("Engine parada e cena redefinida."); }
+    </script>
+</body>
+</html>

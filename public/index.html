@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITA Browser</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #f4f5f7;
+            color: #1f1f1f;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tabs-bar {
+            background-color: #e2e4e9;
+            display: flex;
+            align-items: center;
+            padding: 6px 10px 0 10px;
+            gap: 5px;
+            border-bottom: 1px solid #d0d3dc;
+        }
+
+        .tab {
+            background-color: #d1d5db;
+            color: #4b5563;
+            padding: 6px 12px;
+            border-radius: 8px 8px 0 0;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #c0c4cc;
+            border-bottom: none;
+            cursor: pointer;
+            max-width: 160px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tab.active {
+            background-color: #f4f5f7;
+            color: #111827;
+            border-color: #d0d3dc;
+            font-weight: 600;
+        }
+
+        .tab-close {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-close:hover {
+            background-color: rgba(0,0,0,0.1);
+            color: #111;
+        }
+
+        .new-tab-btn {
+            background: none;
+            border: none;
+            color: #4b5563;
+            font-size: 16px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .new-tab-btn:hover {
+            background-color: #d1d5db;
+            color: #111;
+        }
+
+        .admin-trigger {
+            margin-left: auto;
+            background: none;
+            border: 1px solid #d0d3dc;
+            color: #4b5563;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .admin-trigger:hover {
+            background-color: #d1d5db;
+            color: #111;
+        }
+
+        .ita-header {
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e4e9;
+            gap: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .nav-icon-btn {
+            background: none;
+            border: none;
+            color: #4b5563;
+            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .nav-icon-btn:hover {
+            background-color: #f3f4f6;
+            color: #111;
+        }
+
+        .address-bar-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background-color: #f0f2f5;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            padding: 0 12px;
+        }
+
+        .address-bar-container:focus-within {
+            border-color: #3b5bdb;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 2px rgba(59, 91, 219, 0.15);
+        }
+
+        .ita-url-bar {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 8px 6px;
+            color: #1f2937;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .fav-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+        }
+
+        .fav-btn:hover, .fav-btn.saved {
+            color: #f59e0b;
+        }
+
+        .ita-viewport {
+            flex: 1;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-box {
+            text-align: center;
+            max-width: 550px;
+            z-index: 2;
+        }
+
+        .welcome-box h1 {
+            font-size: 48px;
+            color: #3b5bdb;
+            margin-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        .welcome-box p {
+            color: #4b5563;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .fast-search {
+            width: 100%;
+            display: flex;
+            gap: 8px;
+        }
+
+        .fast-input {
+            flex: 1;
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            padding: 12px 18px;
+            border-radius: 8px;
+            color: #1f2937;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .fast-input:focus {
+            border-color: #3b5bdb;
+            box-shadow: 0 0 0 2px rgba(59, 91, 219, 0.15);
+        }
+
+        .search-go {
+            background: #3b5bdb;
+            color: #fff;
+            border: none;
+            padding: 0 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-go:hover {
+            background: #2b45c2;
+        }
+
+        .web-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #ffffff;
+            display: none;
+            z-index: 5;
+        }
+
+        .web-frame.active {
+            display: block;
+        }
+
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .admin-modal.show {
+            display: flex;
+        }
+
+        .admin-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .admin-card h2 {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .admin-card p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .admin-input {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .admin-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-close-admin {
+            background: #e5e7eb;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .btn-save-admin {
+            background: #3b5bdb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tabs-bar" id="tabsBar">
+        <div class="tab active" onclick="switchTab(0)" id="tab-0">
+            <span id="tab-title-0">ITA Browser</span>
+            <button class="tab-close" onclick="event.stopPropagation(); closeTab(0)">×</button>
+        </div>
+        <button class="new-tab-btn" title="Nova aba" onclick="addNewTab()">+</button>
+        <button class="admin-trigger" onclick="toggleAdminPanel()">Painel Admin</button>
+    </div>
+
+    <div class="ita-header">
+        <button class="nav-icon-btn" title="Voltar" onclick="historyBack()">🡠</button>
+        <button class="nav-icon-btn" title="Avançar" onclick="historyForward()">🡢</button>
+        <button class="nav-icon-btn" title="Atualizar" onclick="reloadPage()">↻</button>
+
+        <div class="address-bar-container">
+            <input type="text" class="ita-url-bar" id="urlInput" value="ita://home" onkeydown="handleUrlKey(event)">
+            <button class="fav-btn" id="favBtn" title="Salvar Favorito" onclick="toggleFavorite()">☆</button>
+        </div>
+    </div>
+
+    <div class="ita-viewport" id="viewportContainer">
+        <div class="welcome-box" id="homeView">
+            <h1 onclick="goHome()">ITA Browser</h1>
+            <p>Pronto para criar. Navegador otimizado para alta velocidade e desenvolvimento independente.</p>
+            
+            <div class="fast-search">
+                <input type="text" class="fast-input" id="searchInput" placeholder="Digite uma URL ou pesquise na web..." onkeydown="handleSearchKey(event)">
+                <button class="search-go" onclick="performSearch()">Ir</button>
+            </div>
+        </div>
+
+        <iframe class="web-frame" id="webFrame" src="about:blank"></iframe>
+    </div>
+
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-card">
+            <h2>Painel Admin - ITA Browser</h2>
+            <p>Gerencie configurações globais, histórico de atualizações e extensões futuras.</p>
+            <label style="font-size: 11px; font-weight: 600; color: #374151;">Versão Atual da Engine:</label>
+            <input type="text" class="admin-input" value="ITA-Core v2.6.0-stable" readonly>
+            <label style="font-size: 11px; font-weight: 600; color: #374151;">Mensagem de Notificação Global:</label>
+            <input type="text" class="admin-input" id="adminNotice" placeholder="Ex: Atualização programada para amanhã">
+            <div class="admin-actions">
+                <button class="btn-close-admin" onclick="toggleAdminPanel()">Fechar</button>
+                <button class="btn-save-admin" onclick="saveAdminSettings()">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tabs = [
+            { id: 0, title: "ITA Browser", url: "ita://home", history: ["ita://home"], historyIndex: 0, isFavorite: false }
+        ];
+        let activeTabId = 0;
+
+        function getProxyUrl(targetUrl) {
+            const base = (window.itaBrowser && window.itaBrowser.getLocalServerUrl) ? window.itaBrowser.getLocalServerUrl() : 'http://localhost:8080';
+            return base + '/proxy?url=' + encodeURIComponent(targetUrl);
+        }
+
+        function getDisplayTitle(rawUrl) {
+            if (rawUrl === "ita://home") {
+                return "ITA Browser";
+            }
+            if (rawUrl.startsWith('http://localhost:8080/proxy?url=')) {
+                try {
+                    const real = new URL(rawUrl).searchParams.get('url');
+                    if (real) {
+                        const u = new URL(real);
+                        return (u.hostname || real) + (u.pathname && u.pathname !== '/' ? u.pathname : '');
+                    }
+                } catch {}
+                return 'Navegando...';
+            }
+            try {
+                const u = new URL(rawUrl);
+                const host = u.hostname || rawUrl;
+                const path = u.pathname || '';
+                return host + (path && path !== '/' ? path : '');
+            } catch {
+                return rawUrl;
+            }
+        }
+
+        function updateUI() {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (!currentTab) return;
+
+            document.getElementById('urlInput').value = currentTab.url;
+
+            const favBtn = document.getElementById('favBtn');
+            if (currentTab.isFavorite) {
+                favBtn.classList.add('saved');
+                favBtn.innerText = '★';
+            } else {
+                favBtn.classList.remove('saved');
+                favBtn.innerText = '☆';
+            }
+
+            const homeView = document.getElementById('homeView');
+            const webFrame = document.getElementById('webFrame');
+
+            if (currentTab.url === "ita://home") {
+                homeView.style.display = "block";
+                webFrame.classList.remove('active');
+                webFrame.style.display = 'none';
+                if (webFrame.getAttribute('src') !== 'about:blank') {
+                    webFrame.setAttribute('src', 'about:blank');
+                }
+            } else {
+                homeView.style.display = "none";
+                webFrame.style.display = 'block';
+                webFrame.classList.add('active');
+                const nextSrc = currentTab.url;
+                if (webFrame.getAttribute('src') !== nextSrc) {
+                    webFrame.setAttribute('src', nextSrc);
+                }
+            }
+
+            renderTabsDOM();
+        }
+
+        function renderTabsDOM() {
+            const tabsBar = document.getElementById('tabsBar');
+            const newTabBtn = document.querySelector('.new-tab-btn');
+
+            document.querySelectorAll('.tab').forEach(el => el.remove());
+
+            tabs.forEach(tab => {
+                const tabEl = document.createElement('div');
+                tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
+                tabEl.id = `tab-${tab.id}`;
+                tabEl.onclick = () => switchTab(tab.id);
+                tabEl.innerHTML = `
+                    <span>${tab.title}</span>
+                    <button class="tab-close" onclick="event.stopPropagation(); closeTab(${tab.id})">×</button>
+                `;
+                tabsBar.insertBefore(tabEl, newTabBtn);
+            });
+        }
+
+        function addNewTab() {
+            const newId = tabs.length > 0 ? Math.max(...tabs.map(t => t.id)) + 1 : 0;
+            const newTabObj = {
+                id: newId,
+                title: "Nova Aba",
+                url: "ita://home",
+                history: ["ita://home"],
+                historyIndex: 0,
+                isFavorite: false
+            };
+            tabs.push(newTabObj);
+            activeTabId = newId;
+            updateUI();
+        }
+
+        function closeTab(id) {
+            if (tabs.length === 1) {
+                tabs[0].url = "ita://home";
+                tabs[0].title = "ITA Browser";
+                tabs[0].history = ["ita://home"];
+                tabs[0].historyIndex = 0;
+                updateUI();
+                return;
+            }
+
+            const index = tabs.findIndex(t => t.id === id);
+            tabs = tabs.filter(t => t.id !== id);
+
+            if (activeTabId === id) {
+                activeTabId = tabs[Math.max(0, index - 1)].id;
+            }
+            updateUI();
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            updateUI();
+        }
+
+        function navigateTo(targetUrl) {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (!currentTab) return;
+
+            let formattedUrl = targetUrl.trim();
+            if (formattedUrl === "ita://home") {
+                formattedUrl = "ita://home";
+            } else if (!formattedUrl.startsWith("http://") && !formattedUrl.startsWith("https://")) {
+                if (formattedUrl.includes(".") && !formattedUrl.includes(" ")) {
+                    formattedUrl = "https://" + formattedUrl;
+                } else {
+                    formattedUrl = "https://html.duckduckgo.com/html/?q=" + encodeURIComponent(formattedUrl);
+                }
+            }
+
+            if (/^https?:\/\//i.test(formattedUrl) && formattedUrl !== "ita://home") {
+              formattedUrl = getProxyUrl(formattedUrl);
+            }
+
+            currentTab.history = currentTab.history.slice(0, currentTab.historyIndex + 1);
+            currentTab.history.push(formattedUrl);
+            currentTab.historyIndex = currentTab.history.length - 1;
+
+            currentTab.url = formattedUrl;
+            currentTab.title = getDisplayTitle(formattedUrl);
+            updateUI();
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (query) navigateTo(query);
+        }
+
+        function handleSearchKey(event) {
+            if (event.key === 'Enter') performSearch();
+        }
+
+        function handleUrlKey(event) {
+            if (event.key === 'Enter') {
+                const url = document.getElementById('urlInput').value;
+                navigateTo(url);
+            }
+        }
+
+        function goHome() {
+            navigateTo("ita://home");
+            document.getElementById('searchInput').value = '';
+        }
+
+        function historyBack() {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (currentTab && currentTab.historyIndex > 0) {
+                currentTab.historyIndex--;
+                currentTab.url = currentTab.history[currentTab.historyIndex];
+                currentTab.title = getDisplayTitle(currentTab.url);
+                updateUI();
+            }
+        }
+
+        function historyForward() {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (currentTab && currentTab.historyIndex < currentTab.history.length - 1) {
+                currentTab.historyIndex++;
+                currentTab.url = currentTab.history[currentTab.historyIndex];
+                currentTab.title = getDisplayTitle(currentTab.url);
+                updateUI();
+            }
+        }
+
+        function reloadPage() {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (currentTab) {
+                const webFrame = document.getElementById('webFrame');
+                if (currentTab.url !== "ita://home") {
+                    try {
+                        const currentSrc = webFrame.getAttribute('src');
+                        if (currentSrc && currentSrc !== 'about:blank') {
+                            webFrame.setAttribute('src', 'about:blank');
+                            setTimeout(() => {
+                                if (currentTab.url !== "ita://home") {
+                                    webFrame.setAttribute('src', currentTab.url);
+                                }
+                            }, 150);
+                        } else {
+                            webFrame.setAttribute('src', currentTab.url);
+                        }
+                    } catch (e) {
+                        webFrame.setAttribute('src', currentTab.url);
+                    }
+                } else {
+                    updateUI();
+                }
+            }
+        }
+
+        function toggleFavorite() {
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (currentTab) {
+                currentTab.isFavorite = !currentTab.isFavorite;
+                updateUI();
+            }
+        }
+
+        function toggleAdminPanel() {
+            const modal = document.getElementById('adminModal');
+            modal.classList.toggle('show');
+        }
+
+        function saveAdminSettings() {
+            const notice = document.getElementById('adminNotice').value;
+            if (notice) {
+                alert("Configuração salva com sucesso! Mensagem global ativada: " + notice);
+            } else {
+                alert("Configurações atualizadas com sucesso!");
+            }
+            toggleAdminPanel();
+        }
+    </script>
+</body>
+</html>
