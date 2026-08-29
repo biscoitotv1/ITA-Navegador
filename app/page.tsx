@@ -46,7 +46,7 @@ export default function Home() {
           <a href="#recursos">Recursos</a>
           <a href="#desktop">Desktop</a>
           <a href="/ide">IDE</a>
-          <a className="btn btn-ghost" href="/ui/index.html">
+          <a className="btn btn-ghost" href="/ui">
             Abrir versão web
           </a>
         </nav>
@@ -65,7 +65,7 @@ export default function Home() {
             navegador ou instale o app desktop.
           </p>
           <div className="cta-row">
-            <a className="btn btn-primary" href="/ui/index.html">
+            <a className="btn btn-primary" href="/ui">
               Abrir o Navegador
             </a>
             <a className="btn btn-outline" href="#desktop">
@@ -148,7 +148,7 @@ npm run app`}</code>
       <footer className="footer">
         <span>© {new Date().getFullYear()} ITA Games Studios · ITA Navegador</span>
         <nav>
-          <a href="/ui/index.html">Navegador</a>
+          <a href="/ui">Navegador</a>
           <a href="/ide">IDE Workspace</a>
           <a href="/api/health">Status</a>
           <a

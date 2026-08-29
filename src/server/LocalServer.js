@@ -70,7 +70,6 @@ class LocalServer {
       this.serveAppUi(res)
       return
     }
-
     // ===== IDE Workspace (layout duplo: editor + navegador) =====
     if (parsedUrl.pathname === '/ide' || parsedUrl.pathname === '/ide/') {
       this.serveIdeUi(res)
@@ -82,12 +81,16 @@ class LocalServer {
     if (filePath === '/') {
       filePath = '/index.html'
     }
+    if (filePath === '/ui') {
+      filePath = '/ui/index.html'
+    }
 
     // Assets vivem em public/{ui,ide,brand} (mesmas pastas servidas pelo Next na Vercel)
     const publicPrefix =
       filePath === '/ui' || filePath.startsWith('/ui/') ||
       filePath === '/ide' || filePath.startsWith('/ide/') ||
-      filePath === '/brand' || filePath.startsWith('/brand/')
+      filePath === '/brand' || filePath.startsWith('/brand/') ||
+      filePath === '/sw.js' || filePath === '/manifest.json' || filePath === '/offline.html'
 
     const fullPath = path.normalize(path.join(this.root, publicPrefix ? 'public' : '', filePath))
 

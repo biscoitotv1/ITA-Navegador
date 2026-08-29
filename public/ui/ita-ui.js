@@ -492,6 +492,7 @@
     wv.addEventListener('did-navigate', (e) => {
       const real = unwrapProxyUrl(e.url)
       tab.url = real
+      tab.failed = false
       syncHistoryOnNavigate(tab, real)
       if (tab.id === activeId) {
         updateOmni()
@@ -526,7 +527,15 @@
     wv.addEventListener('did-fail-load', (e) => {
       // -3 = navegação abortada (comum em redirecionamentos) — ignorar
       if (e.errorCode === -3 || !e.isMainFrame) return
-      if (tab.id === activeId) {
+      tab.failed = true
+      if (OFFLINE_ERR_CODES.has(e.errorCode) || !navigator.onLine) {
+        // Queda de conexão: aviso discreto (sem travar o app) +
+        // recarga automática quando o evento 'online' disparar
+        if (tab.id === activeId) {
+          setStatus('warn', 'Sem conexão — a página será recarregada quando a internet voltar')
+        }
+        showToast('warn', 'Você está offline', 'O ITA Navegador vai recarregar esta página assim que a conexão voltar.')
+      } else if (tab.id === activeId) {
         setStatus('error', `Falha ao carregar (${e.errorDescription || e.errorCode})`)
       }
     })
@@ -824,42 +833,57 @@
   }
 
   // =========================================================
-  // TEMAS MENSAIS — a página de nova aba muda o brilho, a
-  // etiqueta e (opcionalmente) a imagem da logo conforme o mês.
-  // Arte customizada: public/brand/themes/tema-<mes>.png
-  // (mês 0-11, igual a new Date().getMonth() — ex.: tema-11.png
-  // aparece em dezembro). Sem arquivo, mantém a logo oficial.
+  // TEMAS MENSAIS (janeiro → janeiro) — a página de nova aba
+  // muda o brilho, a etiqueta e (opcionalmente) a imagem a cada
+  // mês, sem precisar mexer em código. Arte customizada (PNG
+  // com fundo transparente) em public/brand/themes/, aceitando
+  // dois nomes:
+  //   tema-<nome-do-mes>.png  (ex.: tema-junho-namorados.png)
+  //   tema-<mes>.png          (ex.: tema-5.png)
+  // Sem arquivo para o mês, mantém a logo oficial.
   // =========================================================
 
-  const SEASONAL_THEMES = {
-    0: { emoji: '🎆', label: 'Ano Novo', glow: 'rgba(110, 168, 255, .30)' },
-    1: { emoji: '🎭', label: 'Carnaval', glow: 'rgba(255, 119, 102, .30)' },
-    5: { emoji: '💛', label: 'Namorados', glow: 'rgba(255, 170, 80, .32)' },
-    6: { emoji: '🌴', label: 'Férias de Julho', glow: 'rgba(64, 196, 140, .30)' },
-    8: { emoji: '🎊', label: 'Independência', glow: 'rgba(110, 168, 255, .30)' },
-    9: { emoji: '🎀', label: 'Outubro Rosa', glow: 'rgba(255, 105, 180, .32)' },
-    10: { emoji: '💙', label: 'Novembro Azul', glow: 'rgba(80, 150, 255, .32)' },
-    11: { emoji: '❄️', label: 'Natal', glow: 'rgba(140, 190, 255, .38)' }
-  }
+  const MONTH_THEMES = [
+    { emoji: '🎆', label: 'Ano Novo & Verão',           glow: 'rgba(110, 168, 255, .32)', art: 'tema-janeiro-verao.png' },
+    { emoji: '🎭', label: 'Carnaval',                   glow: 'rgba(255, 119, 102, .30)', art: 'tema-fevereiro-carnaval.png' },
+    { emoji: '🍂', label: 'Outono & Dia da Mulher',     glow: 'rgba(255, 150, 70, .28)',  art: 'tema-marco-outono.png' },
+    { emoji: '🐰', label: 'Páscoa',                     glow: 'rgba(200, 150, 255, .30)', art: 'tema-abril-pascoa.png' },
+    { emoji: '💐', label: 'Dia das Mães',               glow: 'rgba(255, 140, 180, .30)', art: 'tema-maio-maes.png' },
+    { emoji: '💛', label: 'Namorados & Festa Junina',   glow: 'rgba(255, 170, 80, .32)',  art: 'tema-junho-namorados.png' },
+    { emoji: '🎮', label: 'Férias de Inverno',          glow: 'rgba(120, 200, 255, .30)', art: 'tema-julho-ferias.png' },
+    { emoji: '👑', label: 'Dia dos Pais',               glow: 'rgba(80, 200, 200, .28)',  art: 'tema-agosto-pais.png' },
+    { emoji: '🌸', label: 'Primavera & Pátria',         glow: 'rgba(120, 230, 160, .30)', art: 'tema-setembro-primavera.png' },
+    { emoji: '🎀', label: 'Outubro Rosa',               glow: 'rgba(255, 105, 180, .34)', art: 'tema-outubro-halloween.png' },
+    { emoji: '🛒', label: 'Black Friday & Proclamação', glow: 'rgba(255, 196, 87, .30)',  art: 'tema-novembro-black.png' },
+    { emoji: '🎄', label: 'Natal & Fim de Ano',         glow: 'rgba(255, 120, 120, .32)', art: 'tema-dezembro-natal.png' }
+  ]
 
   function applySeasonalTheme() {
     try {
       const month = new Date().getMonth()
-      const theme = SEASONAL_THEMES[month]
+      const theme = MONTH_THEMES[month]
+      if (!theme) return
       const page = el('newTabPage')
       const chip = el('newTabSeason')
       const logo = page ? page.querySelector('.newtab-logo-img') : null
 
-      if (page && theme) page.style.setProperty('--season-glow', theme.glow)
+      if (page) page.style.setProperty('--season-glow', theme.glow)
 
       if (logo && serverBase) {
-        // Se existir uma arte do mês, ela substitui a logo padrão
-        const custom = new Image()
-        custom.onload = () => { logo.src = custom.src }
-        custom.src = `${serverBase}/brand/themes/tema-${month}.png`
+        // Se existir uma arte do mês, ela substitui a logo padrão.
+        // Ordem: tema-<nome-do-mes>.png → tema-<mes>.png → logo oficial.
+        const candidates = [theme.art, `tema-${month}.png`]
+        const tryNext = (i) => {
+          if (i >= candidates.length) return
+          const probe = new Image()
+          probe.onload = () => { logo.src = probe.src }
+          probe.onerror = () => tryNext(i + 1)
+          probe.src = `${serverBase}/brand/themes/${candidates[i]}`
+        }
+        tryNext(0)
       }
 
-      if (chip && theme) {
+      if (chip) {
         chip.textContent = `${theme.emoji} ${theme.label}`
         chip.hidden = false
       }
@@ -869,12 +893,52 @@
   }
 
   // =========================================================
+  // MODO OFFLINE / RECONEXÃO — nenhum navegador garante 100% de
+  // conexão, mas o ITA avisa a queda em tempo real (aviso
+  // discreto, sem travar o app) e se recupera sozinho: quando a
+  // conexão volta, a aba ativa é recarregada automaticamente.
+  // No site, o Service Worker (public/sw.js) mantém a interface
+  // abrindo mesmo com a internet oscilando.
+  // =========================================================
+
+  const OFFLINE_ERR_CODES = new Set([
+    -7,   // TIMED_OUT
+    -100, // CONNECTION_CLOSED
+    -101, // CONNECTION_RESET
+    -102, // CONNECTION_REFUSED
+    -105, // NAME_NOT_RESOLVED
+    -106, // INTERNET_DISCONNECTED
+    -109, // ADDRESS_UNREACHABLE
+    -118  // CONNECTION_TIMED_OUT
+  ])
+
+  let wasOffline = false
+
+  function wireConnectivity() {
+    wasOffline = !navigator.onLine
+    window.addEventListener('offline', () => {
+      wasOffline = true
+      setStatus('warn', 'Offline — as páginas não carregam sem internet')
+      showToast('warn', 'Você está offline', 'A interface segue funcionando. As páginas serão recarregadas quando a conexão voltar.')
+    })
+    window.addEventListener('online', () => {
+      if (!wasOffline) return
+      wasOffline = false
+      setStatus('ok', 'Conexão restabelecida')
+      showToast('ok', 'Conexão restabelecida', 'Recarregando a página atual…')
+      const tab = activeTab()
+      if (tab && tab.url) reload()
+    })
+  }
+
+  // =========================================================
   // BOOT — resolve o servidor local e abre a primeira aba
   // =========================================================
 
   async function boot() {
     wireIpc()
     wireStaticUi()
+    wireConnectivity()
 
     // Base do servidor local (proxy de navegação)
     try {

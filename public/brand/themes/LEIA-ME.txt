@@ -1,26 +1,33 @@
 Pasta de temas mensais — página de nova aba do ITA Navegador
 =============================================================
 
-Para dar à logo um visual especial em determinado mês, coloque aqui
-um PNG com fundo transparente nomeado pelo número do mês (0-11,
-igual a new Date().getMonth()):
+Todo mês, de janeiro a janeiro, a tela inicial muda sozinha:
+brilho de fundo, etiqueta com o nome do tema e, se você quiser,
+uma arte especial no lugar da logo.
 
-  tema-0.png   → Janeiro
-  tema-1.png   → Fevereiro
-  tema-2.png   → Março
-  tema-3.png   → Abril
-  tema-4.png   → Maio
-  tema-5.png   → Junho   (ex.: tema de Namorados)
-  tema-6.png   → Julho
-  tema-7.png   → Agosto
-  tema-8.png   → Setembro
-  tema-9.png   → Outubro (ex.: Outubro Rosa)
-  tema-10.png  → Novembro
-  tema-11.png  → Dezembro (ex.: tema de Natal)
+Basta salvar aqui um PNG com fundo transparente usando um destes
+nomes (o primeiro é o preferido; o segundo é o atalho numérico):
+
+  Janeiro    → tema-janeiro-verao.png        (ou tema-0.png)
+  Fevereiro  → tema-fevereiro-carnaval.png   (ou tema-1.png)
+  Março      → tema-marco-outono.png         (ou tema-2.png)
+  Abril      → tema-abril-pascoa.png         (ou tema-3.png)
+  Maio       → tema-maio-maes.png            (ou tema-4.png)
+  Junho      → tema-junho-namorados.png      (ou tema-5.png)
+  Julho      → tema-julho-ferias.png         (ou tema-6.png)
+  Agosto     → tema-agosto-pais.png          (ou tema-7.png)
+  Setembro   → tema-setembro-primavera.png   (ou tema-8.png)
+  Outubro    → tema-outubro-halloween.png    (ou tema-9.png)
+  Novembro   → tema-novembro-black.png       (ou tema-10.png)
+  Dezembro   → tema-dezembro-natal.png       (ou tema-11.png)
 
 Tamanho recomendado: 256×256 px, mesmo recorte do tile da logo
 oficial (public/brand/ita-logo-256.png).
 
 Sem arquivo para o mês atual, o navegador mantém a logo padrão e
-aplica apenas o brilho e a etiqueta sazonais embutidos no
-public/ui/ita-ui.js (mapa SEASONAL_THEMES).
+aplica apenas o brilho e a etiqueta embutidos no
+public/ui/ita-ui.js (mapa MONTH_THEMES).
+
+No site (itabrowser.top) e no app desktop a troca é automática —
+não é preciso mexer em código nenhum para publicar um tema:
+envie o PNG para esta pasta e faça push (ou reinicie o app).

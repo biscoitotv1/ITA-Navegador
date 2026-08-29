@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ITA Navegador — Seu ponto de partida para navegar pelo ITA",
   description:
     "Navegação rápida, privada e protegida com o protetor ITA. Use no navegador ou baixe o app desktop: tema escuro, favoritos, downloads e sessão persistente.",
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: "/brand/ita-logo-128.png", sizes: "128x128", type: "image/png" },
@@ -26,7 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* PWA: registra o Service Worker só no site (HTTPS); no
+            Electron/localhost é ignorado de propósito. */}
+        <Script id="ita-sw-register" strategy="afterInteractive">
+          {`if ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); }); }`}
+        </Script>
+      </body>
     </html>
   );
 }
