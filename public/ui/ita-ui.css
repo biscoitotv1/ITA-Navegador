@@ -41,7 +41,9 @@
   --ita-navbar-h: 52px;
   --ita-status-h: 26px;
 
-  --ita-font: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  --ita-font: var(--font-ui, 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif);
+  --ita-font-display: var(--font-display, 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif);
+  --ita-font-mono: var(--font-mono, 'Cascadia Code', Consolas, 'Courier New', monospace);
 }
 
 * {
@@ -62,6 +64,8 @@ body {
   overflow: hidden;
   user-select: none;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Estrutura geral: titlebar | abas | navbar | conteúdo | status */
@@ -175,8 +179,10 @@ body {
 }
 
 .brand-name {
+  font-family: var(--ita-font-display);
   font-size: 12.5px;
   font-weight: 600;
+  letter-spacing: .2px;
   letter-spacing: .4px;
   color: var(--ita-text);
   white-space: nowrap;
@@ -575,6 +581,7 @@ body.web-preview .titlebar-overlay-space {
 }
 
 .newtab-logo {
+  font-family: var(--ita-font-hero, var(--ita-font));
   font-size: 46px;
   font-weight: 800;
   letter-spacing: 1px;
@@ -631,7 +638,7 @@ body.web-preview .titlebar-overlay-space {
   color: #04160c;
   font-weight: 700;
   font-size: 14px;
-  font-family: var(--ita-font);
+  font-family: var(--ita-font-display);
   box-shadow: 0 6px 22px rgba(36, 229, 138, .25);
   transition:
     filter .15s ease,

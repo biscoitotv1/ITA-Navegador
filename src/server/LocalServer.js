@@ -90,6 +90,7 @@ class LocalServer {
       filePath === '/ui' || filePath.startsWith('/ui/') ||
       filePath === '/ide' || filePath.startsWith('/ide/') ||
       filePath === '/brand' || filePath.startsWith('/brand/') ||
+      filePath.startsWith('/fonts/') ||
       filePath === '/sw.js' || filePath === '/manifest.json' || filePath === '/offline.html'
 
     const fullPath = path.normalize(path.join(this.root, publicPrefix ? 'public' : '', filePath))

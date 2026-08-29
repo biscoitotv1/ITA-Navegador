@@ -10,7 +10,7 @@
    Bumpar VERSION para forçar atualização de todos os clients.
    ========================================================= */
 
-const VERSION = 'ita-v1'
+const VERSION = 'ita-v2'
 const PAGE_CACHE = `ita-pages-${VERSION}`
 const ASSET_CACHE = `ita-assets-${VERSION}`
 const OFFLINE_URL = '/offline.html'
@@ -23,7 +23,12 @@ const PRECACHE = [
   '/manifest.json',
   '/brand/ita-logo-128.png',
   '/brand/ita-logo-256.png',
-  '/brand/ita-logo.png'
+  '/brand/ita-logo.png',
+  '/fonts/fonts.css',
+  '/fonts/Inter.woff2',
+  '/fonts/PlusJakartaSans.woff2',
+  '/fonts/Outfit.woff2',
+  '/fonts/JetBrainsMono.woff2'
 ]
 
 const ASSET_RE = /\.(?:css|js|mjs|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf)$/i

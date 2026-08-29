@@ -21,7 +21,7 @@
   --amber: #fbbf24;
   --red: #f87171;
   --radius: 14px;
-  --mono: "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace;
+  --mono: var(--font-mono, "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace);
 }
 
 * {
@@ -41,7 +41,9 @@ body {
     radial-gradient(900px 500px at -10% 110%, rgba(76, 141, 255, .10), transparent 55%),
     var(--bg);
   color: var(--text);
-  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  font-family: var(--font-ui, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -87,6 +89,7 @@ textarea {
 }
 
 .brand-name {
+  font-family: var(--font-display, inherit);
   font-weight: 700;
   font-size: .98rem;
 }
