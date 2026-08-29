@@ -199,6 +199,8 @@ async function createWindow() {
       height: 38
     },
     backgroundColor: '#060a13',
+    // Ícone oficial da marca (gerado por scripts/generate-brand.py)
+    icon: path.join(__dirname, 'public', 'brand', 'ita-logo.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

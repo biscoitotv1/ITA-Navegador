@@ -70,17 +70,12 @@ h3 {
 }
 
 .brand-mark {
-  display: inline-grid;
-  place-items: center;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--green-strong), var(--green));
-  color: var(--green-ink);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  box-shadow: 0 4px 18px rgba(36, 229, 138, 0.35);
+  border-radius: 9px;
+  object-fit: contain;
+  display: block;
+  flex: none;
 }
 
 .brand-name {

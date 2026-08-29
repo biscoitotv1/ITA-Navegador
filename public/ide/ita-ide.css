@@ -78,17 +78,12 @@ textarea {
 }
 
 .brand-mark {
-  display: inline-grid;
-  place-items: center;
   width: 30px;
   height: 30px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--green-strong), var(--green));
-  color: var(--green-ink);
-  font-size: .64rem;
-  font-weight: 800;
-  letter-spacing: .04em;
-  box-shadow: 0 4px 14px rgba(36, 229, 138, .35);
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
+  flex: none;
 }
 
 .brand-name {

@@ -83,10 +83,11 @@ class LocalServer {
       filePath = '/index.html'
     }
 
-    // Assets vivem em public/{ui,ide} (mesmas pastas servidas pelo Next na Vercel)
+    // Assets vivem em public/{ui,ide,brand} (mesmas pastas servidas pelo Next na Vercel)
     const publicPrefix =
       filePath === '/ui' || filePath.startsWith('/ui/') ||
-      filePath === '/ide' || filePath.startsWith('/ide/')
+      filePath === '/ide' || filePath.startsWith('/ide/') ||
+      filePath === '/brand' || filePath.startsWith('/brand/')
 
     const fullPath = path.normalize(path.join(this.root, publicPrefix ? 'public' : '', filePath))
 

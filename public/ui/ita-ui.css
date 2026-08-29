@@ -166,17 +166,12 @@ body {
 }
 
 .brand-mark {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 6px;
-  background: linear-gradient(135deg, var(--ita-green) 0%, var(--ita-green-deep) 70%);
-  color: #04160c;
-  font-weight: 800;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 14px var(--ita-green-glow);
+  object-fit: contain;
+  display: block;
+  flex: none;
 }
 
 .brand-name {
@@ -548,6 +543,16 @@ body.web-preview .titlebar-overlay-space {
 
 .newtab.hidden {
   display: none;
+}
+
+.newtab-logo-img {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+  display: block;
+  flex: none;
+  margin-bottom: 2px;
+  filter: drop-shadow(0 12px 34px rgba(42, 82, 152, .55));
 }
 
 .newtab-logo {

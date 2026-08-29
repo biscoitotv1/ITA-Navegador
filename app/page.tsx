@@ -36,7 +36,8 @@ export default function Home() {
     <div className="page">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-mark">ITA</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-mark" src="/brand/ita-logo-128.png" alt="ITA Navegador" />
           <span className="brand-name">
             Navegador<span className="brand-dot">.</span>
           </span>
