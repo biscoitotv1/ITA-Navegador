@@ -79,6 +79,14 @@
     return `${base}${PROXY_PATH}${encodeURIComponent(realUrl)}`
   }
 
+  /** URLs internas (ex.: /ide) carregam na mesma origem, sem proxy. */
+  function resolveViewSrc(u) {
+    if (typeof u === 'string' && u.startsWith('/') && !u.startsWith('//')) {
+      return location.origin + u
+    }
+    return getProxyUrl(u)
+  }
+
   function looksLikeHost(input) {
     if (/^localhost(:\d+)?([/?#]|$)/i.test(input)) return true
     if (/^\d{1,3}(\.\d{1,3}){3}(:\d+)?([/?#]|$)/.test(input)) return true
@@ -306,7 +314,7 @@
     el('newTabPage').classList.add('hidden')
     if (push) pushHistory(tab, tab.url)
     const wv = ensureWebView(tab)
-    wv.setAttribute('src', getProxyUrl(tab.url))
+    wv.setAttribute('src', resolveViewSrc(tab.url))
     syncActiveView()
     updateOmni()
     updateNavButtons()
@@ -343,7 +351,7 @@
     try {
       wv.reload()
     } catch {
-      wv.setAttribute('src', getProxyUrl(tab.url))
+      wv.setAttribute('src', resolveViewSrc(tab.url))
     }
   }
 

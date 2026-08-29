@@ -44,6 +44,7 @@ export default function Home() {
         <nav className="top-nav">
           <a href="#recursos">Recursos</a>
           <a href="#desktop">Desktop</a>
+          <a href="/ide">IDE</a>
           <a className="btn btn-ghost" href="/ui/index.html">
             Abrir versão web
           </a>
@@ -147,6 +148,7 @@ npm run app`}</code>
         <span>© {new Date().getFullYear()} ITA Games Studios · ITA Navegador</span>
         <nav>
           <a href="/ui/index.html">Navegador</a>
+          <a href="/ide">IDE Workspace</a>
           <a href="/api/health">Status</a>
           <a
             href="https://github.com/biscoitotv1/ITA-Navegador"

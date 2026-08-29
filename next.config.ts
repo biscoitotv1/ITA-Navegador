@@ -6,7 +6,11 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(process.cwd()),
   async rewrites() {
     // /app entrega a interface do ITA Navegador (public/ui/index.html)
-    return [{ source: "/app", destination: "/ui/index.html" }];
+    // /ide entrega o IDE Workspace (public/ide/index.html)
+    return [
+      { source: "/app", destination: "/ui/index.html" },
+      { source: "/ide", destination: "/ide/index.html" },
+    ];
   },
 };
 

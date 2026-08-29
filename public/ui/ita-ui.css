@@ -625,7 +625,7 @@ body.web-preview .titlebar-overlay-space {
 /* Grade de atalhos */
 .shortcuts {
   display: grid;
-  grid-template-columns: repeat(6, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: 14px;
   width: min(780px, 94%);
 }

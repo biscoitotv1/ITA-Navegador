@@ -71,16 +71,24 @@ class LocalServer {
       return
     }
 
+    // ===== IDE Workspace (layout duplo: editor + navegador) =====
+    if (parsedUrl.pathname === '/ide' || parsedUrl.pathname === '/ide/') {
+      this.serveIdeUi(res)
+      return
+    }
+
     let filePath = decodeURIComponent(parsedUrl.pathname)
 
     if (filePath === '/') {
       filePath = '/index.html'
     }
 
-    // Assets da UI vivem em public/ui (mesma pasta servida pelo Next na Vercel)
-    const uiPrefix = filePath === '/ui' || filePath.startsWith('/ui/')
+    // Assets vivem em public/{ui,ide} (mesmas pastas servidas pelo Next na Vercel)
+    const publicPrefix =
+      filePath === '/ui' || filePath.startsWith('/ui/') ||
+      filePath === '/ide' || filePath.startsWith('/ide/')
 
-    const fullPath = path.normalize(path.join(this.root, uiPrefix ? 'public' : '', filePath))
+    const fullPath = path.normalize(path.join(this.root, publicPrefix ? 'public' : '', filePath))
 
     // Proteção contra path traversal (só serve arquivos dentro do projeto)
     if (!fullPath.startsWith(this.root + path.sep) && fullPath !== this.root) {
@@ -133,6 +141,25 @@ class LocalServer {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' })
         res.end('<h1>500 - Falha ao carregar a interface do ITA Navegador</h1>')
+        return
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+      res.end(data)
+    })
+  }
+
+  // =========================================================
+  //  IDE WORKSPACE (/ide) — layout duplo: editor + navegador
+  //  Arquivos: public/ide/index.html + ita-ide.css + ita-ide.js
+  //  (mesma pasta servida como estáticos pelo Next.js no site)
+  // =========================================================
+
+  serveIdeUi(res) {
+    const fullPath = path.join(this.root, 'public', 'ide', 'index.html')
+    fs.readFile(fullPath, (err, data) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' })
+        res.end('<h1>500 - Falha ao carregar o ITA IDE Workspace</h1>')
         return
       }
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
