@@ -23,11 +23,11 @@
   --ita-text-faint: #5d6c8f;
 
   /* Identidade ITA */
-  --ita-green: #24e58a;
-  --ita-green-deep: #0f9d63;
-  --ita-green-glow: rgba(36, 229, 138, .22);
-  --ita-blue: #2a5298;
-  --ita-blue-deep: #14264d;
+  --ita-green: #e57b24;
+  --ita-green-deep: #e68619;
+  --ita-green-glow: rgba(230, 153, 37, 0.527);
+  --ita-blue: #98682a;
+  --ita-blue-deep: #4d2e14;
 
   /* Estados */
   --ita-danger: #ff5d6c;
@@ -578,6 +578,52 @@ body.web-preview .titlebar-overlay-space {
 
 .newtab-season-chip[hidden] {
   display: none;
+}
+
+/* ── Banner de data especial (ex.: aniversário Grupo Itavarig 15/03) ── */
+.newtab-special-banner {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .4px;
+  text-align: center;
+  color: #1a1405;
+  background: linear-gradient(135deg, #f3d271, #d4af37 55%, #b4831d);
+  box-shadow: 0 6px 26px rgba(212, 175, 55, .35);
+  animation: ita-banner-pulse 2s ease-in-out infinite;
+}
+
+.newtab-special-banner[hidden] {
+  display: none;
+}
+
+@keyframes ita-banner-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+/* ── Aviãozinho do clique (identidade aeronáutica ITA) ── */
+.flying-plane {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-size: 24px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  animation: ita-fly-to-sky .9s ease-out forwards;
+  filter: drop-shadow(0 2px 10px rgba(212, 175, 55, .5));
+}
+
+@keyframes ita-fly-to-sky {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(.8) rotate(0deg); }
+  100% { opacity: 0; transform: translate(64px, -150px) scale(1.35) rotate(-24deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .newtab-special-banner { animation: none; }
+  .flying-plane { display: none; }
 }
 
 .newtab-logo {

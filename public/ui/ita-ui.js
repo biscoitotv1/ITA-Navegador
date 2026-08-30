@@ -858,10 +858,25 @@
     { emoji: '🎄', label: 'Natal & Fim de Ano',         glow: 'rgba(255, 120, 120, .32)', art: 'tema-dezembro-natal.png' }
   ]
 
+  // Datas especiais (dia + mês, "MM-DD") que SOBREPÕEM o tema do mês —
+  // ex.: 15/03, aniversário do Grupo Itavarig (dispara todo ano):
+  // banner dourado pulsante, emblema na logo e favicon no dia.
+  const SPECIAL_DATES = {
+    '03-15': {
+      emoji: '🎉',
+      label: 'Aniversário do Grupo Itavarig',
+      glow: 'rgba(212, 175, 55, .42)',
+      art: 'aniversario-itavarig.png',
+      banner: '🎉 Parabéns, Grupo Itavarig! 15 de março — aniversário oficial ✈️'
+    }
+  }
+
   function applySeasonalTheme() {
     try {
-      const month = new Date().getMonth()
-      const theme = MONTH_THEMES[month]
+      const now = new Date()
+      const mmdd = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+      const special = SPECIAL_DATES[mmdd]
+      const theme = special || MONTH_THEMES[now.getMonth()]
       if (!theme) return
       const page = el('newTabPage')
       const chip = el('newTabSeason')
@@ -870,9 +885,9 @@
       if (page) page.style.setProperty('--season-glow', theme.glow)
 
       if (logo && serverBase) {
-        // Se existir uma arte do mês, ela substitui a logo padrão.
-        // Ordem: tema-<nome-do-mes>.png → tema-<mes>.png → logo oficial.
-        const candidates = [theme.art, `tema-${month}.png`]
+        // Se existir uma arte do dia/mês, ela substitui a logo padrão.
+        // Ordem: arte especial (ou tema-<nome-do-mes>.png) → tema-<mes>.png → logo oficial.
+        const candidates = special ? [special.art] : [theme.art, `tema-${now.getMonth()}.png`]
         const tryNext = (i) => {
           if (i >= candidates.length) return
           const probe = new Image()
@@ -883,6 +898,17 @@
         tryNext(0)
       }
 
+      if (special) {
+        // Banner comemorativo + favicon assume o emblema no dia.
+        const banner = el('newTabSpecialBanner')
+        if (banner) {
+          banner.textContent = special.banner
+          banner.hidden = false
+        }
+        const fav = document.querySelector('link[rel="icon"][sizes="128x128"]')
+        if (fav && serverBase) fav.href = `${serverBase}/brand/themes/${special.art}`
+      }
+
       if (chip) {
         chip.textContent = `${theme.emoji} ${theme.label}`
         chip.hidden = false
@@ -890,6 +916,41 @@
     } catch {
       // tema sazonal nunca deve quebrar a página inicial
     }
+  }
+
+  // =========================================================
+  // AVIÃO DO CLIQUE — micro-interação da identidade aeronáutica:
+  // todo botão/link/aba solta um ✈️ que sobe e some. Desligada
+  // automaticamente em prefers-reduced-motion; nunca quebra a UI.
+  // =========================================================
+
+  function wirePlaneClicks() {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      let lastFlight = 0
+      document.addEventListener('click', (ev) => {
+        const target = ev.target instanceof Element
+          ? ev.target.closest('button, a, .tab, .shortcut')
+          : null
+        if (!target) return
+        const t = Date.now()
+        if (t - lastFlight < 120) return // evita enxame em cliques repetidos
+        lastFlight = t
+        spawnPlane(ev.clientX, ev.clientY)
+      }, true)
+    } catch {
+      // decoração pura: falha silenciosa
+    }
+  }
+
+  function spawnPlane(x, y) {
+    const plane = document.createElement('span')
+    plane.className = 'flying-plane'
+    plane.textContent = '✈️'
+    plane.style.left = `${x}px`
+    plane.style.top = `${y}px`
+    document.body.appendChild(plane)
+    setTimeout(() => plane.remove(), 950)
   }
 
   // =========================================================
@@ -939,6 +1000,7 @@
     wireIpc()
     wireStaticUi()
     wireConnectivity()
+    wirePlaneClicks()
 
     // Base do servidor local (proxy de navegação)
     try {

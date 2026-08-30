@@ -31,3 +31,14 @@ public/ui/ita-ui.js (mapa MONTH_THEMES).
 No site (itabrowser.top) e no app desktop a troca é automática —
 não é preciso mexer em código nenhum para publicar um tema:
 envie o PNG para esta pasta e faça push (ou reinicie o app).
+
+DATAS ESPECIAIS (sobrepõem o tema do mês)
+=========================================
+Alguns dias do ano têm tema próprio, com banner comemorativo
+dourado e favicon especial. Hoje existe um:
+
+  15/03 → aniversario-itavarig.png (Aniversário do Grupo Itavarig)
+
+O arquivo acima é gerado por scripts/generate-emblem.py a partir
+do emblema oficial. O comportamento do dia fica no mapa
+SPECIAL_DATES dentro de public/ui/ita-ui.js.
