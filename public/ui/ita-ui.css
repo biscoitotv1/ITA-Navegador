@@ -583,8 +583,21 @@ body.web-preview .titlebar-overlay-space {
   backdrop-filter: blur(6px);
 }
 
-.newtab-season-chip[hidden] {
+.newtab-season-chip[hidden],
+.newtab-secure-chip[hidden] {
   display: none;
+}
+
+/* Chip "NAVEGAÇÃO PROTEGIDA • PROXY INTERNO" (mockup 4) */
+.newtab-secure-chip {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ita-text-dim);
+  padding: 6px 16px;
+  border: 1px solid var(--ita-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .02);
 }
 
 /* ── Banner de data especial (ex.: aniversário Grupo Itavarig 15/03) ── */
@@ -681,10 +694,10 @@ body.web-preview .titlebar-overlay-space {
   height: 48px;
   padding: 0 22px;
   border-radius: 999px;
-  border: 1px solid var(--ita-border);
-  background: #141414;
+  border: 1px solid rgba(255, 102, 0, .3);
+  background: #1a1a1a;
   color: var(--ita-text);
-  font-size: 14px;
+  font-size: 15px;
   font-family: var(--ita-font);
   outline: none;
   transition:
@@ -715,7 +728,8 @@ body.web-preview .titlebar-overlay-space {
 }
 
 .newtab-search button:hover {
-  filter: brightness(1.08);
+  background: #ff8533;
+  transform: scale(1.02);
 }
 
 .newtab-search button:active {

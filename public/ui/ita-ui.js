@@ -13,7 +13,7 @@
 
   const API = window.itaBrowserAPI || null // IPC do Electron (opcional)
   const BR = window.itaBrowser || null // favoritos + servidor local
-  const SEARCH_URL = 'https://duckduckgo.com/?q='
+  const SEARCH_URL = 'https://www.google.com/search?q='
   const PROXY_PATH = '/proxy?url='
   const els = {}
 
@@ -1017,6 +1017,16 @@
         : 'http://localhost:8080'
     }
     el('serverTag').textContent = `ITA Local Server • ${displayHost(serverBase) || serverBase}`
+
+    // Chip "navegação protegida" (mockup 4) — o proxy interno só existe no app
+    const secureChip = el('newTabSecure')
+    if (secureChip) {
+      secureChip.textContent = API
+        ? '🔒 Navegação protegida • Proxy interno'
+        : '🔒 Modo preview • Proxy indisponível'
+      secureChip.hidden = false
+    }
+
     applySeasonalTheme()
 
     if (tabOrder.length === 0) createTab(null)

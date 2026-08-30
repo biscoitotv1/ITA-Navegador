@@ -10,7 +10,7 @@
 (() => {
   'use strict'
 
-  const SEARCH_URL = 'https://duckduckgo.com/?q='
+  const SEARCH_URL = 'https://www.google.com/search?q='
   const PROXY_PROBE = '/proxy?url=' + encodeURIComponent('https://example.com')
 
   const frame = document.getElementById('browserFrame')
