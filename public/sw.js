@@ -10,7 +10,7 @@
    Bumpar VERSION para forçar atualização de todos os clients.
    ========================================================= */
 
-const VERSION = 'ita-v4'
+const VERSION = 'ita-v5'
 const PAGE_CACHE = `ita-pages-${VERSION}`
 const ASSET_CACHE = `ita-assets-${VERSION}`
 const OFFLINE_URL = '/offline.html'

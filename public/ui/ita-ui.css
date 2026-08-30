@@ -583,21 +583,8 @@ body.web-preview .titlebar-overlay-space {
   backdrop-filter: blur(6px);
 }
 
-.newtab-season-chip[hidden],
-.newtab-secure-chip[hidden] {
+.newtab-season-chip[hidden] {
   display: none;
-}
-
-/* Chip "NAVEGAÇÃO PROTEGIDA • PROXY INTERNO" (mockup 4) */
-.newtab-secure-chip {
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--ita-text-dim);
-  padding: 6px 16px;
-  border: 1px solid var(--ita-border);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .02);
 }
 
 /* ── Banner de data especial (ex.: aniversário Grupo Itavarig 15/03) ── */

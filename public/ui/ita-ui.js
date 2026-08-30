@@ -1017,16 +1017,6 @@
         : 'http://localhost:8080'
     }
     el('serverTag').textContent = `ITA Local Server • ${displayHost(serverBase) || serverBase}`
-
-    // Chip "navegação protegida" (mockup 4) — o proxy interno só existe no app
-    const secureChip = el('newTabSecure')
-    if (secureChip) {
-      secureChip.textContent = API
-        ? '🔒 Navegação protegida • Proxy interno'
-        : '🔒 Modo preview • Proxy indisponível'
-      secureChip.hidden = false
-    }
-
     applySeasonalTheme()
 
     if (tabOrder.length === 0) createTab(null)

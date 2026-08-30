@@ -1,0 +1,7 @@
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/ui/(.*)", "destination": "/ui/$1" },
+    { "src": "/.*", "destination": "/index.html" }
+  ]
+}
