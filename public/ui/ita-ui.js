@@ -865,7 +865,7 @@
     '03-15': {
       emoji: '🎉',
       label: 'Aniversário do Grupo Itavarig',
-      glow: 'rgba(212, 175, 55, .42)',
+      glow: 'rgba(255, 102, 0, .45)',
       art: 'aniversario-itavarig.png',
       banner: '🎉 Parabéns, Grupo Itavarig! 15 de março — aniversário oficial ✈️'
     }

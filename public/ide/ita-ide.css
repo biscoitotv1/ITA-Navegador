@@ -1,23 +1,24 @@
 /* =========================================================
    ITA IDE WORKSPACE — layout duplo (editor + navegador)
-   Identidade: azul profundo #0a0f1c + verde tecnológico #24e58a
+   Identidade: preto #0d0d0d + laranja oficial #FF6600
+   (ITA Games Studios)
    ========================================================= */
 
 :root {
-  --bg: #0a0f1c;
-  --panel: #0c1322;
-  --panel-2: #101a30;
-  --editor-bg: #070b15;
-  --line: rgba(148, 180, 255, .14);
-  --line-strong: rgba(148, 180, 255, .28);
-  --text: #eaf2ff;
-  --dim: #9db0cf;
-  --green: #24e58a;
-  --green-strong: #5ff7b1;
-  --green-ink: #052015;
-  --green-soft: rgba(36, 229, 138, .12);
-  --blue: #4c8dff;
-  --blue-soft: rgba(76, 141, 255, .14);
+  --bg: #0d0d0d;
+  --panel: #161616;
+  --panel-2: #1a1a1a;
+  --editor-bg: #0a0a0a;
+  --line: rgba(255, 255, 255, .12);
+  --line-strong: rgba(255, 102, 0, .28);
+  --text: #f5f5f5;
+  --dim: #b3b3b3;
+  --green: #ff6600;
+  --green-strong: #ff9a4d;
+  --green-ink: #1a0d00;
+  --green-soft: rgba(255, 102, 0, .12);
+  --blue: #ffb454;
+  --blue-soft: rgba(255, 180, 84, .14);
   --amber: #fbbf24;
   --red: #f87171;
   --radius: 14px;
@@ -37,8 +38,8 @@ body {
 
 body {
   background:
-    radial-gradient(1000px 600px at 90% -10%, rgba(36, 229, 138, .08), transparent 55%),
-    radial-gradient(900px 500px at -10% 110%, rgba(76, 141, 255, .10), transparent 55%),
+    radial-gradient(1000px 600px at 90% -10%, rgba(255, 102, 0, .09), transparent 55%),
+    radial-gradient(900px 500px at -10% 110%, rgba(255, 154, 77, .07), transparent 55%),
     var(--bg);
   color: var(--text);
   font-family: var(--font-ui, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif);
@@ -122,13 +123,13 @@ textarea {
 
 .chip-green {
   color: var(--green-strong);
-  border-color: rgba(36, 229, 138, .4);
+  border-color: rgba(255, 102, 0, .4);
   background: var(--green-soft);
 }
 
 .chip-blue {
   color: var(--blue);
-  border-color: rgba(76, 141, 255, .4);
+  border-color: rgba(255, 180, 84, .4);
   background: var(--blue-soft);
 }
 
@@ -188,13 +189,13 @@ a.chip-green:hover {
   font-weight: 700;
   font-size: .82rem;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(36, 229, 138, .3);
+  box-shadow: 0 4px 14px rgba(255, 102, 0, .3);
   transition: transform .15s ease, box-shadow .15s ease;
 }
 
 .btn-run:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(36, 229, 138, .4);
+  box-shadow: 0 8px 20px rgba(255, 102, 0, .4);
 }
 
 .kbd {
@@ -270,7 +271,7 @@ a.chip-green:hover {
 
 .console-line {
   padding: .12rem 0;
-  border-bottom: 1px dashed rgba(148, 180, 255, .06);
+  border-bottom: 1px dashed rgba(255, 255, 255, .06);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -357,8 +358,8 @@ a.chip-green:hover {
 }
 
 .url-wrap:focus-within {
-  border-color: rgba(36, 229, 138, .55);
-  box-shadow: 0 0 0 3px rgba(36, 229, 138, .12);
+  border-color: rgba(255, 102, 0, .55);
+  box-shadow: 0 0 0 3px rgba(255, 102, 0, .12);
 }
 
 .lock {
@@ -381,7 +382,7 @@ a.chip-green:hover {
 }
 
 .btn-go {
-  border: 1px solid rgba(76, 141, 255, .4);
+  border: 1px solid rgba(255, 180, 84, .4);
   border-radius: 999px;
   padding: .5rem 1.05rem;
   background: var(--blue-soft);
@@ -429,7 +430,7 @@ a.chip-green:hover {
   text-align: center;
   padding: 2rem;
   background:
-    radial-gradient(700px 380px at 70% 10%, rgba(36, 229, 138, .1), transparent 55%),
+    radial-gradient(700px 380px at 70% 10%, rgba(255, 102, 0, .1), transparent 55%),
     var(--panel);
 }
 

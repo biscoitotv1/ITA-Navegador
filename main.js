@@ -194,11 +194,11 @@ async function createWindow() {
     // ao tema escuro — mesma técnica do VS Code no Windows.
     titleBarStyle: 'hidden',
     titleBarOverlay: {
-      color: '#0c1322',
+      color: '#161616',
       symbolColor: '#e8eef9',
       height: 38
     },
-    backgroundColor: '#060a13',
+    backgroundColor: '#0d0d0d',
     // Ícone oficial da marca (gerado por scripts/generate-brand.py)
     icon: path.join(__dirname, 'public', 'brand', 'ita-logo.ico'),
     webPreferences: {

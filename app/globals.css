@@ -1,16 +1,17 @@
 :root {
-  --bg: #0a0f1c;
-  --bg-raise: #0c1322;
-  --surface: rgba(16, 26, 48, 0.72);
-  --border: rgba(148, 180, 255, 0.14);
-  --border-strong: rgba(148, 180, 255, 0.28);
-  --text: #eaf2ff;
-  --muted: #9db0cf;
-  --green: #24e58a;
-  --green-strong: #5ff7b1;
-  --green-ink: #052015;
-  --green-soft: rgba(36, 229, 138, 0.12);
-  --blue: #4c8dff;
+  --bg: #0d0d0d;
+  --bg-raise: #161616;
+  --surface: rgba(26, 26, 26, 0.72);
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 102, 0, 0.28);
+  --text: #f5f5f5;
+  --muted: #b3b3b3;
+  /* Laranja oficial ITA Games Studios (#FF6600) — nomes históricos mantidos */
+  --green: #ff6600;
+  --green-strong: #ff9a4d;
+  --green-ink: #1a0d00;
+  --green-soft: rgba(255, 102, 0, 0.12);
+  --blue: #ffb454;
   --radius: 16px;
 }
 
@@ -27,8 +28,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(900px 500px at 85% -10%, rgba(36, 229, 138, 0.13), transparent 60%),
-    radial-gradient(1100px 700px at -15% 15%, rgba(76, 141, 255, 0.16), transparent 55%),
+    radial-gradient(900px 500px at 85% -10%, rgba(255, 102, 0, 0.12), transparent 60%),
+    radial-gradient(1100px 700px at -15% 15%, rgba(255, 154, 77, 0.09), transparent 55%),
     var(--bg);
   color: var(--text);
   font-family: var(--font-ui, "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif);
@@ -138,12 +139,12 @@ h3 {
 .btn-primary {
   background: linear-gradient(135deg, var(--green-strong), var(--green));
   color: var(--green-ink);
-  box-shadow: 0 8px 28px rgba(36, 229, 138, 0.32);
+  box-shadow: 0 8px 28px rgba(255, 102, 0, 0.32);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 38px rgba(36, 229, 138, 0.42);
+  box-shadow: 0 14px 38px rgba(255, 102, 0, 0.42);
 }
 
 .btn-outline {
@@ -170,7 +171,7 @@ h3 {
   display: inline-block;
   margin: 0 0 1.1rem;
   padding: 0.4rem 1rem;
-  border: 1px solid rgba(36, 229, 138, 0.35);
+  border: 1px solid rgba(255, 102, 0, 0.35);
   border-radius: 999px;
   background: var(--green-soft);
   color: var(--green-strong);
@@ -185,7 +186,7 @@ h3 {
   font-size: clamp(2.3rem, 6vw, 4.4rem);
   margin: 0 auto 1.2rem;
   max-width: 17ch;
-  background: linear-gradient(115deg, #6ea8ff 0%, #818cf8 48%, var(--green) 100%);
+  background: linear-gradient(115deg, #ffb454 0%, #ff8534 48%, var(--green) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -291,7 +292,7 @@ h3 {
 .mock-line {
   height: 12px;
   border-radius: 999px;
-  background: rgba(148, 180, 255, 0.14);
+  background: rgba(255, 255, 255, 0.10);
   margin-bottom: 0.9rem;
 }
 
@@ -318,7 +319,7 @@ h3 {
   aspect-ratio: 1.7 / 1;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: linear-gradient(160deg, rgba(36, 229, 138, 0.14), rgba(76, 141, 255, 0.12));
+  background: linear-gradient(160deg, rgba(255, 102, 0, 0.14), rgba(255, 154, 77, 0.10));
 }
 
 /* ── Recursos ───────────────────────────────────────────── */
@@ -351,7 +352,7 @@ h3 {
 
 .card:hover {
   transform: translateY(-4px);
-  border-color: rgba(36, 229, 138, 0.45);
+  border-color: rgba(255, 102, 0, 0.45);
 }
 
 .card-icon {
