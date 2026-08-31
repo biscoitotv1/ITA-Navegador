@@ -2674,69 +2674,6 @@ body {
 
 
         /* =================================================
-           PROXY
-           ================================================= */
-
-        function getProxyUrl(targetUrl) {
-
-            const base =
-                (
-                    window.itaBrowser &&
-                    typeof window.itaBrowser.getLocalServerUrl === "function"
-                )
-                    ? window.itaBrowser.getLocalServerUrl()
-                    : "http://localhost:8080";
-
-
-            return (
-                base +
-                "/proxy?url=" +
-                encodeURIComponent(targetUrl)
-            );
-        }
-
-
-        /* Converte URL armazenada (proxy) de volta
-           para a URL real — usada na barra de endereço */
-
-        function getRealUrl(storedUrl) {
-
-            if (
-                typeof storedUrl !==
-                "string"
-            ) {
-                return storedUrl;
-            }
-
-            const marker =
-                "/proxy?url=";
-
-            if (
-                !storedUrl.includes(
-                    marker
-                )
-            ) {
-                return storedUrl;
-            }
-
-            try {
-
-                const real =
-                    new URL(storedUrl)
-                        .searchParams
-                        .get("url");
-
-                return real ||
-                    storedUrl;
-
-            } catch {
-
-                return storedUrl;
-            }
-        }
-
-
-        /* =================================================
            TÍTULO
            ================================================= */
 
@@ -2759,76 +2696,12 @@ body {
                 return "Editor 2D (ITA Studio)";
             }
 
-
-            if (
-                rawUrl.startsWith(
-                    "http://localhost:8080/proxy?url="
-                )
-            ) {
-
-                try {
-
-                    const real =
-                        new URL(rawUrl)
-                            .searchParams
-                            .get("url");
-
-
-                    if (real) {
-
-                        const u =
-                            new URL(real);
-
-
-                        return (
-                            u.hostname ||
-                            real
-                        ) +
-                        (
-                            u.pathname &&
-                            u.pathname !== "/"
-                                ? u.pathname
-                                : ""
-                        );
-                    }
-
-                } catch {
-
-                }
-
-
-                return "Navegando...";
-            }
-
-
             try {
-
-                const u =
-                    new URL(rawUrl);
-
-
-                const host =
-                    u.hostname ||
-                    rawUrl;
-
-
-                const path =
-                    u.pathname ||
-                    "";
-
-
-                return (
-                    host +
-                    (
-                        path &&
-                        path !== "/"
-                            ? path
-                            : ""
-                    )
-                );
-
+                const u = new URL(rawUrl);
+                const host = u.hostname || rawUrl;
+                const path = u.pathname || "";
+                return host + (path && path !== "/" ? path : "");
             } catch {
-
                 return rawUrl;
             }
         }
@@ -2857,9 +2730,7 @@ body {
             document.getElementById(
                 "urlInput"
             ).value =
-                getRealUrl(
-                    currentTab.url
-                );
+                currentTab.url;
 
 
             const favBtn =
@@ -3261,32 +3132,8 @@ body {
              * em URLs que já estão no proxy.
              */
 
+
             if (
-
-                /^https?:\/\//i.test(
-                    formattedUrl
-                ) &&
-
-                !formattedUrl.startsWith(
-                    "http://localhost:8080/proxy?url="
-                ) &&
-
-                /* Páginas servidas pelo próprio servidor local
-                   (editor 2D, ferramentas) carregam direto — sem proxy */
-
-                !isLocalServerUrl(
-                    formattedUrl
-                )
-
-            ) {
-
-                formattedUrl =
-                    getProxyUrl(
-                        formattedUrl
-                    );
-            }
-
-
             currentTab.history =
                 currentTab.history.slice(
                     0,
@@ -3374,14 +3221,12 @@ body {
                     data.url
                 ) {
 
-                    const proxied =
-                        getProxyUrl(
-                            data.url
-                        );
+                    const realUrl =
+                        data.url;
 
                     if (
                         currentTab.url ===
-                        proxied
+                        realUrl
                     ) {
                         return;
                     }
@@ -3394,25 +3239,25 @@ body {
                         );
 
                     currentTab.history.push(
-                        proxied
+                        realUrl
                     );
 
                     currentTab.historyIndex =
                         currentTab.history.length - 1;
 
                     currentTab.url =
-                        proxied;
+                        realUrl;
 
                     currentTab.title =
                         getDisplayTitle(
-                            proxied
+                            realUrl
                         );
 
                     document
                         .getElementById(
                             "urlInput"
                         ).value =
-                        getRealUrl(proxied);
+                        realUrl;
 
                     renderTabsDOM();
                 }
@@ -3820,28 +3665,17 @@ body {
             }
 
 
-            /* Desembrulha URLs que já vieram do proxy local
-               (evita duplo empacotamento /proxy?url=...) */
-
-            const realUrl =
-                getRealUrl(navigatedUrl);
-
-
-            const proxied =
-                getProxyUrl(realUrl);
-
-
-            if (tab.url === proxied) {
+            if (tab.url === navigatedUrl) {
 
                 return;
             }
 
 
-            /* Mesma página real (proxy ou não) → ignora */
+            /* Mesma página real → ignora */
 
             if (
-                getRealUrl(tab.url) ===
-                realUrl
+                tab.url ===
+                navigatedUrl
             ) {
 
                 return;
@@ -3854,16 +3688,16 @@ body {
                     tab.historyIndex + 1
                 );
 
-            tab.history.push(proxied);
+            tab.history.push(navigatedUrl);
 
             tab.historyIndex =
                 tab.history.length - 1;
 
-            tab.url = proxied;
+            tab.url = navigatedUrl;
 
             tab.title =
                 getDisplayTitle(
-                    realUrl
+                    navigatedUrl
                 );
 
 
@@ -3871,7 +3705,7 @@ body {
 
                 document
                     .getElementById("urlInput")
-                    .value = getRealUrl(proxied);
+                    .value = navigatedUrl;
             }
 
 

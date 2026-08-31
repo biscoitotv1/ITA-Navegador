@@ -391,20 +391,27 @@ class LocalServer {
     proxyRes.on('error', () => this.sendProxyError(res, targetUrl, 'Conexão interrompida durante o download'))
     proxyRes.on('end', () => {
       const raw = Buffer.concat(chunks)
-      let text
       try {
-        text = this.decodeBody(raw, headers['content-encoding'])
-      } catch {
-        text = raw.toString('utf-8')
-      }
-      delete headers['content-encoding']
-      delete headers['content-length']
+        let text
+        try {
+          // decodeBody devolve Buffer — converte para string antes de reescrever,
+          // evitando que rewriteCss/rewriteHtml recebam algo que não seja texto
+          text = this.decodeBody(raw, headers['content-encoding']).toString('utf-8')
+        } catch {
+          text = raw.toString('utf-8')
+        }
+        delete headers['content-encoding']
+        delete headers['content-length']
 
-      const isCss = /text\/css/i.test(contentType)
-      const finalText = isCss ? this.rewriteCss(text, targetUrl) : this.rewriteHtml(text, targetUrl)
-      headers['content-type'] = isCss ? 'text/css; charset=utf-8' : 'text/html; charset=utf-8'
-      res.writeHead(proxyRes.statusCode, headers)
-      res.end(finalText)
+        const isCss = /text\/css/i.test(contentType)
+        const finalText = isCss ? this.rewriteCss(text, targetUrl) : this.rewriteHtml(text, targetUrl)
+        headers['content-type'] = isCss ? 'text/css; charset=utf-8' : 'text/html; charset=utf-8'
+        res.writeHead(proxyRes.statusCode, headers)
+        res.end(finalText)
+      } catch {
+        // Qualquer falha ao reescrever o conteúdo NÃO pode derrubar o app
+        this.sendProxyError(res, targetUrl, 'Não foi possível processar o conteúdo desta página.')
+      }
     })
   }
 
@@ -441,22 +448,31 @@ class LocalServer {
   }
 
   rewriteCss(css, baseUrl) {
-    if (!css) return css
-    return css
-      .replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi, (match, quote, rawUrl) => {
-        const absolute = this.absolutize(rawUrl, baseUrl)
-        return absolute ? `url("${this.toProxyPath(absolute)}")` : match
-      })
-      .replace(/@import\s+(['"])([^'"]+)\1/gi, (match, quote, rawUrl) => {
-        const absolute = this.absolutize(rawUrl, baseUrl)
-        return absolute ? `@import "${this.toProxyPath(absolute)}"` : match
-      })
+    if (!css || typeof css !== 'string') {
+      return ''
+    }
+
+    let out = css
+
+    out = out.replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/gi, (match, quote, rawUrl) => {
+      const absolute = this.absolutize(rawUrl, baseUrl)
+      return absolute ? `url("${this.toProxyPath(absolute)}")` : match
+    })
+
+    out = out.replace(/@import\s+(['"])([^'"]+)\1/gi, (match, quote, rawUrl) => {
+      const absolute = this.absolutize(rawUrl, baseUrl)
+      return absolute ? `@import "${this.toProxyPath(absolute)}"` : match
+    })
+
+    return out
   }
 
   rewriteHtml(html, baseUrl) {
-    if (!html) return html
+    if (!html || typeof html !== 'string') {
+      return ''
+    }
 
-    let out = String(html)
+    let out = html
 
     // Atributos com URL (href, src, action, poster, formaction, data-src, xlink:href)
     out = out.replace(/\s(?:xlink:)?(href|src|action|poster|formaction|data-src)\s*=\s*("([^"]*)"|'([^']*)')/gi,

@@ -1,5 +1,7 @@
 const path = require('path')
 const fs = require('fs')
+const http = require('http')
+const https = require('https')
 const electron = require('electron')
 
 if (process.defaultApp) {
@@ -172,6 +174,84 @@ function saveSessionFile(data) {
   }
 }
 
+// ===== UI PRINCIPAL — deploy da Vercel com fallback para o arquivo local =====
+// A janela principal carrega a interface hospedada no deploy da branch main
+// (Vercel). Se o deploy estiver inacessível — sem internet, proteção SSO da
+// Vercel ativa ou erro do servidor — o app cai automaticamente para o
+// index.html local, evitando tela branca ou a página de login da Vercel.
+//   ITA_UI_URL=<url>   → usa outra URL remota (ex.: .../ui/ para a UI do navegador)
+//   ITA_UI_URL=local   → força sempre o arquivo local (ignora a rede)
+const DEFAULT_REMOTE_UI_URL = 'https://ita-navegador-g6jv-git-main-biscoitotv1-1912s-projects.vercel.app'
+
+function getRemoteUiUrl() {
+  const configured = process.env.ITA_UI_URL
+  if (!configured || configured === 'default') return DEFAULT_REMOTE_UI_URL
+  return configured === 'local' ? null : configured
+}
+
+// Sonda: o deploy responde com a nossa UI (e não com o muro de login da Vercel)?
+function probeRemoteUi(remoteUrl) {
+  return new Promise((resolve) => {
+    let settled = false
+    let req = null
+    const done = (ok) => {
+      if (settled) return
+      settled = true
+      try { if (req) req.destroy() } catch { /* conexão já encerrada */ }
+      resolve(ok)
+    }
+    try {
+      const lib = remoteUrl.startsWith('http://') ? http : https
+      req = lib.request(remoteUrl, { method: 'GET', timeout: 8000 }, (res) => {
+        // Deploy protegido por SSO redireciona para vercel.com → não é a nossa UI
+        if (res.statusCode < 200 || res.statusCode >= 400) {
+          res.resume()
+          done(false)
+          return
+        }
+        let body = ''
+        res.setEncoding('utf-8')
+        res.on('data', (chunk) => {
+          body += chunk
+          // Marcador da nossa interface aparece no início do HTML
+          if (/ITA Navegador|itaBrowser|ita-ui/i.test(body)) done(true)
+        })
+        res.on('end', () => done(/ITA Navegador|itaBrowser|ita-ui/i.test(body)))
+        res.on('error', () => done(false))
+      })
+      req.on('timeout', () => done(false))
+      req.on('error', () => done(false))
+      req.end()
+    } catch {
+      resolve(false)
+    }
+  })
+}
+
+async function loadMainUi() {
+  let restored = false
+  const restoreOnce = () => {
+    if (restored) return
+    restored = true
+    sendToRenderer('restore-session', readSessionFile())
+  }
+  const loadLocalUi = () => mainWindow.loadFile(path.join(__dirname, 'index.html'))
+
+  mainWindow.webContents.once('did-finish-load', restoreOnce)
+
+  const remoteUrl = getRemoteUiUrl()
+  if (remoteUrl && await probeRemoteUi(remoteUrl)) {
+    // Se a rede cair durante o uso (falha no quadro principal), cai para o local
+    mainWindow.webContents.once('did-fail-load', (_event, errorCode, _desc, _url, isMainFrame) => {
+      if (!isMainFrame || restored || errorCode === -3) return // -3 = carga substituída
+      loadLocalUi()
+    })
+    mainWindow.loadURL(remoteUrl)
+  } else {
+    loadLocalUi()
+  }
+}
+
 async function createWindow() {
   try {
     const serverResult = await LocalServer.start()
@@ -290,16 +370,8 @@ async function createWindow() {
     callback({})
   })
 
-  // ===== UI PRINCIPAL servida pelo servidor local =====
-  // A nova interface (tema escuro azul/verde) vive em ui/index.html e é
-  // entregue pelo LocalServer na rota /app — mesma origem do proxy de
-  // navegação (/proxy?url=...). Para usar a versão hospedada, defina:
-  //   ITA_START_URL=https://itabrowser.top
-  const startUrl = process.env.ITA_START_URL || `${localServerUrl}/app`
-  mainWindow.loadURL(startUrl)
-  mainWindow.webContents.once('did-finish-load', () => {
-    sendToRenderer('restore-session', readSessionFile())
-  })
+  // ===== UI PRINCIPAL: Vercel (branch main) com fallback local offline =====
+  await loadMainUi()
 }
 
 // ===== Barra de Menus Electron =====

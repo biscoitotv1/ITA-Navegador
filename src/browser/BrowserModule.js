@@ -1,7 +1,6 @@
 const path = require('path')
 const fs = require('fs')
 const Store = require('../shared/Store')
-const LocalServer = require('../server/LocalServer')
 
 class BrowserModule {
   constructor() {
@@ -43,11 +42,6 @@ class BrowserModule {
             target = 'https://' + target
           }
         }
-
-        if (/^https?:\/\//i.test(target)) {
-          target = LocalServer.getProxyUrl(target)
-        }
-
         return target
       },
       'browser-go-back': async () => 'back',
