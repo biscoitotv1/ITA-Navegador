@@ -756,6 +756,33 @@ electron.ipcMain.handle('get-local-server-url', async () => {
   return localServerUrl || 'http://localhost:8080'
 })
 
+// =========================================================
+//  NAVEGADOR PADRÃO DO SISTEMA (Chrome, Edge, etc.)
+//  Abre a URL real em nova aba do navegador do usuário —
+//  via IPC (botão ↗ da UI) ou via window.open/target=_blank.
+// =========================================================
+
+function isWebUrl(target) {
+  return typeof target === 'string' && /^https?:\/\//i.test(target)
+}
+
+electron.ipcMain.handle('open-external', async (_event, url) => {
+  if (!isWebUrl(url)) return { success: false, error: 'URL inválida' }
+  await electron.shell.openExternal(url)
+  return { success: true }
+})
+
+// window.open / target="_blank" dentro do app abrem no navegador
+// padrão do sistema em vez de criar uma nova janela Electron.
+electron.app.on('web-contents-created', (_event, contents) => {
+  contents.setWindowOpenHandler(({ url }) => {
+    if (isWebUrl(url)) {
+      electron.shell.openExternal(url).catch(() => {})
+    }
+    return { action: 'deny' }
+  })
+})
+
 electron.ipcMain.handle('switch-module', async (_event, moduleName) => {
   AppCore.switchModule(moduleName)
 })

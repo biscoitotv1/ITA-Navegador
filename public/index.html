@@ -359,6 +359,7 @@
         <div class="address-bar-container">
             <input type="text" class="ita-url-bar" id="urlInput" value="ita://home" onkeydown="handleUrlKey(event)">
             <button class="fav-btn" id="favBtn" title="Salvar Favorito" onclick="toggleFavorite()">☆</button>
+            <button class="fav-btn" id="extBtn" title="Abrir em nova aba do navegador (Chrome, Edge, etc.)" onclick="openExternalTab()">↗</button>
         </div>
     </div>
 
@@ -587,6 +588,29 @@
                 const url = document.getElementById('urlInput').value;
                 navigateTo(url);
             }
+        }
+
+        // Normaliza o texto digitado em URL real (sem proxy) para abrir fora do app.
+        function normalizeForExternal(targetUrl) {
+            let url = String(targetUrl || '').trim();
+            if (!url || url === 'ita://home') return null;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = (url.includes('.') && !url.includes(' '))
+                    ? 'https://' + url
+                    : 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(url);
+            }
+            // Mixed Content: força https:// (hosts locais mantêm http://).
+            if (/^http:\/\//i.test(url) && !isInsecureHostUrl(url)) {
+                url = 'https://' + url.slice(7);
+            }
+            return url;
+        }
+
+        // Abre o site real em uma nova aba do navegador principal (Chrome, Edge, etc.).
+        function openExternalTab() {
+            const url = normalizeForExternal(document.getElementById('urlInput').value);
+            if (!url) return;
+            window.open(url, '_blank', 'noopener');
         }
 
         function goHome() {

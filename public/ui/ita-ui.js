@@ -394,6 +394,27 @@
     el('urlInput').blur()
   }
 
+  /** Abre a página real em nova aba do navegador padrão do sistema (Chrome, Edge…). */
+  function openExternalUrl(raw) {
+    const tab = activeTab()
+    const typed = String(raw || '').trim()
+    const target = typed || (tab && tab.url) || ''
+    if (!target || /^(ita|about|data|view-source):/i.test(target)) {
+      showToast('warn', 'Navegador padrão', 'Digite o endereço de uma página web para abrir fora do app.')
+      return
+    }
+    const url = normalizeInput(target)
+    if (!url || !/^https?:\/\//i.test(url)) return
+    if (BR && typeof BR.openExternal === 'function') {
+      // Electron: o main chama shell.openExternal → navegador padrão do usuário
+      BR.openExternal(url).catch(() => {})
+      showToast('ok', 'Navegador padrão', 'Abrindo o site fora do app…')
+    } else {
+      // Site: nova aba do próprio navegador
+      window.open(url, '_blank', 'noopener,noreferrer')
+    }
+  }
+
   // =========================================================
   // OMNIBOX — campo de endereço limpo + indicador de segurança
   // =========================================================
@@ -829,6 +850,7 @@
     })
 
     el('starBtn').addEventListener('click', toggleFavorite)
+    el('extBtn').addEventListener('click', () => openExternalUrl(el('urlInput').value))
     el('downloadsBtn').addEventListener('click', () => toggleDownloads())
     el('downloadsClose').addEventListener('click', () => toggleDownloads(false))
 

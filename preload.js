@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('itaBrowser', {
   navigate: (url) => ipcRenderer.invoke('navigate', url),
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
   loadLocalFile: (filePath) => ipcRenderer.invoke('load-local-file', filePath),
   goBack: () => ipcRenderer.invoke('go-back'),
   goForward: () => ipcRenderer.invoke('go-forward'),

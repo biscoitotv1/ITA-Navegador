@@ -89,6 +89,16 @@ privada), transmite binários (imagens, mídia, downloads) sem alteração e
 devolve uma página de erro amigável quando o site de destino falha — a
 navegação nunca quebra com exceção não tratada.
 
+### 3. Abrir no navegador padrão (Chrome, Edge, etc.)
+
+O botão **↗** ao lado da barra de endereço (em todas as interfaces) abre a
+página atual em uma nova aba do navegador padrão do sistema. A URL é
+normalizada antes (`https://` por padrão, texto livre vira busca Google) e,
+no desktop, é enviada via IPC `open-external` → `shell.openExternal`.
+`window.open`/`target="_blank"` dentro do app também são interceptados
+(`setWindowOpenHandler` em `main.js`) e despachados para o navegador real do
+usuário em vez de criar uma nova janela Electron.
+
 > **Limitação conhecida:** alguns sites detectam e bloqueiam proxies
 > (Cloudflare, logins com proteção anti-bot). Nesses casos a página de erro do
 > proxy é exibida, e o site continua acessível abrindo direto no app desktop.
