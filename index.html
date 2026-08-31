@@ -3127,13 +3127,56 @@ body {
             }
 
 
+            /* Mixed Content: padroniza https:// mesmo quando o usuário digitou
+               http:// (hosts locais/rede privada mantêm http://) */
+
+            if (
+                /^http:\/\//i.test(formattedUrl)
+            ) {
+
+                let keepHttp = false;
+
+                try {
+
+                    const host = new URL(formattedUrl).hostname;
+
+                    keepHttp =
+                        host === "localhost" ||
+                        host === "127.0.0.1" ||
+                        host === "::1" ||
+                        host.endsWith(".local") ||
+                        /^10\./.test(host) ||
+                        /^192\.168\./.test(host) ||
+                        /^172\.(1[6-9]|2\d|3[01])\./.test(host);
+
+                } catch (err) {
+
+                    keepHttp = false;
+                }
+
+                if (!keepHttp) {
+
+                    formattedUrl =
+                        "https://" +
+                        formattedUrl.slice(7);
+                }
+            }
+
+
             /*
              * Não aplica proxy novamente
              * em URLs que já estão no proxy.
              */
 
 
-            if (
+            /*
+             * Nota: a versão desktop carrega as páginas direto nos webviews
+             * (o main.js remove X-Frame-Options globalmente), então aqui não
+             * há wrap de proxy. Antes havia um "if (" órfão nesta posição —
+             * resto de um bloco de proxy removido — que quebrava a sintaxe
+             * de todo o script. Corrigido.
+             */
+
             currentTab.history =
                 currentTab.history.slice(
                     0,

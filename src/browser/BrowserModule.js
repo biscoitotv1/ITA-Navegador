@@ -2,6 +2,24 @@ const path = require('path')
 const fs = require('fs')
 const Store = require('../shared/Store')
 
+/** Hosts sem TLS (loopback/rede privada) podem manter http://. */
+function isInsecureHostUrl(target) {
+  try {
+    const { hostname } = new URL(target)
+    return (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '::1' ||
+      hostname.endsWith('.local') ||
+      /^10\./.test(hostname) ||
+      /^192\.168\./.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname)
+    )
+  } catch {
+    return false
+  }
+}
+
 class BrowserModule {
   constructor() {
     this.name = 'browser'
@@ -41,6 +59,11 @@ class BrowserModule {
           } else {
             target = 'https://' + target
           }
+        }
+        // Mixed Content: padroniza https:// mesmo quando o usuário digitou
+        // http:// (hosts locais/rede privada mantêm http://).
+        if (/^http:\/\//i.test(target) && !isInsecureHostUrl(target)) {
+          target = 'https://' + target.slice(7)
         }
         return target
       },

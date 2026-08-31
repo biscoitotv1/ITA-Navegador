@@ -44,11 +44,36 @@
     return /^[a-z\d-]+(\.[a-z\d-]+)+(:\d+)?([/?#].*)?$/i.test(input)
   }
 
+  /** Hosts sem TLS disponível (loopback/rede privada) podem manter http://. */
+  function isInsecureHostUrl(url) {
+    try {
+      const { hostname } = new URL(url)
+      return (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '::1' ||
+        hostname.endsWith('.local') ||
+        /^10\./.test(hostname) ||
+        /^192\.168\./.test(hostname) ||
+        /^172\.(1[6-9]|2\d|3[01])\./.test(hostname)
+      )
+    } catch {
+      return false
+    }
+  }
+
   /** Converte o que o usuário digitou em URL (ou busca). */
   function normalizeInput(raw) {
     const input = String(raw || '').trim()
     if (!input) return null
-    if (/^https?:\/\//i.test(input)) return input
+    if (/^https?:\/\//i.test(input)) {
+      // Mixed Content: dentro de um site HTTPS, conteúdo http:// é bloqueado
+      // pelo Chrome. Faz upgrade para https:// (exceto hosts locais, sem TLS).
+      if (/^http:\/\//i.test(input) && !isInsecureHostUrl(input)) {
+        return `https://${input.slice(7)}`
+      }
+      return input
+    }
     if (/^(about|data|view-source|javascript):/i.test(input)) return null
     if (looksLikeHost(input)) return `https://${input}`
     return SEARCH_URL + encodeURIComponent(input)

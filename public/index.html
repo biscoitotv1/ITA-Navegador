@@ -397,8 +397,25 @@
         ];
         let activeTabId = 0;
 
+        // Hosts sem TLS (loopback/rede privada) podem manter http://.
+        function isInsecureHostUrl(url) {
+            try {
+                const { hostname } = new URL(url);
+                return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' ||
+                    hostname.endsWith('.local') || /^10\./.test(hostname) ||
+                    /^192\.168\./.test(hostname) || /^172\.(1[6-9]|2\d|3[01])\./.test(hostname);
+            } catch { return false; }
+        }
+
         function getProxyUrl(targetUrl) {
-            const base = (window.itaBrowser && window.itaBrowser.getLocalServerUrl) ? window.itaBrowser.getLocalServerUrl() : 'http://localhost:8080';
+            // No desktop usa o servidor local (itaBrowser); no site, a própria
+            // origem HTTPS (rota /proxy do Next) — nunca http:// a partir de
+            // uma página https:// (Mixed Content bloqueia a requisição).
+            const base = (window.itaBrowser && window.itaBrowser.getLocalServerUrl)
+                ? window.itaBrowser.getLocalServerUrl()
+                : (location.protocol === 'https:' || location.protocol === 'http:')
+                    ? location.origin
+                    : 'http://localhost:8080';
             return base + '/proxy?url=' + encodeURIComponent(targetUrl);
         }
 
@@ -406,7 +423,7 @@
             if (rawUrl === "ita://home") {
                 return "ITA Browser";
             }
-            if (rawUrl.startsWith('http://localhost:8080/proxy?url=')) {
+            if (rawUrl.includes('/proxy?url=')) {
                 try {
                     const real = new URL(rawUrl).searchParams.get('url');
                     if (real) {
@@ -535,6 +552,12 @@
                 } else {
                     formattedUrl = "https://html.duckduckgo.com/html/?q=" + encodeURIComponent(formattedUrl);
                 }
+            }
+
+            // Mixed Content: força https:// mesmo quando o usuário digitou
+            // http:// (hosts locais/rede privada mantêm http://).
+            if (/^http:\/\//i.test(formattedUrl) && !isInsecureHostUrl(formattedUrl)) {
+                formattedUrl = "https://" + formattedUrl.slice(7);
             }
 
             if (/^https?:\/\//i.test(formattedUrl) && formattedUrl !== "ita://home") {
