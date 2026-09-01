@@ -62,6 +62,16 @@ app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 app.commandLine.appendSwitch('disk-cache-size', '536870912')
 
 /*
+  MEGA TURBO — parte 2: abas 100% ligadas, downloads
+  paralelos e cache de código V8 completo.
+*/
+app.commandLine.appendSwitch('disable-renderer-backgrounding')
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
+app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion')
+app.commandLine.appendSwitch('enable-parallel-downloading')
+app.commandLine.appendSwitch('enable-features', 'CanvasOopRasterization')
+
+/*
 =========================================================
   CONFIGURAÇÃO
 =========================================================
@@ -403,6 +413,9 @@ function createWindow() {
 
         backgroundThrottling:
           false,
+
+        v8CacheOptions:
+          'full',
 
         autoplayPolicy:
           'no-user-gesture-required'
@@ -1001,6 +1014,11 @@ app.whenReady()
       console.log(
         'Portal itabrowser.top local:',
         portalInstalled ? 'ATIVADO (itaportal://)' : 'usando domínio remoto'
+      )
+
+      console.log(
+        '⚡ Turbo Electron: ATIVADO — GPU raster · zero-copy · ' +
+        'download paralelo · abas 100% ligadas'
       )
 
       createWindow()
