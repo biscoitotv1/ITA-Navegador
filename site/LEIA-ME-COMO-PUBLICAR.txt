@@ -36,6 +36,17 @@ Opção B — Vercel / Netlify
         Output Directory: . (raiz do site/)
    3. Domínio: aponte itabrowser.top para o projeto.
 
+── A ANTIGA INTERFACE /ui FOI APOSENTADA ─────────────────
+
+· O domínio tinha uma interface antiga hospedada em
+  https://www.itabrowser.top/ui (a tela com "NAVEGAÇÃO
+  PROTEGIDA • PROXY INTERNO"). Esta pasta já inclui
+  ui/index.html: um redirect instantâneo para a raiz.
+  Ao publicar site/, a raiz vira o portal FORGE e o
+  endereço antigo /ui também cai nele.
+· Dentro do app desktop nem depende de publicar: /ui vira
+  o portal direto (src/portal/PortalBridge.js).
+
 ── PORTAL DENTRO DO APP (NOVO) ────────────────────────────
 
 · A partir de agora o ITA Navegador desktop também SERVE este

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="0; url=/">
+<title>ITA Browser — redirecionando…</title>
+<style>
+  /* ITA FORGE — laranja · preto · branco */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    background: #0a0a0c; color: #f4f4f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    text-align: center; padding: 24px;
+  }
+  .box { max-width: 540px; }
+  .flame { font-size: 46px; }
+  h1 { font-size: 24px; margin: 12px 0 8px; letter-spacing: .5px; }
+  h1 span { color: #ff6a00; }
+  p { color: #9ca3af; font-size: 14px; line-height: 1.7; }
+  code { color: #fbbf77; }
+  a {
+    display: inline-block; margin-top: 20px; padding: 11px 24px;
+    border-radius: 999px; text-decoration: none; font-weight: 700;
+    font-size: 14px; color: #fff;
+    background: linear-gradient(135deg, #ff6a00, #e35200);
+  }
+  a:hover { filter: brightness(1.12); }
+</style>
+</head>
+<body>
+  <div class="box">
+    <div class="flame">🔥</div>
+    <h1>ITA <span>Browser</span></h1>
+    <p>Esta interface antiga (<code>/ui</code>) foi aposentada.<br>
+       Você está sendo levado ao portal oficial itabrowser.top…</p>
+    <a href="/">Ir para itabrowser.top agora</a>
+  </div>
+  <script>
+    /* Redireciona imediatamente, sem poluir o histórico */
+    location.replace('/')
+  </script>
+</body>
+</html>

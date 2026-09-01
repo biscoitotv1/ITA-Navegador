@@ -10,6 +10,9 @@
     dentro da nova interface é redirecionada para o portal
     local — funciona 100%, até sem internet e antes da
     publicação do domínio.
+  - A ANTIGA interface hospedada em /ui também cai no
+    portal FORGE (o usuário pediu: itabrowser.top no lugar
+    de https://www.itabrowser.top/ui).
   - 100% legal: entregamos apenas o nosso próprio portal.
 =========================================================
 */
@@ -122,6 +125,17 @@ function resolvePortalFilePath(portalUrl) {
     } catch {
 
       pathname = parsed.pathname || '/'
+    }
+
+    /*
+      A antiga interface hospedada em /ui foi aposentada:
+      dentro do app ela vira o portal FORGE direto (nem
+      passa pelo arquivo site/ui/index.html do site).
+    ========================================================
+    */
+
+    if (pathname === '/ui' || pathname === '/ui/') {
+      return path.join(PORTAL_DIR, 'index.html')
     }
 
     if (pathname === '' || pathname.endsWith('/')) {

@@ -33,6 +33,9 @@ npm run dist
   `site/` (MIME correto + proteção contra path traversal)
 - Navegar para `https://itabrowser.top` (ou www) em qualquer aba redireciona para o portal local
   — a barra de endereço continua mostrando `https://itabrowser.top`
+- A **antiga interface hospedada** em `https://www.itabrowser.top/ui` também abre o portal FORGE:
+  dentro do app o `PortalBridge` mapeia `/ui` → portal; no domínio publicado, `site/ui/index.html`
+  redireciona `/ui` → `/` instantaneamente
 - Deep links do portal (`itabrowser://open?url=...`) clicados dentro das abas viram nova aba ITA
 - Se a pasta `site/` não existir na instalação, o domínio remoto é usado normalmente
 
