@@ -25,8 +25,9 @@ npm run dist
 - **Sessão:** abas e histórico são restaurados ao reabrir o app
 - **Barra de endereço:** `normalizeUrl` padroniza HTTPS e busca na web quando não é URL
 - **Portal oficial:** `site/` — itabrowser.top é servido de dentro do app via `itaportal://`,
-  então o card **ITA Cloud** abre o portal FORGE na nova interface 100% das vezes (até offline)
-
+  então o card **ITA Cloud** abre o portal FORGE na nova interface 100% das vezes (até offline).
+  O portal novo mostra o **browser-chrome**, a **IDE FORGE** interativa (abas, terminal animado)
+  e a seção **Mega Turbo** com benchmark animado
 ## Portal itabrowser.top na interface
 
 - `src/portal/PortalBridge.js` registra o esquema privilegiado `itaportal://` e serve a pasta
