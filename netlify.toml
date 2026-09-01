@@ -1,0 +1,18 @@
+# ITA Navegador — portal oficial itabrowser.top (ITA Games Studios)
+# Publica a pasta site/ (portal FORGE) como raiz do domínio.
+# A antiga interface /ui foi aposentada: cai no portal novo.
+
+[build]
+  publish = "site"
+
+[[redirects]]
+  from = "/ui"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ui/*"
+  to = "/"
+  status = 301
+  force = true

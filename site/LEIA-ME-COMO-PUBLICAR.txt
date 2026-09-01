@@ -28,13 +28,15 @@ Opção A — Hospedagem simples (Hostinger, cPanel, etc.)
       do domínio (public_html / www).
    2. Pronto: index.html é a página inicial.
 
-Opção B — Vercel / Netlify
-   1. Importe o repositório.
-   2. Configure:
-        Root Directory: site
-        Build Command: (vazio — é estático)
-        Output Directory: . (raiz do site/)
+Opção B — Vercel / Netlify (recomendada)
+   1. Importe/conecte o repositório no painel.
+   2. NÃO precisa configurar nada na mão: o repositório já
+      traz vercel.json (outputDirectory: site) e netlify.toml
+      (publish = "site") — a raiz do domínio publica a pasta
+      site/ automaticamente.
    3. Domínio: aponte itabrowser.top para o projeto.
+   4. A antiga interface /ui é redirecionada para a raiz
+      pelas regras incluídas (e por site/ui/index.html).
 
 ── A ANTIGA INTERFACE /ui FOI APOSENTADA ─────────────────
 

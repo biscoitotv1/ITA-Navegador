@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "site",
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/ui",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/ui/:path*",
+      "destination": "/",
+      "permanent": true
+    }
+  ]
+}
