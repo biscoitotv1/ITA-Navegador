@@ -74,7 +74,7 @@
       <div class="actions">
         <div class="download-buttons" style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
           <!-- Botão Windows -->
-          <a href="https://github.com/biscoitotv1/ITA-Navegador/releases/download/v1.0.12/ITA-Navegador-Setup-1.0.12.exe" class="btn-download">
+          <a href="#" id="download-btn" class="btn-download">
             Baixar ITA Navegador
           </a>
 
@@ -100,5 +100,17 @@
     </section>
   </main>
   <footer><div class="shell footer"><span>ITA Games Studios</span><a href="https://github.com/biscoitotv1/ITA-Navegador" target="_blank" rel="noreferrer">github.com/biscoitotv1/ITA-Navegador</a></div></footer>
+  <script>
+    fetch('https://api.github.com/repos/biscoitotv1/ITA-Navegador/releases/latest')
+      .then(response => response.json())
+      .then(data => {
+        const asset = data.assets.find(a => a.name.endsWith('.exe'));
+        if (asset) {
+          const btn = document.getElementById('download-btn');
+          btn.href = asset.browser_download_url;
+        }
+      })
+      .catch(err => console.error('Erro ao buscar última versão:', err));
+  </script>
 </body>
 </html>

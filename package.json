@@ -1,6 +1,6 @@
 {
   "name": "ita-navegador",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "private": true,
   "description": "ITA Navegador - app desktop (Electron) com internet real (sem proxy e sem servidor local)",
   "main": "main.js",
