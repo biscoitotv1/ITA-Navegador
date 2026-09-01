@@ -481,29 +481,30 @@ function createWindow() {
   =======================================================
   */
 
-  /* A interface do navegador é SEMPRE o index.html —
-     nenhuma página local de apresentação é carregada.
+  /* A UI do Electron é separada da landing pública raiz.
      As abas navegam direto na internet via webview. */
 
-  const indexPath =
+  const browserInterfacePath =
     path.join(
       __dirname,
+      'src',
+      'browser',
       'index.html'
     )
 
   if (
-    fs.existsSync(indexPath)
+    fs.existsSync(browserInterfacePath)
   ) {
 
     mainWindow.loadFile(
-      indexPath
+      browserInterfacePath
     )
 
   } else {
 
     console.error(
-      'ERRO FATAL: index.html não encontrado em',
-      indexPath
+      'ERRO FATAL: interface interna não encontrada em',
+      browserInterfacePath
     )
   }
 

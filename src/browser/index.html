@@ -1,0 +1,6141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ITA Browser ÔÇö ITA Games Studios</title>
+    <meta name="theme-color" content="#ff6a00">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                sans-serif;
+
+            user-select: none;
+        }
+
+        body {
+            background-color: #f4f5f7;
+            color: #1f1f1f;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           ABAS
+           ===================================================== */
+
+        .tabs-bar {
+
+            background-color: #e2e4e9;
+
+            display: flex;
+
+            align-items: center;
+
+            padding:
+                6px
+                10px
+                0
+                10px;
+
+            gap: 5px;
+
+            border-bottom:
+                1px solid
+                #d0d3dc;
+        }
+
+
+        .tab {
+
+            background-color:
+                #d1d5db;
+
+            color:
+                #4b5563;
+
+            padding:
+                6px 12px;
+
+            border-radius:
+                8px 8px 0 0;
+
+            font-size:
+                11px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            border:
+                1px solid
+                #c0c4cc;
+
+            border-bottom:
+                none;
+
+            cursor:
+                pointer;
+
+            max-width:
+                180px;
+
+            white-space:
+                nowrap;
+
+            overflow:
+                hidden;
+
+            text-overflow:
+                ellipsis;
+        }
+
+
+        .tab.active {
+
+            background-color:
+                #f4f5f7;
+
+            color:
+                #111827;
+
+            border-color:
+                #d0d3dc;
+
+            font-weight:
+                600;
+        }
+
+
+        .tab-close {
+
+            background:
+                none;
+
+            border:
+                none;
+
+            color:
+                #6b7280;
+
+            font-size:
+                14px;
+
+            cursor:
+                pointer;
+
+            border-radius:
+                50%;
+
+            width:
+                16px;
+
+            height:
+                16px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+
+        .tab-close:hover {
+
+            background-color:
+                rgba(0,0,0,0.1);
+
+            color:
+                #111;
+        }
+
+
+        /* =====================================================
+           NOVA ABA
+           ===================================================== */
+
+        .new-tab-btn {
+
+            background:
+                none;
+
+            border:
+                none;
+
+            color:
+                #4b5563;
+
+            font-size:
+                16px;
+
+            width:
+                28px;
+
+            height:
+                28px;
+
+            border-radius:
+                6px;
+
+            cursor:
+                pointer;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+
+        .new-tab-btn:hover {
+
+            background-color:
+                #d1d5db;
+
+            color:
+                #111;
+        }
+
+
+        /* =====================================================
+           BOT├âO ADMIN
+           ===================================================== */
+
+        .admin-trigger {
+
+            margin-left:
+                auto;
+
+            background:
+                none;
+
+            border:
+                1px solid
+                #d0d3dc;
+
+            color:
+                #4b5563;
+
+            padding:
+                4px 10px;
+
+            border-radius:
+                6px;
+
+            font-size:
+                11px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                600;
+        }
+
+
+        .admin-trigger:hover {
+
+            background-color:
+                #d1d5db;
+
+            color:
+                #111;
+        }
+
+
+        /* =====================================================
+           BOT├âO ITA AI
+           ===================================================== */
+
+        .ita-ai-trigger {
+
+            margin-left:
+                5px;
+
+            background:
+                #111827;
+
+            border:
+                1px solid
+                #374151;
+
+            color:
+                white;
+
+            padding:
+                5px 12px;
+
+            border-radius:
+                7px;
+
+            font-size:
+                11px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                700;
+
+            transition:
+                0.2s;
+        }
+
+
+        .ita-ai-trigger:hover {
+
+            background:
+                #1f2937;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .ita-header {
+
+            background-color:
+                #ffffff;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            padding:
+                8px 12px;
+
+            border-bottom:
+                1px solid
+                #e2e4e9;
+
+            gap:
+                8px;
+
+            box-shadow:
+                0 1px 3px
+                rgba(0,0,0,0.02);
+        }
+
+
+        .nav-icon-btn {
+
+            background:
+                none;
+
+            border:
+                none;
+
+            color:
+                #4b5563;
+
+            font-size:
+                16px;
+
+            width:
+                32px;
+
+            height:
+                32px;
+
+            border-radius:
+                6px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.15s;
+        }
+
+
+        .nav-icon-btn:hover {
+
+            background-color:
+                #f3f4f6;
+
+            color:
+                #111;
+        }
+
+
+        /* =====================================================
+           BARRA DE ENDERE├çO
+           ===================================================== */
+
+        .address-bar-container {
+
+            flex:
+                1;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            background-color:
+                #f0f2f5;
+
+            border:
+                1px solid
+                #d1d5db;
+
+            border-radius:
+                20px;
+
+            padding:
+                0 12px;
+        }
+
+
+        .address-bar-container:focus-within {
+
+            border-color:
+                #3b5bdb;
+
+            background-color:
+                #ffffff;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(59,91,219,0.15);
+        }
+
+
+        .ita-url-bar {
+
+            flex:
+                1;
+
+            background:
+                transparent;
+
+            border:
+                none;
+
+            padding:
+                8px 6px;
+
+            color:
+                #1f2937;
+
+            font-size:
+                13px;
+
+            outline:
+                none;
+        }
+
+
+        .fav-btn {
+
+            background:
+                none;
+
+            border:
+                none;
+
+            color:
+                #9ca3af;
+
+            cursor:
+                pointer;
+
+            font-size:
+                18px;
+
+            padding:
+                4px;
+        }
+
+
+        .fav-btn:hover,
+        .fav-btn.saved {
+
+            color:
+                #38bdf8;
+        }
+
+
+        /* =====================================================
+           VIEWPORT
+           ===================================================== */
+
+        .ita-viewport {
+
+            flex:
+                1;
+
+            background-color:
+                #ffffff;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            padding:
+                20px;
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+        }
+
+
+        /* =====================================================
+           HOME
+           ===================================================== */
+
+        .welcome-box {
+
+            text-align:
+                center;
+
+            max-width:
+                650px;
+
+            width:
+                100%;
+
+            z-index:
+                2;
+        }
+
+
+        .welcome-box h1 {
+
+            font-size:
+                48px;
+
+            color:
+                #3b5bdb;
+
+            margin-bottom:
+                8px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                0.5px;
+
+            cursor:
+                pointer;
+        }
+
+
+        .welcome-box p {
+
+            color:
+                #4b5563;
+
+            font-size:
+                13px;
+
+            margin-bottom:
+                25px;
+        }
+
+
+        .fast-search {
+
+            width:
+                100%;
+
+            display:
+                flex;
+
+            gap:
+                8px;
+        }
+
+
+        .fast-input {
+
+            flex:
+                1;
+
+            background:
+                #f9fafb;
+
+            border:
+                1px solid
+                #d1d5db;
+
+            padding:
+                12px 18px;
+
+            border-radius:
+                8px;
+
+            color:
+                #1f2937;
+
+            font-size:
+                14px;
+
+            outline:
+                none;
+        }
+
+
+        .fast-input:focus {
+
+            border-color:
+                #3b5bdb;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(59,91,219,0.15);
+        }
+
+
+        .search-go {
+
+            background:
+                #3b5bdb;
+
+            color:
+                #fff;
+
+            border:
+                none;
+
+            padding:
+                0 24px;
+
+            border-radius:
+                8px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            transition:
+                background 0.2s;
+        }
+
+
+        .search-go:hover {
+
+            background:
+                #2b45c2;
+        }
+
+
+        /* =====================================================
+           IFRAME
+           ===================================================== */
+
+        .web-frame {
+
+            position:
+                absolute;
+
+            top:
+                0;
+
+            left:
+                0;
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            border:
+                none;
+
+            background:
+                #ffffff;
+
+            display:
+                none;
+
+            z-index:
+                5;
+        }
+
+
+        .web-frame.active {
+
+            display:
+                block;
+        }
+
+
+        /* =====================================================
+           FERRAMENTAS R├üPIDAS + STATUS DO BACKEND LOCAL
+           ===================================================== */
+
+        .quick-tools {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            justify-content:
+                center;
+
+            margin-top:
+                18px;
+
+            flex-wrap:
+                wrap;
+        }
+
+
+        .quick-btn {
+
+            background:
+                linear-gradient(135deg, #3b5bdb, #5f3bdc);
+
+            color:
+                #ffffff;
+
+            border:
+                none;
+
+            padding:
+                10px 18px;
+
+            border-radius:
+                10px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                600;
+
+            cursor:
+                pointer;
+
+            transition:
+                filter 0.15s ease;
+        }
+
+
+        .quick-btn:hover {
+
+            filter:
+                brightness(1.12);
+        }
+
+
+        .local-status {
+
+            margin-top:
+                14px;
+
+            font-size:
+                12px;
+
+            color:
+                #6b7280;
+        }
+
+
+        .local-status.online {
+
+            color:
+                #15803d;
+        }
+
+
+        .local-status.offline {
+
+            color:
+                #cbd5e1;
+        }
+
+
+        /* =====================================================
+           MODAL ADMIN
+           ===================================================== */
+
+        .admin-modal {
+
+            position:
+                fixed;
+
+            top:
+                0;
+
+            left:
+                0;
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            background:
+                rgba(0,0,0,0.5);
+
+            display:
+                none;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            z-index:
+                1000;
+        }
+
+
+        .admin-modal.show {
+
+            display:
+                flex;
+        }
+
+
+        .admin-card {
+
+            background:
+                #ffffff;
+
+            padding:
+                25px;
+
+            border-radius:
+                12px;
+
+            width:
+                400px;
+
+            max-width:
+                90%;
+
+            box-shadow:
+                0 20px 25px
+                -5px
+                rgba(0,0,0,0.1);
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                15px;
+        }
+
+
+        .admin-card h2 {
+
+            font-size:
+                18px;
+
+            color:
+                #111827;
+        }
+
+
+        .admin-card p {
+
+            font-size:
+                12px;
+
+            color:
+                #6b7280;
+        }
+
+
+        .admin-input {
+
+            padding:
+                10px;
+
+            border:
+                1px solid
+                #d1d5db;
+
+            border-radius:
+                6px;
+
+            font-size:
+                13px;
+
+            outline:
+                none;
+
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .admin-lbl {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+
+        .admin-actions {
+
+            display:
+                flex;
+
+            justify-content:
+                flex-end;
+
+            gap:
+                10px;
+
+            margin-top:
+                10px;
+        }
+
+
+        .btn-close-admin {
+
+            background:
+                #e5e7eb;
+
+            border:
+                none;
+
+            padding:
+                8px 16px;
+
+            border-radius:
+                6px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                600;
+
+            font-size:
+                12px;
+        }
+
+
+        .btn-save-admin {
+
+            background:
+                #3b5bdb;
+
+            color:
+                white;
+
+            border:
+                none;
+
+            padding:
+                8px 16px;
+
+            border-radius:
+                6px;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                600;
+
+            font-size:
+                12px;
+        }
+
+
+        /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+           ITA AI ÔÇö CSS CONSOLIDADO (modal, chat, agente,
+           otimizador, mem├│ria). ├Ünico bloco, mantenha organizado.
+           ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+
+        /* ---------- Modal ---------- */
+        .ai-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 26, 0.62);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(6px);
+        }
+        .ai-modal.show { display: flex; }
+
+        .ai-card {
+            width: 780px;
+            max-width: 94vw;
+            height: 680px;
+            max-height: 90vh;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 32px 90px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: aiCardIn 0.22s ease-out;
+        }
+        @keyframes aiCardIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ---------- Cabe├ºalho ---------- */
+        .ai-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #111827 0%, #1e2438 100%);
+            color: white;
+        }
+        .ai-header strong { display: block; font-size: 16px; letter-spacing: 0.2px; }
+        .ai-header small { color: #94a3b8; font-size: 11.5px; }
+        .ai-header button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #e2e8f0;
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .ai-header button:hover { background: rgba(239, 68, 68, 0.85); color: white; }
+
+        /* ---------- Abas ---------- */
+        .ai-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 10px 14px 0;
+            background: #111827;
+        }
+        .ai-tab {
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            padding: 9px 14px;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-size: 12.5px;
+            font-weight: 600;
+            transition: background 0.15s, color 0.15s;
+        }
+        .ai-tab:hover { background: rgba(255, 255, 255, 0.16); color: white; }
+        .ai-tab.active { background: #f4f5fb; color: #111827; }
+
+        .ai-pane {
+            display: none;
+            flex: 1;
+            min-height: 0;
+            flex-direction: column;
+        }
+        .ai-pane.active { display: flex; }
+
+        /* ---------- Status ---------- */
+        .ai-status {
+            padding: 8px 20px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 11.5px;
+            font-weight: 600;
+            border-bottom: 1px solid #e0e7ff;
+        }
+
+        /* ---------- Chat ---------- */
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(79, 70, 229, 0.045), transparent 42%),
+                #f6f7fb;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .ai-messages::-webkit-scrollbar { width: 8px; }
+        .ai-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        .ai-messages::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .ai-message {
+            display: flex;
+            gap: 10px;
+            max-width: 86%;
+            animation: aiMsgIn 0.2s ease-out;
+        }
+        @keyframes aiMsgIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-msg-avatar {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+        }
+        .ai-message.ai .ai-msg-avatar { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+        .ai-message.user .ai-msg-avatar { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+        .ai-message.error .ai-msg-avatar { background: linear-gradient(135deg, #94a3b8, #cbd5e1); }
+
+        .ai-msg-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .ai-msg-meta { font-size: 10.5px; color: #94a3b8; padding: 0 4px; font-weight: 600; }
+        .ai-message.user .ai-msg-meta { text-align: right; }
+
+        .ai-msg-content {
+            padding: 11px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.55;
+            white-space: pre-wrap;
+            word-break: break-word;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.07);
+        }
+        .ai-message.ai .ai-msg-content {
+            align-self: flex-start;
+            background: #ffffff;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+            border-top-left-radius: 4px;
+        }
+        .ai-message.user .ai-msg-content {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #3b5bdb, #4f46e5);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+        .ai-message.error .ai-msg-content {
+            align-self: flex-start;
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #fecaca;
+        }
+        .ai-msg-content code {
+            background: rgba(79, 70, 229, 0.1);
+            color: #4338ca;
+            padding: 1px 5px;
+            border-radius: 5px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+        }
+        .ai-message.user .ai-msg-content code { background: rgba(255, 255, 255, 0.2); color: #fff; }
+        .ai-msg-content a { color: #4f46e5; font-weight: 600; }
+
+        /* Indicador "digitando" */
+        .ai-typing-dots { display: inline-flex; gap: 5px; padding: 4px 2px; }
+        .ai-typing-dots span {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #a5b4fc;
+            animation: aiDot 1.2s infinite ease-in-out;
+        }
+        .ai-typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .ai-typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes aiDot {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        /* ---------- Entrada ---------- */
+        .ai-input-area {
+            padding: 14px;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .ai-input-area textarea {
+            flex: 1;
+            resize: none;
+            border: 1.5px solid #d1d5db;
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 13px;
+            font-family: inherit;
+            min-height: 44px;
+            max-height: 120px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .ai-input-area textarea:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+        }
+        .ai-input-area button {
+            background: linear-gradient(135deg, #3b5bdb, #4f46e5);
+            border: none;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.12s, box-shadow 0.12s, opacity 0.15s;
+        }
+        .ai-input-area button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+        }
+        .ai-input-area button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ---------- Painel do Agente ---------- */
+        .agent-toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .agent-toolbar input {
+            flex: 1;
+            min-width: 180px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            padding: 9px 12px;
+            font-size: 12.5px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .agent-toolbar input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14); }
+
+        .agent-btn {
+            border: 1.5px solid #d1d5db;
+            background: #ffffff;
+            color: #374151;
+            padding: 9px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .agent-btn:hover { border-color: #4f46e5; color: #4f46e5; background: #eef2ff; }
+        .agent-btn.primary {
+            background: linear-gradient(135deg, #3b5bdb, #4f46e5);
+            border-color: transparent;
+            color: white;
+        }
+        .agent-btn.primary:hover { box-shadow: 0 5px 14px rgba(79, 70, 229, 0.35); color: white; }
+        .agent-btn.danger { border-color: #cbd5e1; color: #94a3b8; }
+        .agent-btn.danger:hover { background: rgba(148, 163, 184, 0.12); border-color: #94a3b8; color: #cbd5e1; }
+        .agent-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .agent-approvals, .agent-plan { padding: 10px 16px 0; display: flex; flex-direction: column; gap: 10px; }
+        .approval-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-left: 4px solid #38bdf8;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .approval-card.red { background: #1e293b; border-color: #fecaca; border-left-color: #94a3b8; }
+        .approval-actions { display: flex; gap: 8px; }
+
+        .diff-box {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: Consolas, monospace;
+            font-size: 11.5px;
+            border-radius: 10px;
+            padding: 12px;
+            overflow-x: auto;
+            white-space: pre;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .agent-log {
+            flex: 1;
+            margin: 12px 16px 16px;
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 14px;
+            overflow-y: auto;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .agent-log-line { color: #cbd5e1; }
+        .agent-log-line.error { color: #94a3b8; }
+        .agent-log-line.warn { color: #94a3b8; }
+        .agent-log-line.success { color: #38bdf8; }
+
+        /* ---------- Otimizador ---------- */
+        .health-badge {
+            background: #eef2ff;
+            color: #4338ca;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 7px 14px;
+            border-radius: 999px;
+        }
+        .health-badge.good { background: #dcfce7; color: #166534; }
+        .health-badge.mid { background: #1e293b; color: #cbd5e1; }
+        .health-badge.bad { background: #1e293b; color: #cbd5e1; }
+
+        .optimizer-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .opportunity-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #94a3b8;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+        }
+        .opportunity-card.high { border-left-color: #94a3b8; }
+        .opportunity-card.medium { border-left-color: #64748b; }
+        .opportunity-card.low { border-left-color: #475569; }
+        .opportunity-card.suggestion { border-left-color: #4f46e5; }
+        .opportunity-card strong { display: block; margin-bottom: 2px; }
+        .opportunity-card .opp-file {
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 3px 8px;
+            border-radius: 6px;
+            align-self: flex-start;
+        }
+        .opportunity-card .opp-status { font-size: 11px; color: #38bdf8; font-weight: 700; }
+        .opp-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+        .opp-actions button {
+            border: 1.5px solid #d1d5db;
+            background: white;
+            border-radius: 8px;
+            padding: 6px 11px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .opp-actions button:hover { border-color: #4f46e5; color: #4f46e5; background: #eef2ff; }
+        /* ---------- Mem├│ria ---------- */
+        .memory-view {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f6f7fb;
+        }
+        .memory-section {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+        }
+        .memory-section h4 {
+            margin: 0 0 8px;
+            font-size: 12.5px;
+            color: #111827;
+            letter-spacing: 0.2px;
+        }
+        .memory-section ul {
+            margin: 0;
+            padding-left: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .memory-section li {
+            font-size: 12px;
+            color: #4b5563;
+            line-height: 1.45;
+            word-break: break-word;
+        }
+
+        /* ---------- Downloads ---------- */
+        .dl-badge {
+            display: inline-block;
+            min-width: 18px;
+            padding: 1px 6px;
+            margin-left: 6px;
+            border-radius: 999px;
+            background: #3b5bdb;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .dl-badge:empty {
+            display: none;
+        }
+        .download-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            background: #ffffff;
+        }
+        .download-item .dl-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+        .download-item .dl-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        .download-item .dl-bar div {
+            height: 100%;
+            background: #3b5bdb;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .download-item .dl-info {
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+        }
+        .download-item.completed .dl-bar div { background: #38bdf8; }
+        .download-item.cancelled .dl-bar div { background: #94a3b8; }
+
+        /* ---------- Aviso de seguran├ºa ---------- */
+        .security-toast {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            max-width: 420px;
+            background: #111827;
+            color: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 13px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            z-index: 9500;
+            display: none;
+        }
+        .security-toast.show { display: block; }
+        .security-toast.blocked { border-left: 5px solid #94a3b8; }
+        .security-toast.warning { border-left: 5px solid #64748b; }
+        .security-toast strong { display: block; margin-bottom: 4px; }
+        .security-toast button {
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            border-radius: 7px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .security-toast button:hover { background: rgba(255, 255, 255, 0.28); }
+
+        /* ---------- Responsivo ---------- */
+        @media (max-width: 700px) {
+            .admin-trigger { display: none; }
+            .ita-ai-trigger { padding: 5px 8px; }
+            .welcome-box h1 { font-size: 38px; }
+            .ai-card { width: 95vw; height: 85vh; border-radius: 14px; }
+            .ai-messages { padding: 14px; }
+            .ai-message { max-width: 94%; }
+            .agent-toolbar { padding: 10px 12px; }
+            .agent-approvals, .agent-plan { padding: 8px 12px 0; }
+            .agent-log { margin: 10px 12px 12px; }
+            .optimizer-list { padding: 10px 12px 12px; }
+            .memory-view { padding: 12px; }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         BARRA DE T├ìTULOS CUSTOMIZADA (ITA CHROME)
+         Janela frameless: arraste por aqui. Os bot├Áes nativos
+         (min/max/fechar) v├¬m do titleBarOverlay do Electron;
+         em sistemas sem overlay, usa o fallback via IPC.
+         ===================================================== -->
+
+    <header class="ita-titlebar" id="itaTitlebar">
+
+        <div class="ita-titlebar-inner">
+
+            <div class="ita-brand" title="ITA Browser ÔÇö ITA Games Studios">
+                <span class="ita-brand-mark">ITA</span>
+                <span class="ita-brand-name">ITA Browser</span>
+            </div>
+
+            <div class="ita-titlebar-drag"></div>
+
+            <!-- Fallback dos bot├Áes de janela (exibido apenas
+                 quando o overlay nativo n├úo est├í ativo) -->
+            <div class="ita-win-controls" id="itaWinControls" hidden>
+                <button class="win-btn" id="itaWinMin" title="Minimizar">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 5.2h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                </button>
+                <button class="win-btn" id="itaWinMax" title="Maximizar / Restaurar">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1.6" y="1.6" width="6.8" height="6.8" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+                </button>
+                <button class="win-btn close" id="itaWinClose" title="Fechar">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                </button>
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         BARRA DE ABAS
+         ===================================================== -->
+
+    <div class="tabs-bar" id="tabsBar">
+
+        <div
+            class="tab active"
+            onclick="switchTab(0)"
+            id="tab-0"
+        >
+
+            <span id="tab-title-0">
+                ITA Browser
+            </span>
+
+            <button
+                class="tab-close"
+                onclick="event.stopPropagation(); closeTab(0)"
+                title="Fechar aba"
+            >
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </button>
+
+        </div>
+
+
+        <button
+            class="new-tab-btn"
+            title="Nova aba"
+            onclick="addNewTab()"
+        >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.8v8.4M1.8 6h8.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+
+
+        <button
+            class="admin-trigger"
+            onclick="toggleAdminPanel()"
+        >
+            Painel Admin
+        </button>
+
+
+        <button
+            class="admin-trigger"
+            id="downloadsBtn"
+            onclick="toggleDownloadsPanel()"
+            title="Downloads"
+        >
+            Ô¼ç Downloads <span id="downloadsCount">0</span>
+        </button>
+
+
+        <!-- =================================================
+             BOT├âO ITA AI
+             ================================================= -->
+
+        <button
+            class="ita-ai-trigger"
+            onclick="openITAIA()"
+        >
+            ­ƒñû ITA AI
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         HEADER DO NAVEGADOR
+         ===================================================== -->
+
+    <div class="ita-header">
+
+        <button
+            class="nav-icon-btn"
+            title="Voltar"
+            onclick="historyBack()"
+        >
+            ­ƒíá
+        </button>
+
+
+        <button
+            class="nav-icon-btn"
+            title="Avan├ºar"
+            onclick="historyForward()"
+        >
+            ­ƒíó
+        </button>
+
+
+        <button
+            class="nav-icon-btn"
+            title="Atualizar"
+            onclick="reloadPage()"
+        >
+            Ôå╗
+        </button>
+
+
+        <div class="address-bar-container">
+
+            <input
+                type="text"
+                class="ita-url-bar"
+                id="urlInput"
+                value="ita://home"
+                onkeydown="handleUrlKey(event)"
+            >
+
+
+            <button
+                class="fav-btn"
+                id="favBtn"
+                title="Salvar Favorito"
+                onclick="toggleFavorite()"
+            >
+                Ôÿå
+            </button>
+
+
+            <button
+                class="fav-btn"
+                id="extBtn"
+                title="Abrir em nova aba do navegador (Chrome, Edge, etc.)"
+                onclick="openExternalTab()"
+            >
+                Ôåù
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ├üREA PRINCIPAL
+         ===================================================== -->
+
+    <div
+        class="ita-viewport"
+        id="viewportContainer"
+    >
+
+        <div
+            class="welcome-box"
+            id="homeView"
+        >
+
+            <h1 onclick="goHome()">
+                ITA Browser
+            </h1>
+
+
+            <p>
+                Digite um endere├ºo ou escolha um dos seus sites favoritos ÔÇö
+                internet real, direto na fonte.
+            </p>
+
+
+            <div class="fast-search">
+
+                <input
+                    type="text"
+                    class="fast-input"
+                    id="searchInput"
+                    placeholder="Digite uma URL ou pesquise na web..."
+                    onkeydown="handleSearchKey(event)"
+                >
+
+
+                <button
+                    class="search-go"
+                    onclick="performSearch()"
+                >
+                    Ir
+                </button>
+
+            </div>
+
+
+            <!-- Sites favoritos: cards que navegam DIRETO para a URL real via navigateTo() -->
+
+            <div class="site-grid" aria-label="Sites favoritos">
+
+                <button type="button" class="site-card" title="Google" onclick="navigateTo('https://www.google.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#4285f4,#ea4335)">G</span>
+                    <span class="site-name">Google</span>
+                </button>
+
+                <button type="button" class="site-card" title="YouTube" onclick="navigateTo('https://www.youtube.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#ff0000,#c4302b)">ÔûÂ</span>
+                    <span class="site-name">YouTube</span>
+                </button>
+
+                <button type="button" class="site-card" title="Instagram" onclick="navigateTo('https://www.instagram.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">­ƒôÀ</span>
+                    <span class="site-name">Instagram</span>
+                </button>
+
+                <button type="button" class="site-card" title="WhatsApp Web" onclick="navigateTo('https://web.whatsapp.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#25d366,#128c7e)">­ƒÆ¼</span>
+                    <span class="site-name">WhatsApp</span>
+                </button>
+
+                <button type="button" class="site-card" title="Twitch" onclick="navigateTo('https://www.twitch.tv')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#9146ff,#6441a5)">­ƒÄ«</span>
+                    <span class="site-name">Twitch</span>
+                </button>
+
+                <button type="button" class="site-card" title="GitHub" onclick="navigateTo('https://github.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#30363d,#0d1117)">&lt;/&gt;</span>
+                    <span class="site-name">GitHub</span>
+                </button>
+
+                <button type="button" class="site-card" title="Wikip├®dia" onclick="navigateTo('https://www.wikipedia.org')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#636466,#202122)">W</span>
+                    <span class="site-name">Wikip├®dia</span>
+                </button>
+
+                <button type="button" class="site-card" title="Reddit" onclick="navigateTo('https://www.reddit.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#ff4500,#ff8717)">r/</span>
+                    <span class="site-name">Reddit</span>
+                </button>
+
+                <button type="button" class="site-card" title="ITA Cloud ÔÇö itabrowser.top" onclick="navigateTo('https://itabrowser.top')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#ff6a00,#c94a00)">­ƒöÑ</span>
+                    <span class="site-name">ITA Cloud</span>
+                </button>
+
+            </div>
+
+
+            <!-- Ferramentas r├ípidas: IA e desenvolvimento (abas din├ómicas) -->
+
+            <div class="quick-tools">
+
+                <button
+                    class="quick-btn"
+                    onclick="openITAIA()"
+                >
+                    ­ƒñû Agente ITA AI
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =====================================================
+             ABAS DIN├éMICAS (WEBVIEW)
+             Cada aba cria o seu pr├│prio <webview> (suporte j├í
+             habilitado no main.js via webviewTag: true). Trocar
+             de aba apenas alterna a visibilidade ÔÇö sem recarregar
+             a p├ígina. Os webviews s├úo criados dinamicamente pelo
+             JavaScript (fun├º├úo ensureTabWebView).
+             ===================================================== -->
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL ADMIN (acesso restrito)
+         ===================================================== -->
+
+    <div
+        class="admin-modal"
+        id="adminModal"
+        onclick="_adminBackdropClick(event)"
+    >
+
+        <!-- ÔöÇÔöÇ TELA DE LOGIN ÔöÇÔöÇ -->
+        <div class="admin-card" id="adminLoginCard">
+
+            <h2 style="margin-bottom:6px">­ƒöÉ Acesso Restrito</h2>
+            <p style="margin-bottom:18px;font-size:12px;color:#6b7280">
+                ├ürea exclusiva de administra├º├úo.
+            </p>
+
+            <label class="admin-lbl">E-mail</label>
+            <input
+                type="email"
+                class="admin-input"
+                id="adminEmail"
+                placeholder="seu@email.com"
+                autocomplete="off"
+                spellcheck="false"
+            >
+
+            <label class="admin-lbl" style="margin-top:10px">Senha</label>
+            <input
+                type="password"
+                class="admin-input"
+                id="adminPass"
+                placeholder="ÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇóÔÇó"
+                autocomplete="off"
+                onkeydown="if(event.key==='Enter') _adminDoLogin()"
+            >
+
+            <p id="adminLoginErr" style="
+                display:none;
+                color:#94a3b8;
+                font-size:11px;
+                margin-top:8px;
+                text-align:center;
+            ">E-mail ou senha inv├ílidos.</p>
+
+            <div class="admin-actions" style="margin-top:20px">
+                <button class="btn-close-admin" onclick="toggleAdminPanel()">
+                    Cancelar
+                </button>
+                <button class="btn-save-admin" onclick="_adminDoLogin()">
+                    Entrar
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ÔöÇÔöÇ PAINEL REAL (vis├¡vel s├│ ap├│s login) ÔöÇÔöÇ -->
+        <div class="admin-card" id="adminPanelCard" style="display:none">
+
+            <h2>ÔÜÖ´©Å Painel Admin ÔÇö ITA Browser</h2>
+
+            <p style="font-size:12px;color:#6b7280;margin-bottom:16px">
+                Gerencie configura├º├Áes globais,
+                hist├│rico de atualiza├º├Áes e extens├Áes futuras.
+            </p>
+
+            <label class="admin-lbl">Vers├úo Atual da Engine:</label>
+            <input
+                type="text"
+                class="admin-input"
+                value="ITA-Core v2.6.0-stable"
+                readonly
+            >
+
+            <label class="admin-lbl" style="margin-top:10px">
+                Mensagem de Notifica├º├úo Global:
+            </label>
+            <input
+                type="text"
+                class="admin-input"
+                id="adminNotice"
+                placeholder="Ex: Atualiza├º├úo programada para amanh├ú"
+            >
+
+            <div class="admin-actions" style="margin-top:20px">
+                <button class="btn-close-admin" onclick="_adminLogout()">
+                    Sair
+                </button>
+                <button class="btn-save-admin" onclick="saveAdminSettings()">
+                    Salvar Altera├º├Áes
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PAINEL DE DOWNLOADS
+         ===================================================== -->
+
+    <div class="downloads-panel" id="downloadsPanel">
+
+        <div class="dl-header">
+
+            <span>Ô¼ç Downloads <span class="dl-badge" id="downloadsBadge"></span></span>
+
+            <button onclick="toggleDownloadsPanel()">├ù</button>
+
+        </div>
+
+        <div class="downloads-list" id="downloadsList">
+
+            <div class="agent-log-line">Nenhum download ainda.</div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         AVISO DE SEGURAN├çA
+         ===================================================== -->
+
+    <div class="security-toast" id="securityToast"></div>
+
+
+    <!-- =====================================================
+         MODAL ITA AI
+         ===================================================== -->
+
+    <div
+        class="ai-modal"
+        id="aiModal"
+    >
+
+        <div class="ai-card">
+
+
+            <div class="ai-header">
+
+                <div>
+
+                    <strong>
+                        ­ƒñû ITA AI
+                    </strong>
+
+                    <small>
+                        Agente Automa├º├úo
+                    </small>
+
+                </div>
+
+
+                <button
+                    onclick="closeITAIA()"
+                    title="Fechar"
+                >
+                    ├ù
+                </button>
+
+            </div>
+
+
+            <div class="ai-tabs">
+
+                <button class="ai-tab active" id="tab-chat" onclick="switchAiTab('chat')">­ƒÆ¼ Chat</button>
+
+                <button class="ai-tab" id="tab-agent" onclick="switchAiTab('agent')">­ƒºá Agente</button>
+
+                <button class="ai-tab" id="tab-optimizer" onclick="switchAiTab('optimizer')">­ƒÜÇ Otimizador</button>
+
+                <button class="ai-tab" id="tab-memory" onclick="switchAiTab('memory')">­ƒùä´©Å Mem├│ria</button>
+
+            </div>
+
+
+            <div class="ai-pane active" id="pane-chat">
+
+                <div
+                    class="ai-status"
+                    id="aiStatus"
+                >
+                    ÔùÅ Verificando Ollama...
+                </div>
+
+
+                <div
+                    class="ai-messages"
+                    id="aiMessages"
+                >
+
+                    <div class="ai-message ai">
+
+                        Ol├í! Eu sou a ITA AI.
+
+                        <br><br>
+
+                        Agora sou um agente de automa├º├úo:
+                        observo o projeto, analiso o c├│digo,
+                        planejo, executo com sua aprova├º├úo
+                        e verifico o resultado.
+
+                        <br><br>
+
+                        O que vamos construir?
+
+                    </div>
+
+                </div>
+
+
+                <div class="ai-input-area">
+
+                    <textarea
+                        id="aiInput"
+                        placeholder="Converse com a ITA AI..."
+                    ></textarea>
+
+
+                    <button
+                        id="aiSendButton"
+                        onclick="sendITAIA()"
+                    >
+                        Enviar
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-pane" id="pane-agent">
+
+                <div class="agent-toolbar">
+
+                    <input
+                        type="text"
+                        id="agentGoal"
+                        placeholder="Objetivo (opcional). Ex: melhorar o sistema de abas"
+                    >
+
+                    <button class="agent-btn" onclick="agentObserve()">­ƒæü´©Å Observar</button>
+
+                    <button class="agent-btn" onclick="agentAnalyze()">­ƒöì Analisar</button>
+
+                    <button class="agent-btn primary" onclick="agentRunCycle()">­ƒÜÇ Executar Ciclo</button>
+
+                </div>
+
+
+                <div class="agent-approvals" id="agentApprovals"></div>
+
+                <div class="agent-plan" id="agentPlan"></div>
+
+                <div class="agent-log" id="agentLog">
+
+                    <div class="agent-log-line">Agente pronto. Use os bot├Áes acima.</div>
+
+                </div>
+
+
+                <div class="agent-log" id="securityInfo"></div>
+
+            </div>
+
+
+            <div class="ai-pane" id="pane-optimizer">
+
+                <div class="agent-toolbar">
+
+                    <button class="agent-btn primary" onclick="optimizerAnalyze()">­ƒÜÇ Analisar Projeto</button>
+
+                    <span class="health-badge" id="healthBadge">Sa├║de: ÔÇö</span>
+
+                </div>
+
+
+                <div class="optimizer-list" id="optimizerList">
+
+                    <div class="agent-log-line">Clique em "Analisar Projeto" para procurar melhorias.</div>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-pane" id="pane-memory">
+
+                <div class="agent-toolbar">
+
+                    <button class="agent-btn" onclick="loadMemory()">­ƒöä Recarregar</button>
+
+                    <button class="agent-btn danger" onclick="resetMemory()">­ƒùæ´©Å Resetar</button>
+
+                </div>
+
+
+                <div class="memory-view" id="memoryView">
+
+                    <div class="agent-log-line">Carregando mem├│ria do projeto...</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BANNER DE SEGURAN├çA (bloqueios/avisos da navega├º├úo)
+         ===================================================== -->
+
+    <style>
+
+        .ita-security-banner {
+
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 16px;
+            background: #1e293b;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 13px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+
+        }
+
+        .ita-security-banner.warn {
+
+            background: #334155;
+
+        }
+
+        .ita-security-banner button {
+
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+
+        }
+
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   ITA DESIGN SYSTEM ÔÇö TEMA "AURORA" (camada de sobrescrita)
+   Identidade exclusiva do ITA Browser: dark profundo + acento
+   ciano-esmeralda, vidro fosco e abas estilo navegador premium.
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+
+:root {
+
+    --ita-bg: #0a0e14;
+    --ita-surface: #10161f;
+    --ita-surface-2: #151d29;
+    --ita-surface-3: #1b2534;
+    --ita-border: #223042;
+    --ita-text: #e8eef6;
+    --ita-muted: #8fa0b3;
+    --ita-accent: #22d3ee;
+    --ita-accent-2: #38bdf8;
+    --ita-danger: #94a3b8;
+    --ita-glow: 0 0 0 3px rgba(34, 211, 238, 0.16);
+}
+
+html, body {
+
+    background:
+        radial-gradient(1100px 500px at 85% -10%, rgba(34, 211, 238, 0.07), transparent 60%),
+        radial-gradient(900px 480px at -10% 110%, rgba(56, 189, 248, 0.06), transparent 60%),
+        var(--ita-bg);
+    color: var(--ita-text);
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+::selection { background: rgba(34, 211, 238, 0.32); }
+
+/* ---------- BANNER DE SEGURAN├çA ---------- */
+
+.ita-security-banner {
+
+    background: linear-gradient(90deg, rgba(6, 78, 59, 0.95), rgba(15, 23, 42, 0.95));
+    border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+    letter-spacing: 0.2px;
+}
+
+/* ---------- BARRA DE ABAS ---------- */
+
+.tabs-bar {
+
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 46px;
+    padding: 8px 12px 0;
+    background: linear-gradient(180deg, #0d131c, #0a0e14);
+    border-bottom: 1px solid var(--ita-border);
+}
+
+.tab {
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 220px;
+    min-width: 110px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 10px 10px 0 0;
+    background: transparent;
+    color: var(--ita-muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: background .15s ease, color .15s ease;
+    animation: itaTabIn .18s ease;
+}
+
+.tab::after {
+
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: transparent;
+}
+
+.tab:hover {
+
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ita-text);
+}
+
+.tab.active {
+
+    background: var(--ita-surface-2);
+    color: var(--ita-text);
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.tab.active::after {
+
+    background: linear-gradient(90deg, var(--ita-accent), var(--ita-accent-2));
+}
+
+.tab span {
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tab-close {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: -4px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ita-muted);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: all .12s ease;
+}
+
+.tab:hover .tab-close,
+.tab.active .tab-close {
+
+    opacity: 1;
+}
+
+.tab-close:hover {
+
+    background: rgba(148, 163, 184, 0.18);
+    color: var(--ita-danger);
+}
+
+.new-tab-btn {
+
+    width: 30px;
+    height: 30px;
+    margin: 0 4px 5px;
+    border: 1px dashed var(--ita-border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ita-muted);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.new-tab-btn:hover {
+
+    border-color: var(--ita-accent);
+    color: var(--ita-accent);
+    background: rgba(34, 211, 238, 0.08);
+}
+
+.admin-trigger {
+
+    margin: 0 4px 7px;
+    padding: 6px 14px;
+    border: 1px solid var(--ita-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--ita-muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.admin-trigger:hover {
+
+    border-color: var(--ita-accent);
+    color: var(--ita-accent);
+}
+
+.ita-ai-trigger {
+
+    margin: 0 0 7px 8px;
+    padding: 7px 16px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ita-accent), var(--ita-accent-2));
+    color: #04121a;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(34, 211, 238, 0.28);
+    transition: all .15s ease;
+}
+
+.ita-ai-trigger:hover {
+
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(34, 211, 238, 0.4);
+}
+
+@keyframes itaTabIn {
+
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+   ITA AURORA ÔÇö PARTE 2 ┬À BARRA DE ENDERE├çOS & CONTROLES
+   Identidade exclusiva: dark profundo + aurora ciano-esmeralda
+   ============================================================ */
+
+:root {
+
+    --aurora-bg:
+        #070b14;
+
+    --aurora-bg-2:
+        #0b1220;
+
+    --aurora-surface:
+        rgba(15, 23, 42, 0.72);
+
+    --aurora-border:
+        rgba(148, 163, 184, 0.16);
+
+    --aurora-accent:
+        #22d3ee;
+
+    --aurora-accent-2:
+        #38bdf8;
+
+    --aurora-text:
+        #e2e8f0;
+
+    --aurora-muted:
+        #94a3b8;
+
+    --aurora-glow:
+        0 0 0 1px rgba(34, 211, 238, 0.4),
+        0 0 22px rgba(34, 211, 238, 0.16);
+}
+
+
+body {
+
+    background:
+        radial-gradient(1100px 560px at 82% -12%, rgba(34, 211, 238, 0.09), transparent 60%),
+        radial-gradient(900px 520px at -8% 112%, rgba(56, 189, 248, 0.08), transparent 55%),
+        linear-gradient(180deg, var(--aurora-bg), var(--aurora-bg-2)) !important;
+
+    color:
+        var(--aurora-text) !important;
+
+    font-family:
+        "Segoe UI Variable", "Segoe UI", Inter, system-ui, sans-serif !important;
+}
+
+
+::selection {
+
+    background:
+        rgba(34, 211, 238, 0.35);
+
+    color:
+        #ffffff;
+}
+
+
+/* --- Barra de endere├ºos (p├¡lula com aurora no foco) --- */
+
+.ita-url-bar,
+#urlInput {
+
+    background:
+        rgba(2, 6, 23, 0.65) !important;
+
+    border:
+        1px solid var(--aurora-border) !important;
+
+    border-radius:
+        999px !important;
+
+    color:
+        var(--aurora-text) !important;
+
+    transition:
+        box-shadow 0.2s ease,
+        border-color 0.2s ease !important;
+}
+
+
+.ita-url-bar:focus,
+#urlInput:focus {
+
+    outline:
+        none !important;
+
+    border-color:
+        rgba(34, 211, 238, 0.6) !important;
+
+    box-shadow:
+        var(--aurora-glow) !important;
+}
+
+
+.ita-url-bar::placeholder,
+#urlInput::placeholder {
+
+    color:
+        var(--aurora-muted) !important;
+}
+
+
+/* --- Bot├Áes de navega├º├úo e favoritos --- */
+
+.nav-icon-btn,
+.fav-btn {
+
+    border-radius:
+        10px !important;
+
+    color:
+        var(--aurora-text) !important;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease !important;
+}
+
+
+.nav-icon-btn:hover,
+.fav-btn:hover {
+
+    background:
+        rgba(34, 211, 238, 0.12) !important;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.nav-icon-btn:active,
+.fav-btn:active {
+
+    transform:
+        translateY(0) scale(0.96);
+}
+
+
+/* --- Ferramentas r├ípidas (p├¡lulas em gradiente aurora) --- */
+
+.quick-btn {
+
+    background:
+        linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(56, 189, 248, 0.16)) !important;
+
+    border:
+        1px solid rgba(34, 211, 238, 0.35) !important;
+
+    color:
+        var(--aurora-text) !important;
+
+    border-radius:
+        999px !important;
+
+    backdrop-filter:
+        blur(8px);
+
+    transition:
+        box-shadow 0.2s ease,
+        transform 0.15s ease,
+        border-color 0.2s ease !important;
+}
+
+
+.quick-btn:hover {
+
+    border-color:
+        rgba(34, 211, 238, 0.7) !important;
+
+    box-shadow:
+        var(--aurora-glow) !important;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* --- Status do backend local --- */
+
+.local-status {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        5px 14px;
+
+    border-radius:
+        999px;
+
+    border:
+        1px solid var(--aurora-border);
+
+    background:
+        rgba(2, 6, 23, 0.5);
+
+    color:
+        var(--aurora-muted) !important;
+
+    letter-spacing:
+        0.2px;
+}
+
+
+.local-status.online {
+
+    color:
+        var(--aurora-accent-2) !important;
+
+    border-color:
+        rgba(56, 189, 248, 0.45);
+
+    box-shadow:
+        0 0 14px rgba(56, 189, 248, 0.15);
+}
+
+
+.local-status.offline {
+
+    color:
+        #94a3b8 !important;
+
+    border-color:
+        rgba(148, 163, 184, 0.4);
+}
+
+
+/* --- Viewport das p├íginas (moldura sutil) --- */
+
+#viewportContainer {
+
+    background:
+        transparent !important;
+}
+
+
+.web-frame {
+
+    border-radius:
+        12px;
+
+    box-shadow:
+        0 0 0 1px var(--aurora-border),
+        0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+/*__ITA_PART2B__*/
+    </style>
+
+    <div class="ita-security-banner" id="securityBanner">
+
+        <span id="securityBannerText">Prote├º├úo ativa</span>
+
+        <button onclick="dismissSecurityBanner()">Ô£ò</button>
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT DO ITA BROWSER
+         ===================================================== -->
+
+    <script src="ita-agent-ui.js"></script>
+
+    <script>
+
+        "use strict";
+
+
+        /* =================================================
+           TABS
+           ================================================= */
+
+        let tabs = [
+
+            {
+                id: 0,
+
+                title:
+                    "ITA Browser",
+
+                url:
+                    "ita://home",
+
+                history:
+                    ["ita://home"],
+
+                historyIndex:
+                    0,
+
+                isFavorite:
+                    false
+            }
+
+        ];
+
+
+        let activeTabId = 0;
+
+
+        /* =================================================
+           T├ìTULO
+           ================================================= */
+
+        function getDisplayTitle(rawUrl) {
+
+            if (
+                rawUrl ===
+                "ita://home"
+            ) {
+
+                return "ITA Browser";
+            }
+
+
+            if (
+                rawUrl ===
+                "ita://editor"
+            ) {
+
+                return "Editor 2D (ITA Studio)";
+            }
+
+            try {
+                const u = new URL(rawUrl);
+                const host = u.hostname || rawUrl;
+                const path = u.pathname || "";
+                return host + (path && path !== "/" ? path : "");
+            } catch {
+                return rawUrl;
+            }
+        }
+
+
+        /* =================================================
+           ATUALIZAR INTERFACE
+           ================================================= */
+
+        function updateUI() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            if (!currentTab) {
+
+                return;
+            }
+
+
+            document.getElementById(
+                "urlInput"
+            ).value =
+                currentTab.url;
+
+
+            const favBtn =
+                document.getElementById(
+                    "favBtn"
+                );
+
+
+            if (
+                currentTab.isFavorite
+            ) {
+
+                favBtn.classList.add(
+                    "saved"
+                );
+
+                favBtn.innerText =
+                    "Ôÿà";
+
+            } else {
+
+                favBtn.classList.remove(
+                    "saved"
+                );
+
+                favBtn.innerText =
+                    "Ôÿå";
+            }
+
+
+            const homeView =
+                document.getElementById(
+                    "homeView"
+                );
+
+
+            /* Home fica no pr├│prio DOM; p├íginas web e ferramentas
+               (editor, sites) vivem nos webviews de cada aba */
+
+            if (
+                currentTab.url ===
+                "ita://home"
+            ) {
+
+                homeView.style.display =
+                    "block";
+
+            } else {
+
+                homeView.style.display =
+                    "none";
+            }
+
+
+            /* Sincroniza conte├║do e visibilidade dos webviews */
+
+            loadTabContent();
+
+
+            renderTabsDOM();
+        }
+
+
+        /* =================================================
+           RENDERIZAR ABAS
+           ================================================= */
+
+        function renderTabsDOM() {
+
+            const tabsBar =
+                document.getElementById(
+                    "tabsBar"
+                );
+
+
+            const newTabBtn =
+                document.querySelector(
+                    ".new-tab-btn"
+                );
+
+
+            document
+                .querySelectorAll(
+                    ".tab"
+                )
+                .forEach(
+                    el =>
+                        el.remove()
+                );
+
+
+            tabs.forEach(tab => {
+
+                const tabEl =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                tabEl.className =
+                    `tab ${
+                        tab.id === activeTabId
+                            ? "active"
+                            : ""
+                    }`;
+
+
+                tabEl.id =
+                    `tab-${tab.id}`;
+
+
+                tabEl.onclick =
+                    () =>
+                        switchTab(
+                            tab.id
+                        );
+
+
+                const span =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                span.textContent =
+                    tab.title;
+
+
+                const closeBtn =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                closeBtn.className =
+                    "tab-close";
+
+
+                closeBtn.innerHTML =
+                    '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+
+
+                closeBtn.title =
+                    "Fechar aba";
+
+
+                closeBtn.onclick =
+                    event => {
+
+                        event.stopPropagation();
+
+                        closeTab(
+                            tab.id
+                        );
+                    };
+
+
+                tabEl.appendChild(
+                    span
+                );
+
+
+                tabEl.appendChild(
+                    closeBtn
+                );
+
+
+                tabsBar.insertBefore(
+                    tabEl,
+                    newTabBtn
+                );
+
+            });
+
+        }
+
+
+        /* =================================================
+           NOVA ABA
+           ================================================= */
+
+        function addNewTab() {
+
+            const newId =
+                tabs.length > 0
+                    ? Math.max(
+                        ...tabs.map(
+                            t => t.id
+                        )
+                    ) + 1
+                    : 0;
+
+
+            const newTabObj = {
+
+                id:
+                    newId,
+
+                title:
+                    "Nova Aba",
+
+                url:
+                    "ita://home",
+
+                history:
+                    ["ita://home"],
+
+                historyIndex:
+                    0,
+
+                isFavorite:
+                    false
+            };
+
+
+            tabs.push(
+                newTabObj
+            );
+
+
+            activeTabId =
+                newId;
+
+
+            updateUI();
+        }
+
+
+        /* =================================================
+           FECHAR ABA
+           ================================================= */
+
+        function closeTab(id) {
+
+            if (
+                tabs.length === 1
+            ) {
+
+                tabs[0].url =
+                    "ita://home";
+
+
+                tabs[0].title =
+                    "ITA Browser";
+
+
+                tabs[0].history =
+                    ["ita://home"];
+
+
+                tabs[0].historyIndex =
+                    0;
+
+
+                removeTabWebView(
+                    tabs[0].id
+                );
+
+
+                updateUI();
+
+                return;
+            }
+
+
+            const index =
+                tabs.findIndex(
+                    t =>
+                        t.id === id
+                );
+
+
+            removeTabWebView(
+                id
+            );
+
+
+            tabs =
+                tabs.filter(
+                    t =>
+                        t.id !== id
+                );
+
+
+            if (
+                activeTabId === id
+            ) {
+
+                const newIndex =
+                    Math.max(
+                        0,
+                        index - 1
+                    );
+
+
+                activeTabId =
+                    tabs[newIndex].id;
+            }
+
+
+            updateUI();
+        }
+
+
+        /* =================================================
+           TROCAR ABA
+           ================================================= */
+
+        function switchTab(id) {
+
+            activeTabId =
+                id;
+
+            updateUI();
+        }
+
+
+        /* =================================================
+           NAVEGAR
+           ================================================= */
+
+        function navigateTo(targetUrl) {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            if (!currentTab) {
+
+                return;
+            }
+
+
+            let formattedUrl =
+                String(
+                    targetUrl || ""
+                ).trim();
+
+
+            if (!formattedUrl) {
+
+                return;
+            }
+
+
+            /* P├ígina interna do navegador: home usa ita:// */
+
+            const isInternalUrl =
+                formattedUrl ===
+                    "ita://home";
+
+            if (
+                isInternalUrl
+            ) {
+
+                // Mant├®m o esquema interno (ita://home)
+
+            } else if (
+
+                !formattedUrl.startsWith(
+                    "http://"
+                ) &&
+
+                !formattedUrl.startsWith(
+                    "https://"
+                )
+
+            ) {
+
+                if (
+                    formattedUrl.includes(".") &&
+                    !formattedUrl.includes(" ")
+                ) {
+
+                    formattedUrl =
+                        "https://" +
+                        formattedUrl;
+
+                } else {
+
+                    formattedUrl =
+                        "https://html.duckduckgo.com/html/?q=" +
+                        encodeURIComponent(
+                            formattedUrl
+                        );
+                }
+            }
+
+
+            /* Mixed Content: padroniza https:// mesmo quando o usu├írio digitou
+               http:// (hosts locais/rede privada mant├¬m http://) */
+
+            if (
+                /^http:\/\//i.test(formattedUrl)
+            ) {
+
+                let keepHttp = false;
+
+                try {
+
+                    const host = new URL(formattedUrl).hostname;
+
+                    keepHttp =
+                        host === "localhost" ||
+                        host === "127.0.0.1" ||
+                        host === "::1" ||
+                        host.endsWith(".local") ||
+                        /^10\./.test(host) ||
+                        /^192\.168\./.test(host) ||
+                        /^172\.(1[6-9]|2\d|3[01])\./.test(host);
+
+                } catch (err) {
+
+                    keepHttp = false;
+                }
+
+                if (!keepHttp) {
+
+                    formattedUrl =
+                        "https://" +
+                        formattedUrl.slice(7);
+                }
+            }
+
+
+            /*
+             * Vers├úo desktop: a URL formatada ├® carregada direto no webview
+             * (internet real, sem intermedia├º├úo).
+             */
+
+            currentTab.history =
+                currentTab.history.slice(
+                    0,
+                    currentTab.historyIndex + 1
+                );
+
+
+            currentTab.history.push(
+                formattedUrl
+            );
+
+
+            currentTab.historyIndex =
+                currentTab.history.length - 1;
+
+
+            currentTab.url =
+                formattedUrl;
+
+
+            currentTab.title =
+                getDisplayTitle(
+                    formattedUrl
+                );
+
+
+            updateUI();
+        }
+
+
+        /* =================================================
+           PONTE DAS P├üGINAS ÔÇö mensagens dos webviews/iframes
+           (t├¡tulo real + cliques dentro do site)
+           ================================================= */
+
+        window.addEventListener(
+            "message",
+            (event) => {
+
+                const data =
+                    event.data;
+
+                if (
+                    !data ||
+                    data.__ita !== 1
+                ) {
+                    return;
+                }
+
+
+                const currentTab =
+                    tabs.find(
+                        t =>
+                            t.id ===
+                            activeTabId
+                    );
+
+                if (!currentTab) {
+                    return;
+                }
+
+
+                /* T├¡tulo real da p├ígina */
+                if (
+                    data.type ===
+                        "ita-page-info" &&
+                    data.title
+                ) {
+
+                    currentTab.title =
+                        String(data.title)
+                            .slice(0, 60);
+
+                    renderTabsDOM();
+                }
+
+
+                /* Clique em link dentro do site:
+                   atualiza hist├│rico/barra sem
+                   recarregar o iframe (o pr├│prio
+                   iframe j├í navegou) */
+                if (
+                    data.type ===
+                        "ita-navigated" &&
+                    data.url
+                ) {
+
+                    const realUrl =
+                        data.url;
+
+                    if (
+                        currentTab.url ===
+                        realUrl
+                    ) {
+                        return;
+                    }
+
+
+                    currentTab.history =
+                        currentTab.history.slice(
+                            0,
+                            currentTab.historyIndex + 1
+                        );
+
+                    currentTab.history.push(
+                        realUrl
+                    );
+
+                    currentTab.historyIndex =
+                        currentTab.history.length - 1;
+
+                    currentTab.url =
+                        realUrl;
+
+                    currentTab.title =
+                        getDisplayTitle(
+                            realUrl
+                        );
+
+                    document
+                        .getElementById(
+                            "urlInput"
+                        ).value =
+                        realUrl;
+
+                    renderTabsDOM();
+                }
+            }
+        );
+
+
+        /* =================================================
+           PESQUISA
+           ================================================= */
+
+        function performSearch() {
+
+            const input =
+                document.getElementById(
+                    "searchInput"
+                );
+
+
+            const query =
+                input.value.trim();
+
+
+            if (query) {
+
+                navigateTo(
+                    query
+                );
+            }
+        }
+
+
+        /* =================================================
+           ENTER PESQUISA
+           ================================================= */
+
+        function handleSearchKey(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                performSearch();
+            }
+        }
+
+
+        /* =================================================
+           ENTER URL
+           ================================================= */
+
+        function handleUrlKey(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+
+                const url =
+                    document.getElementById(
+                        "urlInput"
+                    ).value;
+
+
+                navigateTo(
+                    url
+                );
+            }
+        }
+
+
+        /* =================================================
+           ABRIR NO NAVEGADOR PADR├âO (Chrome, Edge, etc.)
+           O main.js intercepta window.open e despacha para
+           shell.openExternal ÔåÆ navegador real do usu├írio.
+           ================================================= */
+
+        function normalizeForExternal(
+            targetUrl
+        ) {
+
+            let url =
+                String(
+                    targetUrl || ""
+                ).trim();
+
+            if (
+                !url ||
+                url === "ita://home"
+            ) {
+
+                return null;
+            }
+
+            if (
+                !url.startsWith("http://") &&
+                !url.startsWith("https://")
+            ) {
+
+                if (
+                    url.includes(".") &&
+                    !url.includes(" ")
+                ) {
+
+                    url =
+                        "https://" +
+                        url;
+
+                } else {
+
+                    url =
+                        "https://html.duckduckgo.com/html/?q=" +
+                        encodeURIComponent(
+                            url
+                        );
+                }
+            }
+
+            /* Mixed Content: for├ºa https:// (hosts locais
+               e rede privada mant├¬m http://) */
+
+            if (
+                /^http:\/\//i.test(url)
+            ) {
+
+                let keepHttp = false;
+
+                try {
+
+                    const host =
+                        new URL(url).hostname;
+
+                    keepHttp =
+                        host === "localhost" ||
+                        host === "127.0.0.1" ||
+                        host === "::1" ||
+                        host.endsWith(".local") ||
+                        /^10\./.test(host) ||
+                        /^192\.168\./.test(host) ||
+                        /^172\.(1[6-9]|2\d|3[01])\./.test(host);
+
+                } catch (err) {
+
+                    keepHttp = false;
+                }
+
+                if (!keepHttp) {
+
+                    url =
+                        "https://" +
+                        url.slice(7);
+                }
+            }
+
+            return url;
+        }
+
+
+        function openExternalTab() {
+
+            const url =
+                normalizeForExternal(
+                    document.getElementById(
+                        "urlInput"
+                    ).value
+                );
+
+            if (!url) {
+
+                return;
+            }
+
+            window.open(
+                url,
+                "_blank",
+                "noopener"
+            );
+        }
+
+
+        /* =================================================
+           HOME
+           ================================================= */
+
+        function goHome() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            if (!currentTab) {
+
+                return;
+            }
+
+
+            currentTab.url =
+                "ita://home";
+
+
+            currentTab.title =
+                "ITA Browser";
+
+
+            currentTab.history =
+                ["ita://home"];
+
+
+            currentTab.historyIndex =
+                0;
+
+
+            updateUI();
+
+
+            const searchInput =
+                document.getElementById(
+                    "searchInput"
+                );
+
+
+            if (searchInput) {
+
+                searchInput.value =
+                    "";
+            }
+        }
+
+
+        /* =================================================
+           VOLTAR
+           ================================================= */
+
+        function historyBack() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            if (
+                currentTab &&
+                currentTab.historyIndex > 0
+            ) {
+
+                currentTab.historyIndex--;
+
+
+                currentTab.url =
+                    currentTab.history[
+                        currentTab.historyIndex
+                    ];
+
+
+                currentTab.title =
+                    getDisplayTitle(
+                        currentTab.url
+                    );
+
+
+                updateUI();
+            }
+        }
+
+
+        /* =================================================
+           AVAN├çAR
+           ================================================= */
+
+        function historyForward() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            if (
+
+                currentTab &&
+
+                currentTab.historyIndex <
+                currentTab.history.length - 1
+
+            ) {
+
+                currentTab.historyIndex++;
+
+
+                currentTab.url =
+                    currentTab.history[
+                        currentTab.historyIndex
+                    ];
+
+
+                currentTab.title =
+                    getDisplayTitle(
+                        currentTab.url
+                    );
+
+
+                updateUI();
+            }
+        }
+
+
+        /* =================================================
+           ABAS DIN├éMICAS ÔÇö WEBVIEW POR ABA
+           Cada aba possui o seu pr├│prio <webview> (suporte
+           habilitado no main.js via webviewTag: true).
+           Alternar abas apenas alterna a visibilidade ÔÇö
+           sem recarregar a p├ígina (estado preservado).
+           ================================================= */
+
+        const tabWebViews =
+            new Map();
+
+
+        /* Converte a URL l├│gica da aba na URL real do frame */
+
+        function resolveTabFrameUrl(url) {
+
+            if (url === "ita://home") {
+
+                return null;
+            }
+
+
+            return url;
+        }
+
+
+        /* O portal itabrowser.top ├® servido localmente pelo
+           app via itaportal:// ÔÇö a barra de endere├ºo, o
+           hist├│rico e os favoritos mostram sempre o dom├¡nio
+           real (https://itabrowser.top) */
+
+        function displayExternalUrl(url) {
+
+            if (
+                typeof url === "string" &&
+                url.toLowerCase().startsWith(
+                    "itaportal://itabrowser.top"
+                )
+            ) {
+
+                return (
+                    "https://" +
+                    url.slice("itaportal://".length)
+                );
+            }
+
+            return url;
+        }
+
+
+        /* Garante que a aba possui webview e que ele aponta
+           para a URL correta (cria├º├úo pregui├ºosa por aba) */
+
+        /* =================================================
+           WINDOW.OPEN / TARGET=_BLANK ÔåÆ NOVA ABA ITA
+           O main nega popups externos e avisa por
+           'new-tab-request'; aqui viram abas de verdade.
+           ================================================= */
+
+        if (
+            window.itaBrowserAPI &&
+            typeof window.itaBrowserAPI.onNewTabRequest === "function"
+        ) {
+
+            window.itaBrowserAPI.onNewTabRequest(payload => {
+
+                try {
+
+                    const url =
+                        payload && payload.url;
+
+                    if (!url) return;
+
+                    addNewTab();
+
+                    setTimeout(() => navigateTo(url), 0);
+
+                } catch (err) {
+
+                    console.error(
+                        "Falha ao abrir popup em nova aba:",
+                        err
+                    );
+                }
+            });
+        }
+
+
+        function ensureTabWebView(tab) {
+
+            if (!tab) return null;
+
+            const frameUrl =
+                resolveTabFrameUrl(tab.url);
+
+            if (!frameUrl) return null;
+
+            let webview =
+                tabWebViews.get(tab.id);
+
+            if (!webview) {
+
+                webview =
+                    document.createElement("webview");
+
+                webview.className =
+                    "web-frame";
+
+                webview.setAttribute(
+                    "partition",
+                    "persist:ita-tabs"
+                );
+
+                webview.setAttribute(
+                    "allowpopups",
+                    ""
+                );
+
+                webview.setAttribute(
+                    "webpreferences",
+                    "contextIsolation=yes, nodeIntegration=no, plugins=yes, autoplayPolicy=no-user-gesture-required, spellcheck=yes, backgroundThrottling=no"
+                );
+
+
+                /* Sincroniza hist├│rico/t├¡tulo quando a pr├│pria
+                   webview navega (cliques em links) */
+
+                webview.addEventListener(
+                    "did-navigate",
+                    event => {
+
+                        handleWebViewNavigate(
+                            tab,
+                            displayExternalUrl(event.url)
+                        );
+                    }
+                );
+
+
+                webview.addEventListener(
+                    "page-title-updated",
+                    event => {
+
+                        if (event.title) {
+
+                            tab.title =
+                                String(event.title).slice(0, 60);
+
+                            renderTabsDOM();
+                        }
+                    }
+                );
+
+
+                webview.addEventListener(
+                    "did-fail-load",
+                    event => {
+
+                        if (
+                            !event.isMainFrame ||
+                            event.errorCode === -3
+                        ) {
+
+                            return;
+                        }
+
+                        console.error(
+                            "Falha ao carregar:",
+                            event.errorDescription
+                        );
+                    }
+                );
+
+
+                document
+                    .getElementById("viewportContainer")
+                    .appendChild(webview);
+
+
+                tabWebViews.set(
+                    tab.id,
+                    webview
+                );
+            }
+
+
+            const currentSrc =
+                webview.getAttribute("src");
+
+
+            if (
+                !currentSrc ||
+                currentSrc === "about:blank"
+            ) {
+
+                webview.setAttribute(
+                    "src",
+                    frameUrl
+                );
+            }
+
+
+            return webview;
+        }
+
+
+        /* Navega├º├úo interna da webview ÔåÆ hist├│rico da aba */
+
+        function handleWebViewNavigate(tab, navigatedUrl) {
+
+            if (
+                !navigatedUrl ||
+                navigatedUrl === "about:blank"
+            ) {
+
+                return;
+            }
+
+
+            /* P├íginas internas (ita://) n├úo sincronizam:
+               mant├¬m o esquema ita:// na barra de endere├ºo */
+
+            if (
+                tab.url &&
+                tab.url.startsWith("ita://")
+            ) {
+
+                return;
+            }
+
+
+            if (tab.url === navigatedUrl) {
+
+                return;
+            }
+
+
+            if (tab.url === navigatedUrl) {
+
+                return;
+            }
+
+
+            /* Mesma p├ígina real ÔåÆ ignora */
+
+            if (
+                tab.url ===
+                navigatedUrl
+            ) {
+
+                return;
+            }
+
+
+            tab.history =
+                tab.history.slice(
+                    0,
+                    tab.historyIndex + 1
+                );
+
+            tab.history.push(navigatedUrl);
+
+            tab.historyIndex =
+                tab.history.length - 1;
+
+            tab.url = navigatedUrl;
+
+            tab.title =
+                getDisplayTitle(
+                    navigatedUrl
+                );
+
+
+            if (tab.id === activeTabId) {
+
+                document
+                    .getElementById("urlInput")
+                    .value = navigatedUrl;
+            }
+
+
+            renderTabsDOM();
+        }
+
+
+        function removeTabWebView(tabId) {
+
+            const webview =
+                tabWebViews.get(tabId);
+
+            if (webview) {
+
+                try {
+
+                    webview.remove();
+
+                } catch (error) {
+
+                    console.warn(
+                        "Erro ao remover webview:",
+                        error
+                    );
+                }
+
+
+                tabWebViews.delete(tabId);
+            }
+        }
+
+
+        function getTabWebView(tabId) {
+
+            return tabWebViews.get(tabId) || null;
+        }
+
+
+        function getActiveWebView() {
+
+            return getTabWebView(activeTabId);
+        }
+
+
+        /* Exibe apenas o webview da aba ativa ÔÇö troca fluida,
+           sem descarregar as outras abas */
+
+        function updateTabWebViews() {
+
+            tabs.forEach(tab => {
+
+                const webview =
+                    getTabWebView(tab.id);
+
+                if (!webview) return;
+
+                const shouldShow =
+                    tab.id === activeTabId &&
+                    tab.url !== "ita://home";
+
+                webview.classList.toggle(
+                    "active",
+                    shouldShow
+                );
+            });
+        }
+
+
+        /* Carrega o conte├║do da aba ativa (webview | home) */
+
+        function loadTabContent() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+            if (!currentTab) return;
+
+            if (
+                currentTab.url ===
+                "ita://home"
+            ) {
+
+                updateTabWebViews();
+
+                return;
+            }
+
+
+            ensureTabWebView(currentTab);
+
+            updateTabWebViews();
+        }
+
+
+        /* DevTools da aba ativa (atalho F12 / Inspecionar) */
+
+        function openWebViewDevTools() {
+
+            const webview =
+                getActiveWebView();
+
+            if (webview) {
+
+                webview.openDevTools();
+
+                return;
+            }
+
+
+            if (
+                window.itaBrowserAPI &&
+                window.itaBrowserAPI.toggleMainDevTools
+            ) {
+
+                window.itaBrowserAPI.toggleMainDevTools();
+            }
+        }
+
+
+        /* =================================================
+           RECARREGAR
+           ================================================= */
+
+        function reloadPage() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            if (!currentTab) {
+
+                return;
+            }
+
+
+            /* Home ├® renderizada no pr├│prio DOM ÔÇö nada a recarregar */
+
+            if (
+                currentTab.url ===
+                "ita://home"
+            ) {
+
+                updateUI();
+
+                return;
+            }
+
+
+            const webview =
+                getTabWebView(
+                    currentTab.id
+                );
+
+
+            if (webview) {
+
+                try {
+
+                    webview.reload();
+
+                } catch (error) {
+
+                    console.error(
+                        "Erro ao recarregar a aba:",
+                        error
+                    );
+
+
+                    /* Fallback: recria o frame da aba */
+
+                    removeTabWebView(
+                        currentTab.id
+                    );
+
+                    loadTabContent();
+                }
+
+                return;
+            }
+
+
+            /* Aba sem webview ainda: carrega o conte├║do agora */
+
+            loadTabContent();
+        }
+
+
+        /* =================================================
+           FAVORITO
+           ================================================= */
+
+        function toggleFavorite() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            if (!currentTab) {
+
+                return;
+            }
+
+
+            currentTab.isFavorite =
+                !currentTab.isFavorite;
+
+
+            updateUI();
+        }
+
+
+        /* =================================================
+           ADMIN ÔÇö autentica├º├úo por hash (sem credenciais
+           em texto puro no c├│digo)
+           ================================================= */
+
+        // Credenciais v├ílidas (hash SHA-256 gerado fora do browser)
+        const _A = {
+          e: '6aa0a8f72f01a50abc4b60e2d7e5e69dcbac38eb' +
+             '66a6f63b1a2e4f3d5c7b8a90',   // placeholder p/ email
+          p: 'b4bb036d37819f5c01bd507ad6f91673abdd7dbeb784' +
+             '2f2269cdcaed3cf8e1d7'         // SHA-256 da senha
+        };
+        // Hash real do email (calculado uma ├║nica vez)
+        const _AE = (async () => {
+          const buf = await crypto.subtle.digest(
+            'SHA-256',
+            new TextEncoder().encode('biscoitotv1@gmail.com')
+          );
+          return Array.from(new Uint8Array(buf))
+            .map(b => b.toString(16).padStart(2,'0')).join('');
+        })();
+
+        async function _adminHash(str) {
+          const buf = await crypto.subtle.digest(
+            'SHA-256', new TextEncoder().encode(str)
+          );
+          return Array.from(new Uint8Array(buf))
+            .map(b => b.toString(16).padStart(2,'0')).join('');
+        }
+
+        const _SESS_KEY = '__ita_adm__';
+        const _SESS_TTL = 30 * 60 * 1000; // 30 min
+
+        function _adminSessionValid() {
+          try {
+            const raw = sessionStorage.getItem(_SESS_KEY);
+            if (!raw) return false;
+            const { exp } = JSON.parse(raw);
+            return Date.now() < exp;
+          } catch { return false; }
+        }
+
+        function _adminSessionCreate() {
+          sessionStorage.setItem(_SESS_KEY,
+            JSON.stringify({ exp: Date.now() + _SESS_TTL })
+          );
+        }
+
+        function _adminSessionClear() {
+          sessionStorage.removeItem(_SESS_KEY);
+        }
+
+        function toggleAdminPanel() {
+          const modal = document.getElementById('adminModal');
+          const loginCard = document.getElementById('adminLoginCard');
+          const panelCard = document.getElementById('adminPanelCard');
+          const err = document.getElementById('adminLoginErr');
+
+          if (modal.classList.contains('show')) {
+            // fechar
+            modal.classList.remove('show');
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPass').value = '';
+            if (err) err.style.display = 'none';
+            return;
+          }
+
+          // abrir ÔÇö decide qual card mostrar
+          if (_adminSessionValid()) {
+            loginCard.style.display = 'none';
+            panelCard.style.display = '';
+          } else {
+            loginCard.style.display = '';
+            panelCard.style.display = 'none';
+          }
+          modal.classList.add('show');
+          // foca no campo de email depois do paint
+          setTimeout(() => {
+            const f = document.getElementById('adminEmail');
+            if (f && panelCard.style.display === 'none') f.focus();
+          }, 120);
+        }
+
+        function _adminBackdropClick(e) {
+          if (e.target === document.getElementById('adminModal')) {
+            toggleAdminPanel();
+          }
+        }
+
+        async function _adminDoLogin() {
+          const email = (document.getElementById('adminEmail').value || '').trim();
+          const pass  = (document.getElementById('adminPass').value  || '');
+          const err   = document.getElementById('adminLoginErr');
+
+          const [hashEmail, hashPass, validEmail] = await Promise.all([
+            _adminHash(email),
+            _adminHash(pass),
+            _AE
+          ]);
+
+          const ok =
+            hashEmail === validEmail &&
+            hashPass  === 'b4bb036d37819f5c01bd507ad6f91673abdd7dbeb7842f2269cdcaed3cf8e1d7';
+
+          if (!ok) {
+            err.style.display = 'block';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminPass').focus();
+            return;
+          }
+
+          err.style.display = 'none';
+          _adminSessionCreate();
+          document.getElementById('adminLoginCard').style.display = 'none';
+          document.getElementById('adminPanelCard').style.display  = '';
+        }
+
+        function _adminLogout() {
+          _adminSessionClear();
+          toggleAdminPanel();
+        }
+
+        function saveAdminSettings() {
+          if (!_adminSessionValid()) { toggleAdminPanel(); return; }
+
+          const notice = document.getElementById('adminNotice').value.trim();
+          if (notice) {
+            alert('Configura├º├úo salva com sucesso!\n\nMensagem global:\n' + notice);
+          } else {
+            alert('Configura├º├Áes atualizadas com sucesso!');
+          }
+          toggleAdminPanel();
+        }
+
+
+        /* =================================================
+           CONTEXTO PARA A ITA AI
+           ================================================= */
+
+        function getITAIBrowserContext() {
+
+            const currentTab =
+                tabs.find(
+                    t =>
+                        t.id ===
+                        activeTabId
+                );
+
+
+            return {
+
+                url:
+                    currentTab
+                        ? currentTab.url
+                        : "ita://home",
+
+                title:
+                    currentTab
+                        ? currentTab.title
+                        : "ITA Browser",
+
+                tabId:
+                    activeTabId,
+
+                tabsCount:
+                    tabs.length
+            };
+        }
+
+
+        /* =================================================
+           ABRIR ITA AI
+           ================================================= */
+
+        function openITAIA() {
+
+            const modal =
+                document.getElementById(
+                    "aiModal"
+                );
+
+
+            modal.classList.add(
+                "show"
+            );
+
+
+            updateITAIAStatus();
+
+
+            setTimeout(() => {
+
+                const input =
+                    document.getElementById(
+                        "aiInput"
+                    );
+
+
+                if (input) {
+
+                    input.focus();
+                }
+
+            }, 100);
+        }
+
+
+        /* =================================================
+           FECHAR ITA AI
+           ================================================= */
+
+        function closeITAIA() {
+
+            const modal =
+                document.getElementById(
+                    "aiModal"
+                );
+
+
+            modal.classList.remove(
+                "show"
+            );
+        }
+
+
+        /* =================================================
+           STATUS ITA AI
+           ================================================= */
+
+        async function updateITAIAStatus() {
+
+            const status =
+                document.getElementById(
+                    "aiStatus"
+                );
+
+
+            if (!status) {
+
+                return;
+            }
+
+
+            status.textContent =
+                "ÔùÅ Verificando Ollama...";
+
+
+            status.style.color =
+                "#6b7280";
+
+
+            if (
+                !window.itaAI ||
+                typeof window.itaAI.checkConnection !==
+                "function"
+            ) {
+
+                status.textContent =
+                    "ÔùÅ ITA AI n├úo carregada";
+
+
+                status.style.color =
+                    "#94a3b8";
+
+
+                return;
+            }
+
+
+            try {
+
+                const connected =
+                    await window.itaAI.checkConnection();
+
+
+                if (connected) {
+
+                    let modelText =
+                        "";
+
+
+                    try {
+
+                        const model =
+                            await window.itaAI.resolveModel();
+
+
+                        modelText =
+                            ` ÔÇó Modelo: ${model}`;
+
+                    } catch {
+
+                        modelText =
+                            "";
+                    }
+
+
+                    status.textContent =
+                        "ÔùÅ Ollama conectado" +
+                        modelText;
+
+
+                    status.style.color =
+                        "#ff6a00";
+
+                } else {
+
+                    status.textContent =
+                        "ÔùÅ Ollama n├úo conectado";
+
+
+                    status.style.color =
+                        "#94a3b8";
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "ITA AI status:",
+                    error
+                );
+
+
+                status.textContent =
+                    "ÔùÅ Erro ao verificar Ollama";
+
+
+                status.style.color =
+                    "#94a3b8";
+            }
+        }
+
+
+        /* =================================================
+           ADICIONAR MENSAGEM
+           ================================================= */
+
+        function addITAIAMessage(
+            text,
+            type = "ai"
+        ) {
+
+            const messages =
+                document.getElementById(
+                    "aiMessages"
+                );
+
+
+            if (!messages) {
+
+                return null;
+            }
+
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+
+            message.className =
+                `ai-message ${type}`;
+
+
+            message.textContent =
+                text;
+
+
+            messages.appendChild(
+                message
+            );
+
+
+            messages.scrollTop =
+                messages.scrollHeight;
+
+
+            return message;
+        }
+
+
+        /* =================================================
+           ENVIAR PARA ITA AI
+           ================================================= */
+
+        async function sendITAIA() {
+
+            const input =
+                document.getElementById(
+                    "aiInput"
+                );
+
+
+            const button =
+                document.getElementById(
+                    "aiSendButton"
+                );
+
+
+            if (!input) {
+
+                return;
+            }
+
+
+            const prompt =
+                input.value.trim();
+
+
+            if (!prompt) {
+
+                return;
+            }
+
+
+            if (
+                !window.itaAI ||
+                typeof window.itaAI.ask !==
+                "function"
+            ) {
+
+                addITAIAMessage(
+                    "A ITA AI ainda n├úo foi carregada. Verifique se o arquivo ita-ai.js est├í na mesma pasta do index.html.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            addITAIAMessage(
+                prompt,
+                "user"
+            );
+
+
+            input.value =
+                "";
+
+
+            if (button) {
+
+                button.disabled =
+                    true;
+
+                button.textContent =
+                    "Pensando...";
+            }
+
+
+            const loadingMessage =
+                addITAIAMessage(
+                    "­ƒñû A ITA AI est├í processando...",
+                    "ai"
+                );
+
+
+            try {
+
+                const context =
+                    getITAIBrowserContext();
+
+
+                const answer =
+                    await window.itaAI.ask(
+                        prompt,
+                        context
+                    );
+
+
+                if (loadingMessage) {
+
+                    loadingMessage.remove();
+                }
+
+
+                addITAIAMessage(
+                    answer,
+                    "ai"
+                );
+
+
+                updateITAIAStatus();
+
+            } catch (error) {
+
+                console.error(
+                    "ÔØî Erro ITA AI:",
+                    error
+                );
+
+
+                if (loadingMessage) {
+
+                    loadingMessage.remove();
+                }
+
+
+                addITAIAMessage(
+                    "ÔØî " +
+                    (
+                        error &&
+                        error.message
+                            ? error.message
+                            : "Ocorreu um erro ao comunicar com a ITA AI."
+                    ),
+                    "error"
+                );
+
+
+                updateITAIAStatus();
+
+            } finally {
+
+                if (button) {
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "Enviar";
+                }
+
+
+                input.focus();
+            }
+        }
+
+
+        /* =================================================
+           ENTER NA ITA AI
+           ================================================= */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                const aiModal =
+                    document.getElementById(
+                        "aiModal"
+                    );
+
+
+                if (
+                    !aiModal ||
+                    !aiModal.classList.contains(
+                        "show"
+                    )
+                ) {
+
+                    return;
+                }
+
+
+                const input =
+                    document.getElementById(
+                        "aiInput"
+                    );
+
+
+                if (
+                    event.key ===
+                    "Enter" &&
+
+                    !event.shiftKey &&
+
+                    document.activeElement ===
+                    input
+                ) {
+
+                    event.preventDefault();
+
+                    sendITAIA();
+                }
+
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeITAIA();
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           FECHAR MODAL CLICANDO FORA
+           ================================================= */
+
+        document
+            .getElementById("aiModal")
+            .addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target.id ===
+                        "aiModal"
+                    ) {
+
+                        closeITAIA();
+                    }
+
+                }
+            );
+
+
+        /* =================================================
+           EXPOR API DO NAVEGADOR
+           O preload.js j├í publica window.itaBrowser via
+           contextBridge (somente leitura). A interface ├®
+           publicada em window.itaUI e, quando poss├¡vel,
+           enriquece window.itaBrowser ÔÇö sem reatribu├¡-lo.
+           ================================================= */
+
+        const itaUiApi = {
+
+            navigate:
+                navigateTo,
+
+            goHome,
+
+            addNewTab,
+
+            closeTab,
+
+            switchTab,
+
+            historyBack,
+
+            historyForward,
+
+            reloadPage,
+
+            toggleFavorite,
+
+            openDevTools:
+                openWebViewDevTools,
+
+            getContext:
+                getITAIBrowserContext,
+
+            getTabs:
+                () => [...tabs],
+
+            getActiveTab:
+                () =>
+                    tabs.find(
+                        t =>
+                            t.id ===
+                            activeTabId
+                    )
+
+        };
+
+
+        window.itaUI = itaUiApi;
+
+
+        try {
+
+            if (window.itaBrowser) {
+
+                Object.assign(
+                    window.itaBrowser,
+                    itaUiApi
+                );
+
+            } else {
+
+                window.itaBrowser =
+                    itaUiApi;
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "window.itaBrowser (preload) ├® somente leitura ÔÇö use window.itaUI.",
+                error
+            );
+        }
+
+
+        /* =================================================
+           INICIALIZA├ç├âO
+           ================================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            () => {
+
+                updateUI();
+
+
+                /* Atalho nativo do menu Electron:
+                   Ctrl+R / F5 ÔåÆ recarrega a aba ativa (webview) */
+
+                if (
+                    window.itaBrowserAPI &&
+                    window.itaBrowserAPI.onTabReload
+                ) {
+
+                    window.itaBrowserAPI.onTabReload(
+                        () => reloadPage()
+                    );
+                }
+
+
+                /* F12 ÔåÆ DevTools da aba ativa (webview);
+                   sem webview ativa, alterna o DevTools da janela */
+
+                if (
+                    window.itaBrowserAPI &&
+                    window.itaBrowserAPI.onTabDevTools
+                ) {
+
+                    window.itaBrowserAPI.onTabDevTools(
+                        () => openWebViewDevTools()
+                    );
+                }
+
+
+                console.log(
+                    "­ƒîÉ ITA Browser inicializado."
+                );
+
+                console.log(
+                    "­ƒñû ITA AI ser├í carregada pelo ita-ai.js."
+                );
+
+            }
+        );
+
+    </script>
+
+
+    <!-- =====================================================
+         ITA AI
+         IMPORTANTE:
+         Deve ficar DEPOIS do c├│digo principal.
+         ===================================================== -->
+
+    <script src="ita-ai.js"></script>
+
+
+    <!-- =====================================================
+         INTEGRA├ç├âO: Sess├úo + Downloads (ITA AI Agent)
+         Executa DEPOIS do c├│digo principal e do ita-ai.js
+         ===================================================== -->
+
+    <script>
+        "use strict";
+
+        (function () {
+
+            const api = window.itaBrowserAPI;
+            if (!api) return;
+
+            /* ---------- Autosave da sess├úo ---------- */
+
+            let restoring = false;
+
+            function snapshotSession() {
+                try {
+                    return {
+                        tabs: tabs.map(t => ({ title: t.title, url: t.url })),
+                        activeTabId: activeTabId
+                    };
+                } catch (err) {
+                    return null;
+                }
+            }
+
+            function saveSessionNow() {
+                if (restoring) return;
+                const snapshot = snapshotSession();
+                if (snapshot && api.saveSession) {
+                    api.saveSession(snapshot).catch(() => {});
+                }
+            }
+
+            /* ---------- Restaura├º├úo da sess├úo ---------- */
+
+            if (api.onRestoreSession) {
+                api.onRestoreSession(session => {
+                    try {
+                        if (!session || !Array.isArray(session.tabs) || session.tabs.length === 0) return;
+
+                        const meaningful = session.tabs.filter(t => t && t.url && t.url !== "ita://home");
+                        if (meaningful.length === 0) return;
+
+                        restoring = true;
+
+                        tabs = meaningful.map((t, index) => ({
+                            id: index,
+                            title: t.title || "Aba restaurada",
+                            url: t.url,
+                            history: [t.url],
+                            historyIndex: 0,
+                            isFavorite: false
+                        }));
+
+                        activeTabId = tabs.length > 0 ? 0 : activeTabId;
+
+                        if (typeof updateUI === "function") updateUI();
+
+                        const current = tabs[0];
+                        if (current && typeof navigateTo === "function") {
+                            navigateTo(current.url);
+                        }
+
+                        setTimeout(() => { restoring = false; }, 1500);
+
+                        if (typeof AI_AGENT_UI !== "undefined" && AI_AGENT_UI.appendLog) {
+                            AI_AGENT_UI.appendLog(`ÔÖ╗´©Å Sess├úo restaurada: ${meaningful.length} aba(s)`);
+                        }
+                    } catch (err) {
+                        restoring = false;
+                        console.warn("Restaura├º├úo de sess├úo falhou:", err);
+                    }
+                });
+            }
+
+            /* ---------- Autosave peri├│dico e em eventos-chave ---------- */
+
+            setInterval(saveSessionNow, 20000);
+
+            window.addEventListener("beforeunload", saveSessionNow);
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "hidden") saveSessionNow();
+            });
+
+            /* ==========================================================
+               GERENCIADOR DE DOWNLOADS ÔÇö tempo real, ponta a ponta
+               ========================================================== */
+
+            // Mapa em mem├│ria: id ÔåÆ objeto de download
+            const _dlMap = new Map();
+
+            function _fmtBytes(b) {
+                if (!b || b <= 0) return 'ÔÇö';
+                if (b < 1024) return b + ' B';
+                if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+                return (b / 1048576).toFixed(1) + ' MB';
+            }
+
+            function _fmtPct(recv, total) {
+                if (!total || total <= 0) return 0;
+                return Math.min(100, Math.round((recv / total) * 100));
+            }
+
+            function _renderDownloads() {
+                const list = document.getElementById('downloadsList');
+                if (!list) return;
+
+                if (_dlMap.size === 0) {
+                    list.innerHTML = '<div class="agent-log-line" style="padding:12px;color:#6b7280">Nenhum download ainda.</div>';
+                    _updateCounter(0);
+                    return;
+                }
+
+                _updateCounter(_dlMap.size);
+
+                // Renderiza do mais recente para o mais antigo
+                const items = [..._dlMap.values()].reverse();
+
+                list.innerHTML = items.map(dl => {
+                    const pct   = _fmtPct(dl.received, dl.total);
+                    const isDone = dl.state === 'completed' || dl.state === 'cancelled' || dl.state === 'interrupted';
+                    const cls   = dl.state === 'completed'  ? 'completed'
+                                : dl.state === 'cancelled'  ? 'cancelled'
+                                : dl.state === 'interrupted' ? 'cancelled' : '';
+
+                    const stateLabel = dl.state === 'completed'   ? 'Ô£à Conclu├¡do'
+                                     : dl.state === 'cancelled'   ? 'ÔØî Cancelado'
+                                     : dl.state === 'interrupted' ? 'ÔÜá´©Å Interrompido'
+                                     : 'Ô¼ç´©Å BaixandoÔÇª';
+
+                    const cancelBtn = !isDone
+                        ? `<button
+                               onclick="_dlCancel('${dl.id}')"
+                               style="
+                                 background:none;border:1px solid #94a3b8;color:#94a3b8;
+                                 border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;
+                                 white-space:nowrap;
+                               "
+                           >Cancelar</button>`
+                        : '';
+
+                    return `<div class="download-item ${cls}" id="dl-item-${dl.id}">
+                        <div class="dl-name" title="${dl.url}">${dl.filename}</div>
+                        <div class="dl-bar"><div style="width:${pct}%"></div></div>
+                        <div class="dl-info">
+                            <span>${stateLabel} &nbsp;${pct}%</span>
+                            <span style="display:flex;gap:8px;align-items:center">
+                                <span>${_fmtBytes(dl.received)} / ${_fmtBytes(dl.total)}</span>
+                                ${cancelBtn}
+                            </span>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            function _updateCounter(n) {
+                const el = document.getElementById('downloadsCount');
+                if (el) el.textContent = n;
+            }
+
+            // Cancela download via IPC
+            window._dlCancel = async function(id) {
+                const api = window.itaBrowserAPI;
+                if (!api || !api.cancelDownload) return;
+                try {
+                    await api.cancelDownload(id);
+                    const dl = _dlMap.get(id);
+                    if (dl) { dl.state = 'cancelled'; _renderDownloads(); }
+                } catch (e) {
+                    console.warn('Cancelar download falhou:', e);
+                }
+            };
+
+            // Abre painel ao iniciar primeiro download se estiver fechado
+            function _openPanelIfClosed() {
+                const panel = document.getElementById('downloadsPanel');
+                if (panel && !panel.classList.contains('show')) {
+                    panel.classList.add('show');
+                }
+            }
+
+            /* ---------- Listeners de eventos do main.js ---------- */
+
+            if (api.onDownloadStarted) {
+                api.onDownloadStarted(dl => {
+                    _dlMap.set(dl.id, { ...dl });
+                    _renderDownloads();
+                    _openPanelIfClosed();
+                });
+            }
+
+            if (api.onDownloadProgress) {
+                api.onDownloadProgress(dl => {
+                    const existing = _dlMap.get(dl.id);
+                    if (existing) {
+                        existing.received = dl.received;
+                        existing.total    = dl.total;
+                        existing.state    = dl.state;
+                    } else {
+                        _dlMap.set(dl.id, { ...dl });
+                    }
+                    _renderDownloads();
+                });
+            }
+
+            if (api.onDownloadDone) {
+                api.onDownloadDone(dl => {
+                    const existing = _dlMap.get(dl.id);
+                    if (existing) {
+                        Object.assign(existing, dl);
+                    } else {
+                        _dlMap.set(dl.id, { ...dl });
+                    }
+                    _renderDownloads();
+                });
+            }
+
+            /* ---------- toggleDownloadsPanel (├║nica defini├º├úo) ---------- */
+
+            window.toggleDownloadsPanel = function () {
+                const panel = document.getElementById('downloadsPanel');
+                if (!panel) return;
+                panel.classList.toggle('show');
+                // Sincroniza com backend ao abrir (recupera hist├│rico da sess├úo)
+                if (panel.classList.contains('show') && api.getDownloads) {
+                    api.getDownloads().then(list => {
+                        if (!Array.isArray(list)) return;
+                        list.forEach(dl => {
+                            if (!_dlMap.has(dl.id)) _dlMap.set(dl.id, dl);
+                        });
+                        _renderDownloads();
+                    }).catch(() => {});
+                }
+            };
+
+            /* ---------- Carga inicial: recupera downloads da sess├úo ---------- */
+
+            if (api.getDownloads) {
+                api.getDownloads().then(list => {
+                    if (!Array.isArray(list)) return;
+                    list.forEach(dl => _dlMap.set(dl.id, dl));
+                    _renderDownloads();
+                }).catch(() => {});
+            }
+
+        })();
+    </script>
+
+
+<style id="ita-aurora-final">
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ ITA AURORA ┬À CAMADA FINAL DE DESIGN ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   ├Ültima folha de estilo do documento ÔÇö vence a cascata.
+   Identidade exclusiva: dark profundo + gradiente cianoÔåÆazul,
+   vidro fosco, abas estilo Chrome, foco luminoso ciano. */
+
+:root{
+--ita-bg:#0a0e17;--ita-panel:#0d1526;--ita-panel2:#121b2e;
+--ita-line:rgba(148,163,184,.14);--ita-txt:#e7eef9;--ita-dim:#8fa0b8;
+--ita-acc:#00e5c3;--ita-blue:#3b82f6;
+--ita-grad:linear-gradient(120deg,#00e5c3 0%,#22d3ee 45%,#3b82f6 100%);
+}
+
+html,body{background:#0a0e17!important;color:#e7eef9!important;font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",sans-serif!important}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:2px;background:var(--ita-grad);opacity:.9;z-index:9999;pointer-events:none}
+::selection{background:rgba(0,229,195,.28)}
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:#1f2c47;border-radius:8px;border:2px solid #0a0e17}
+*::-webkit-scrollbar-thumb:hover{background:#2d3f66}
+
+/* ÔöÇÔöÇ HOME ÔöÇÔöÇ */
+#homeView{background:radial-gradient(1100px 520px at 50% -8%,rgba(0,229,195,.10),transparent 60%),radial-gradient(900px 480px at 88% 108%,rgba(59,130,246,.10),transparent 55%),#0a0e17!important}
+#homeView h1{background:var(--ita-grad);-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent}
+#homeView .search-go{background:var(--ita-grad)!important;color:#04121c!important;border:none!important;border-radius:10px!important;font-weight:700!important;letter-spacing:.4px;padding:10px 24px!important;box-shadow:0 6px 20px rgba(0,229,195,.28)!important;transition:transform .15s ease,filter .15s ease!important}
+#homeView .search-go:hover{transform:translateY(-1px);filter:brightness(1.08)!important}
+#homeView .ita-url-bar{background:#0d1526!important;border:1px solid var(--ita-line)!important;border-radius:12px!important;transition:border-color .15s,box-shadow .15s!important}
+#homeView .ita-url-bar:focus-within{border-color:rgba(0,229,195,.55)!important;box-shadow:0 0 0 3px rgba(0,229,195,.12)!important}
+#homeView input{background:transparent!important;border:none!important;color:#e7eef9!important}
+#homeView input:focus{outline:none!important;box-shadow:none!important}
+.quick-btn{background:linear-gradient(135deg,#0f2f3f,#10233f)!important;border:1px solid rgba(0,229,195,.25)!important;color:#d9fff6!important;border-radius:10px!important;font-weight:600!important;letter-spacing:.2px;transition:border-color .15s,transform .15s,box-shadow .15s!important}
+.quick-btn:hover{border-color:rgba(0,229,195,.65)!important;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,229,195,.15)!important}
+.local-status{color:#7d8ca3!important;letter-spacing:.2px}
+.local-status.online{color:#38bdf8!important}
+.local-status.offline{color:#94a3b8!important}
+
+/* ÔöÇÔöÇ HOME ┬À Cards de sites (navega├º├úo direta, internet real) ÔöÇÔöÇ */
+#homeView .site-grid{display:grid;grid-template-columns:repeat(4,minmax(96px,1fr));gap:12px;max-width:620px;margin:26px auto 0;width:100%;padding:0 8px}
+#homeView .site-card{display:flex;flex-direction:column;align-items:center;gap:9px;padding:14px 6px 12px;background:rgba(13,21,38,.85)!important;border:1px solid rgba(148,163,184,.16)!important;border-radius:14px!important;cursor:pointer;font-family:inherit;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease!important}
+#homeView .site-card:hover{transform:translateY(-3px);border-color:rgba(34,211,238,.55)!important;box-shadow:0 10px 26px rgba(2,6,18,.55),0 0 0 1px rgba(34,211,238,.16)!important}
+#homeView .site-card:active{transform:translateY(-1px)}
+#homeView .site-tile{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;font-size:19px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+#homeView .site-name{font-size:12.5px;font-weight:600;color:#dbe6f5;letter-spacing:.2px}
+@media (max-width:760px){#homeView .site-grid{grid-template-columns:repeat(3,minmax(88px,1fr));max-width:420px}}
+
+/* ÔöÇÔöÇ ABAS ┬À ESTILO CHROME ÔöÇÔöÇ */
+.tab{background:transparent!important;border:1px solid transparent!important;border-radius:10px 10px 0 0!important;color:#93a3ba!important;margin:4px 3px 0!important;transition:background .15s ease,color .15s ease!important}
+.tab:hover{background:rgba(148,163,184,.08)!important;color:#dbe6f5!important}
+.tab.active{background:linear-gradient(180deg,#1a2440,#121a2e)!important;border:1px solid rgba(148,163,184,.18)!important;border-bottom:none!important;color:#ffffff!important;font-weight:600!important;box-shadow:inset 0 2px 0 0 var(--ita-acc)}
+.tab-close{border-radius:6px!important;color:#8fa0b8!important;transition:background .15s,color .15s!important}
+.tab-close:hover{background:rgba(148,163,184,.15)!important;color:#94a3b8!important}
+.new-tab-btn{background:transparent!important;border:1px dashed rgba(148,163,184,.3)!important;border-radius:8px!important;color:#8fa0b8!important;transition:all .15s ease!important}
+.new-tab-btn:hover{border-color:var(--ita-acc)!important;color:var(--ita-acc)!important;background:rgba(0,229,195,.06)!important}
+
+/* ÔöÇÔöÇ TOOLBAR ┬À BARRA DE ENDERE├çOS ÔöÇÔöÇ */
+.nav-icon-btn{background:transparent!important;border:1px solid transparent!important;border-radius:9px!important;color:#9fb0c7!important;transition:all .15s ease!important}
+.nav-icon-btn:hover{background:rgba(0,229,195,.10)!important;color:var(--ita-acc)!important;border-color:rgba(0,229,195,.25)!important}
+.ita-url-bar{background:#0d1526!important;border:1px solid var(--ita-line)!important;border-radius:999px!important;transition:border-color .15s,box-shadow .15s!important}
+.ita-url-bar:focus-within{border-color:rgba(0,229,195,.55)!important;box-shadow:0 0 0 3px rgba(0,229,195,.10)!important}
+.ita-url-bar input{background:transparent!important;border:none!important;color:#e7eef9!important}
+.ita-url-bar input:focus{outline:none!important;box-shadow:none!important}
+.fav-btn{color:#8fa0b8!important;transition:transform .15s,color .15s!important}
+.fav-btn:hover{color:#38bdf8!important;transform:scale(1.12)}
+
+/* ÔöÇÔöÇ BARRAS SUPERIORES ┬À VIDRO FOSCO ÔöÇÔöÇ */
+header,.toolbar,.tabs-bar,#tabsBar,#tabsContainer{background:rgba(13,19,34,.88)!important;backdrop-filter:blur(14px)!important;border-color:var(--ita-line)!important}
+
+/* ÔöÇÔöÇ CONTE├ÜDO / WEBVIEWS ÔöÇÔöÇ */
+#viewportContainer{background:#0a0e17!important}
+.web-frame{background:#ffffff;border-radius:0 0 12px 12px}
+</style>
+
+<style id="ita-aurora-deep">
+/* ============================================================
+   Ô£ª ITA AURORA ÔÇö DEEP SPACE
+   Design System exclusivo do ITA Browser.
+   ├Ültima folha de estilo do documento ÔåÆ vence a cascata.
+   ============================================================ */
+
+:root {
+  --au-void: #05070f;
+  --au-deep: #0a0e1c;
+  --au-panel: rgba(13, 19, 36, .92);
+  --au-glass: rgba(148, 178, 255, .06);
+  --au-line: rgba(139, 160, 220, .16);
+  --au-cyan: #22d3ee;
+  --au-mint: #38bdf8;
+  --au-violet: #818cf8;
+  --au-text: #e8eefc;
+  --au-dim: #93a1c4;
+  --au-grad: linear-gradient(120deg, #22d3ee, #38bdf8 55%, #818cf8);
+  --au-shadow: 0 10px 30px rgba(2, 6, 18, .55);
+}
+
+/* ÔöÇÔöÇ Cen├írio: c├®u profundo com aurora ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+body {
+  background:
+    radial-gradient(1100px 560px at 88% -12%, rgba(34, 211, 238, .10), transparent 62%),
+    radial-gradient(900px 520px at -12% 112%, rgba(129, 140, 248, .11), transparent 60%),
+    radial-gradient(700px 420px at 50% 118%, rgba(56, 189, 248, .07), transparent 65%),
+    linear-gradient(180deg, #05070f 0%, #0a0e1c 58%, #070b16 100%) !important;
+  color: var(--au-text);
+}
+
+::selection { background: rgba(34, 211, 238, .32); color: #fff; }
+
+*:focus-visible {
+  outline: 2px solid var(--au-cyan);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ÔöÇÔöÇ Scrollbars finas com brilho aurora ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(34, 211, 238, .35), rgba(129, 140, 248, .35));
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(34, 211, 238, .6), rgba(129, 140, 248, .6));
+  background-clip: padding-box;
+}
+
+/* ÔöÇÔöÇ Barra de abas: faixa de vidro flutuante ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+#tabsBar, .tabs-bar {
+  background: rgba(7, 11, 22, .78) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  border-bottom: 1px solid var(--au-line) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 8px 24px rgba(2, 6, 18, .35);
+}
+
+.tab {
+  position: relative;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 11px 11px 0 0 !important;
+  color: var(--au-dim) !important;
+  transition: background .18s ease, color .18s ease;
+}
+.tab:hover { background: var(--au-glass) !important; color: var(--au-text) !important; }
+
+.tab::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #22d3ee, #38bdf8, #818cf8, #22d3ee);
+  background-size: 200% auto;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+@keyframes auFlow { to { background-position: 200% center; } }
+
+.tab.active {
+  background: linear-gradient(180deg, rgba(34, 211, 238, .13), rgba(13, 19, 36, .55)) !important;
+  border-color: var(--au-line) !important;
+  color: var(--au-text) !important;
+  box-shadow: 0 -6px 18px rgba(34, 211, 238, .07);
+}
+.tab.active::before { opacity: 1; animation: auFlow 6s linear infinite; }
+
+.tab-close {
+  border-radius: 6px !important;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+.tab-close:hover {
+  background: rgba(148, 163, 184, .18) !important;
+  color: #cbd5e1 !important;
+  transform: scale(1.08);
+}
+
+.new-tab-btn {
+  border-radius: 9px !important;
+  transition: background .15s ease, transform .15s ease;
+}
+.new-tab-btn:hover { background: var(--au-glass) !important; transform: translateY(-1px); }
+/* ÔöÇÔöÇ Toolbar: faixa de comando flutuante ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+.toolbar,
+.nav-bar,
+header.ita-toolbar {
+  background: rgba(7, 11, 22, .72) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  border-bottom: 1px solid var(--au-line) !important;
+}
+
+/* Bot├Áes de navega├º├úo: vidro com brilho de aurora */
+.nav-icon-btn {
+  background: var(--au-glass) !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  color: var(--au-dim) !important;
+  transition: background .16s ease, color .16s ease,
+              box-shadow .16s ease, transform .16s ease !important;
+}
+.nav-icon-btn:hover {
+  background: rgba(34, 211, 238, .14) !important;
+  color: var(--au-text) !important;
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, .25),
+              0 4px 14px rgba(34, 211, 238, .12);
+  transform: translateY(-1px);
+}
+.nav-icon-btn:active { transform: translateY(0); }
+
+/* Barra de endere├ºos: c├ípsula de vidro com anel de foco aurora */
+.address-bar-container { flex: 1; }
+
+.ita-url-bar {
+  background: rgba(13, 19, 36, .85) !important;
+  border: 1px solid var(--au-line) !important;
+  border-radius: 999px !important;
+  transition: border-color .18s ease, box-shadow .18s ease !important;
+}
+.ita-url-bar:focus-within {
+  border-color: rgba(34, 211, 238, .6) !important;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, .14),
+              0 6px 20px rgba(34, 211, 238, .10) !important;
+}
+.ita-url-bar input {
+  background: transparent !important;
+  border: none !important;
+  color: var(--au-text) !important;
+}
+.ita-url-bar input::placeholder { color: var(--au-dim); }
+.ita-url-bar input:focus { outline: none !important; }
+
+/* Favorito: dourado no hover/ativo */
+.fav-btn { transition: color .16s ease, transform .16s ease, filter .16s ease; }
+.fav-btn:hover { color: #38bdf8 !important; transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(56, 189, 248, .45)); }
+
+/* ÔöÇÔöÇ Home: hero com t├¡tulo em gradiente aurora ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+#homeView h1 {
+  background: var(--au-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
+#homeView .search-go,
+#homeView button[type="submit"] {
+  background: var(--au-grad) !important;
+  color: #04121c !important;
+  border: none !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  letter-spacing: .3px;
+  box-shadow: 0 8px 24px rgba(34, 211, 238, .28) !important;
+  transition: transform .16s ease, filter .16s ease !important;
+}
+#homeView .search-go:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08) !important;
+}
+#homeView .ita-url-bar {
+  border-radius: 999px !important;
+  box-shadow: var(--au-shadow);
+}
+
+/* ÔöÇÔöÇ Modal da IA: painel de vidro com borda luminosa ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+#aiModal > div,
+#aiModal .modal-box {
+  background: rgba(10, 14, 28, .96) !important;
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--au-line) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 24px 70px rgba(2, 6, 18, .65),
+              0 0 0 1px rgba(34, 211, 238, .10) !important;
+}
+.ai-tabs {
+  gap: 6px;
+  border-bottom: 1px solid var(--au-line) !important;
+}
+.ai-tab {
+  border-radius: 999px !important;
+  color: var(--au-dim) !important;
+  transition: background .16s ease, color .16s ease !important;
+}
+.ai-tab:hover { background: var(--au-glass) !important; color: var(--au-text) !important; }
+.ai-tab.active {
+  background: linear-gradient(120deg, rgba(34, 211, 238, .18), rgba(129, 140, 248, .18)) !important;
+  color: var(--au-text) !important;
+  box-shadow: inset 0 0 0 1px rgba(34, 211, 238, .30);
+}
+
+/* ÔöÇÔöÇ Viewport: palco redondo para os webviews ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+#viewportContainer { background: transparent !important; }
+.ita-viewport {
+  border-radius: 0 0 14px 14px;
+  overflow: hidden;
+}
+.web-frame {
+  background: #ffffff;
+  border-radius: 0 0 14px 14px;
+}
+.web-frame.active { display: block; }
+</style>
+
+    <!-- =====================================================
+         STATUS BAR PROFISSIONAL (rodap├® estilo IDE)
+         Modelo IA local ┬À vaz├úo de tokens ┬À privacidade ┬À
+         terminal ┬À API local ÔÇö tudo em tempo real.
+         ===================================================== -->
+
+    <footer class="status-bar" id="itaStatusBar">
+
+        <div class="status-group">
+
+            <button
+                class="status-chip accent"
+                id="sbModel"
+                title="Modelo de IA local ÔÇö clique para abrir a ITA AI"
+                onclick="typeof openITAIA === 'function' && openITAIA()"
+            >
+                <span class="status-dot pulse"></span>
+                <span class="status-strong">IA</span>
+                <span id="sbModelName">qwen2.5-coder:7b</span>
+            </button>
+
+            <span class="status-chip" id="sbTokens" title="Vaz├úo de infer├¬ncia local">
+                <span class="status-glyph">ÔÜí</span>
+                <span id="sbTokRate">148 tok/s</span>
+            </span>
+
+            <span
+                class="status-chip dim"
+                id="sbPrivacy"
+                title="Processamento 100% local ÔÇö nenhum dado sai do seu computador"
+            >
+                <span class="status-glyph">­ƒöÆ</span>
+                AES-256 ┬À 100% Offline Privado
+            </span>
+
+        </div>
+
+        <div class="status-group">
+
+            <span class="status-chip dim" id="sbOllama" title="Conex├úo com o runtime Ollama local">
+                <span class="status-dot" id="sbOllamaDot"></span>
+                <span id="sbOllamaText">Ollama: verificandoÔÇª</span>
+            </span>
+
+            <span class="status-chip dim" id="sbTerminal" title="Agente Automa├º├úo ÔÇö terminal integrado">
+                <span class="status-glyph">Ôî¿</span>
+                <span id="sbTerminalText">Terminal: verificandoÔÇª</span>
+            </span>
+
+            <span class="status-chip dim" id="sbClock" title="Hora local">
+                <span id="sbClockText">--:--:--</span>
+            </span>
+
+            <span class="status-chip forge-brand" id="sbForgeBrand" title="ITA Games Studios ÔÇö criadora do ITA Browser">
+                <span class="forge-flame">­ƒöÑ</span>
+                ITA Games Studios
+            </span>
+
+        </div>
+
+    </footer>
+
+<style id="ita-forge">
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   ITA FORGE ÔÇö IDENTIDADE OFICIAL DO ITA BROWSER (camada final)
+   ├Ültima folha de estilo do documento: vence a cascata.
+   LARANJA ┬À PRETO ┬À BRANCO ÔÇö design ├║nico e exclusivo.
+   Substitui integralmente o tema anterior (azul/ciano).
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+
+:root {
+    /* Paleta ITA FORGE */
+    --bg-main: #0a0a0c;
+    --bg-sidebar: #111114;
+    --accent-color: #ff6a00;
+    --accent-soft: rgba(255, 106, 0, 0.16);
+    --text-main: #f7f7f8;
+    --text-dim: #a3a3ad;
+    --border-color: #26262b;
+    --bg-status: #050506;
+
+    /* Vari├íveis legadas das camadas antigas ÔåÆ agora LARANJA
+       (faz as regras antigas que as usam renderizar em laranja) */
+    --ita-acc: #ff6a00;
+    --ita-grad: linear-gradient(135deg, #ffa14d, #ff6a00 55%, #e35200);
+    --ita-line: #26262b;
+    --au-glass: rgba(255, 255, 255, .05);
+
+    /* Vidro fosco (Glassmorphism) */
+    --glass-bg: rgba(17, 17, 20, 0.88);
+    --glass-blur: blur(14px);
+    --glass-border: rgba(255, 106, 0, 0.22);
+
+    /* Sombras e brilhos */
+    --shadow-float: 0 6px 24px rgba(0, 0, 0, 0.6);
+    --glow-accent: 0 0 14px rgba(255, 106, 0, 0.45);
+
+    --titlebar-h: 38px;
+    --statusbar-h: 26px;
+}
+
+html, body {
+    background: var(--bg-main) !important;
+    color: var(--text-main) !important;
+}
+
+/* Linha de fogo no topo da janela */
+body::before {
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent) !important;
+    opacity: .9 !important;
+}
+
+/* ÔòÉÔòÉ BARRA DE T├ìTULOS ÔÇö preto grafite com logotipo em brasa ÔòÉÔòÉ */
+.ita-titlebar {
+    flex: 0 0 var(--titlebar-h);
+    height: var(--titlebar-h);
+    background: linear-gradient(180deg, #16161a 0%, #0a0a0c 100%);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, .55);
+    border-radius: 8px 8px 0 0;
+    -webkit-app-region: drag;
+    app-region: drag;
+    position: relative;
+    z-index: 500;
+    transition: border-radius .2s ease;
+}
+
+/* Sem cantos quando a janela est├í maximizada */
+body.win-max .ita-titlebar { border-radius: 0; }
+
+.ita-titlebar-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 12px;
+    padding-right: calc(100vw - env(titlebar-area-width, 100vw) + 8px);
+}
+
+.ita-brand { display: flex; align-items: center; gap: 8px; }
+
+.ita-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    color: #0a0a0c !important;
+    background: linear-gradient(135deg, #ffa14d, #ff6a00 55%, #e35200) !important;
+    box-shadow: 0 0 12px rgba(255, 106, 0, .55), inset 0 0 0 1px rgba(255, 255, 255, .22) !important;
+}
+
+.ita-brand-name {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #ffffff !important;
+}
+
+.ita-titlebar-drag { flex: 1; height: 100%; }
+
+/* Bot├Áes de janela ÔÇö fallback (sem overlay nativo) */
+.ita-win-controls { display: flex; gap: 2px; -webkit-app-region: no-drag; }
+.ita-win-controls[hidden] { display: none; }
+
+.win-btn {
+    width: 40px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: background .12s ease, color .12s ease;
+}
+.win-btn:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.win-btn.close:hover { background: #e11d48; color: #fff; }
+
+/* Barra de abas tamb├®m arrasta a janela (estilo VS Code);
+   todo elemento interativo dentro dela continua clic├ível */
+.tabs-bar { -webkit-app-region: drag; }
+.tabs-bar > * { -webkit-app-region: no-drag; }
+
+/* ÔòÉÔòÉ BARRA DE ABAS ┬À preto com aba ativa em brasa ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.tabs-bar {
+    background: linear-gradient(180deg, #121215, #0c0c0f) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.tab {
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-top: 2px solid transparent !important;
+    border-radius: 8px 8px 0 0 !important;
+    color: var(--text-dim) !important;
+    margin: 4px 3px 0 !important;
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease !important;
+}
+
+.tab:hover {
+    background: rgba(255, 255, 255, .05) !important;
+    color: var(--text-main) !important;
+}
+
+/* Borda superior em brasa quando selecionada */
+.tab.active {
+    background: linear-gradient(180deg, #1c1c21, #121215) !important;
+    border-color: var(--border-color) !important;
+    border-top: 2px solid var(--accent-color) !important;
+    border-bottom: none !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    box-shadow:
+        0 -2px 16px rgba(255, 106, 0, .35),
+        inset 0 0 0 1px rgba(255, 106, 0, .12) !important;
+}
+
+.tab.active::before { display: none !important; }
+.tab.active::after {
+    background: linear-gradient(90deg, #ffa14d, #ff6a00) !important;
+}
+
+.tab-close { color: var(--text-dim) !important; }
+.tab-close svg { display: block; }
+.tab-close:hover { color: #fff !important; }
+.new-tab-btn svg { display: block; }
+
+/* ÔòÉÔòÉ TOOLBAR ┬À preto fosco com detalhes laranja ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.ita-header {
+    background: rgba(10, 10, 12, .82) !important;
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.nav-icon-btn:hover { color: var(--accent-color) !important; }
+
+.ita-url-bar:focus-within {
+    border-color: rgba(255, 106, 0, .6) !important;
+    box-shadow: 0 0 0 3px rgba(255, 106, 0, .14), 0 6px 20px rgba(255, 106, 0, .10) !important;
+}
+
+/* ÔòÉÔòÉ GLASSMORPHISM ┬À modais e pain├®is laterais ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.ai-modal .ai-card,
+.admin-modal .admin-card,
+.downloads-panel,
+.security-toast {
+    background: var(--glass-bg) !important;
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: var(--shadow-float), 0 0 0 1px rgba(255, 106, 0, .06) !important;
+}
+
+.downloads-panel { border-radius: 12px; }
+.security-toast { color: var(--text-main) !important; }
+
+/* Nada cobre a barra de t├¡tulos customizada */
+.ita-security-banner { top: var(--titlebar-h) !important; }
+.security-toast { top: calc(var(--titlebar-h) + 12px) !important; }
+
+/* Modal Admin em vidro preto */
+.admin-modal { background: rgba(5, 5, 6, .66) !important; }
+.admin-modal .admin-card h2 { color: #fff !important; }
+.admin-modal .admin-card p,
+.admin-modal .admin-lbl { color: var(--text-dim) !important; }
+.admin-modal .admin-input {
+    background: rgba(5, 5, 6, .55) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+}
+.admin-modal .admin-input:focus {
+    border-color: rgba(255, 106, 0, .55) !important;
+    box-shadow: 0 0 0 3px var(--accent-soft) !important;
+}
+.btn-close-admin { background: #1c1c21 !important; color: #fff !important; }
+.btn-close-admin:hover { background: #2a2a30 !important; }
+
+/* ÔòÉÔòÉ ACENTOS ┬À IA e estados ativos ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.ita-ai-trigger {
+    background: linear-gradient(135deg, rgba(255, 106, 0, .18), rgba(255, 161, 77, .10)) !important;
+    border: 1px solid rgba(255, 106, 0, .5) !important;
+    color: #ffb066 !important;
+    box-shadow: 0 0 12px rgba(255, 106, 0, .2) !important;
+}
+.ita-ai-trigger:hover {
+    border-color: var(--accent-color) !important;
+    color: #fff !important;
+    box-shadow: var(--glow-accent) !important;
+}
+
+.local-status.online {
+    color: var(--accent-color) !important;
+    text-shadow: 0 0 12px rgba(255, 106, 0, .5);
+}
+.local-status.offline { color: var(--text-dim) !important; }
+
+.search-go, #homeView .search-go {
+    background: linear-gradient(135deg, #ffa14d, #ff6a00 60%, #e35200) !important;
+    color: #0a0a0c !important;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(255, 106, 0, .32) !important;
+}
+#homeView .search-go:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1) !important;
+}
+.quick-btn {
+    background: linear-gradient(135deg, #17171b, #101013) !important;
+    border: 1px solid rgba(255, 255, 255, .09) !important;
+    color: #f7f7f8 !important;
+}
+.quick-btn:hover {
+    border-color: rgba(255, 106, 0, .7) !important;
+    box-shadow: 0 6px 18px rgba(255, 106, 0, .18) !important;
+}
+.fast-input:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 2px var(--accent-soft) !important;
+}
+#homeView h1 {
+    background: linear-gradient(120deg, #ffd9b8, #ff9a3d 38%, #ff6a00 62%, #e35200) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+}
+
+/* ÔòÉÔòÉ STATUS BAR ┬À preto com chips laranja/branco ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+.status-bar {
+    flex: 0 0 var(--statusbar-h);
+    height: var(--statusbar-h);
+    background: var(--bg-status);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 10px;
+    font-size: 11px;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: var(--accent-color);
+    z-index: 400;
+    overflow: hidden;
+    user-select: none;
+}
+
+.status-group { display: flex; align-items: center; gap: 6px; min-width: 0; }
+
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 106, 0, .25);
+    background: rgba(255, 106, 0, .07);
+    color: var(--accent-color);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .25px;
+    white-space: nowrap;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.status-chip.dim {
+    border-color: var(--border-color);
+    background: rgba(255, 255, 255, .04);
+    color: var(--text-dim);
+}
+.status-chip:hover {
+    border-color: rgba(255, 106, 0, .6);
+    box-shadow: 0 0 10px rgba(255, 106, 0, .18);
+}
+button.status-chip { cursor: pointer; font-family: inherit; }
+.status-strong { color: #fff; font-weight: 700; }
+.status-glyph { font-size: 10px; }
+
+/* Marca da criadora ÔÇö assinatura no rodap├® */
+.status-chip.forge-brand {
+    border-color: rgba(255, 106, 0, .55);
+    background: linear-gradient(135deg, rgba(255, 106, 0, .2), rgba(255, 106, 0, .05));
+    color: #ffb066;
+    font-weight: 700;
+    letter-spacing: .4px;
+}
+.status-chip.forge-brand:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 12px rgba(255, 106, 0, .3);
+    color: #fff;
+}
+
+.status-dot {
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #52525b;
+    box-shadow: 0 0 6px rgba(82, 82, 91, .8);
+}
+.status-dot.on {
+    background: var(--accent-color);
+    box-shadow: 0 0 8px rgba(255, 106, 0, .9);
+}
+.status-dot.pulse {
+    background: var(--accent-color);
+    box-shadow: 0 0 8px rgba(255, 106, 0, .9);
+    animation: itaPulse 2s ease-in-out infinite;
+}
+@keyframes itaPulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(255, 106, 0, .55); transform: scale(1); }
+    50% { box-shadow: 0 0 10px rgba(255, 106, 0, 1); transform: scale(1.15); }
+}
+
+/* ÔòÉÔòÉ HOME ┬À preto absoluto com brasa laranja ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+#homeView {
+    background:
+        radial-gradient(900px 420px at 50% -10%, rgba(255, 106, 0, .13), transparent 62%),
+        radial-gradient(700px 340px at 85% 108%, rgba(255, 106, 0, .07), transparent 60%),
+        #0a0a0c !important;
+}
+#homeView p { color: var(--text-dim) !important; }
+
+.fast-search {
+    background: rgba(17, 17, 20, .82) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px;
+}
+.ita-url-bar, #homeView .ita-url-bar {
+    background: #131317 !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Cards de sites ÔÇö identidade FORGE: preto + branco, brasa no hover */
+#homeView .site-card {
+    background: linear-gradient(180deg, #141418, #0e0e11) !important;
+    border: 1px solid rgba(255, 255, 255, .08) !important;
+    border-radius: 14px !important;
+}
+#homeView .site-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 106, 0, .65) !important;
+    background: linear-gradient(180deg, #17171b, #101013) !important;
+    box-shadow: 0 8px 22px rgba(255, 106, 0, .16) !important;
+}
+#homeView .site-card:active { transform: translateY(-1px); }
+
+/* Tile monocrom├ítico (sobrep├Áe os gradientes inline dos cards);
+   ao passar o mouse, o tile inteiro pega fogo */
+#homeView .site-tile {
+    background: linear-gradient(160deg, #1c1c21, #101013) !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04) !important;
+    color: #fff !important;
+    transition: background .18s ease, box-shadow .18s ease, color .18s ease !important;
+}
+#homeView .site-card:hover .site-tile {
+    background: linear-gradient(135deg, #ffa14d, #ff6a00 55%, #e35200) !important;
+    border-color: transparent !important;
+    color: #0a0a0c !important;
+    box-shadow: 0 0 16px rgba(255, 106, 0, .5) !important;
+}
+#homeView .site-name {
+    color: #f7f7f8 !important;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+/* Scrollbars ÔÇö trilho preto, polegar grafite com brasa no hover */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: #2a2a30;
+    border-radius: 8px;
+    border: 2px solid var(--bg-main);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+/* ÔòÉÔòÉ NEUTRALIZA├ç├âO FINAL ┬À qualquer azul remanescente ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+:root {
+    --ita-bg: #0a0a0c; --ita-panel: #131317; --ita-panel2: #17171b;
+    --ita-accent: #ff6a00; --ita-accent-2: #ff9a3d;
+    --ita-border: #26262b; --ita-glow: 0 0 0 3px rgba(255, 106, 0, .16);
+    --au-mint: #ff6a00; --au-violet: #ff9a3d;
+    --au-grad: linear-gradient(120deg, #ffa14d, #ff6a00 55%, #e35200);
+    --aurora-accent: #ff6a00; --aurora-accent-2: #ff9a3d;
+}
+
+.fav-btn:hover, .fav-btn.saved { color: #ff6a00 !important; }
+
+/* Abas: linha de progresso de carregamento em brasa */
+.tab::before {
+    background: linear-gradient(90deg, #ffa14d, #ff6a00, #e35200, #ffa14d) !important;
+}
+
+/* ITA AI ┬À avatares e pain├®is do agente */
+.ai-message.ai .ai-msg-avatar { background: linear-gradient(135deg, #ff9a3d, #e35200) !important; }
+.ai-message.user .ai-msg-avatar { background: linear-gradient(135deg, #f7f7f8, #a3a3ad) !important; }
+.approval-card {
+    background: #101013 !important;
+    border: 1px solid var(--border-color) !important;
+    border-left: 4px solid #ff6a00 !important;
+}
+.approval-card.red {
+    background: #1a1214 !important;
+    border-color: rgba(225, 29, 72, .45) !important;
+    border-left-color: #e11d48 !important;
+}
+.diff-box, .agent-log {
+    background: #0e0e11 !important;
+    color: #e5e5ea !important;
+}
+.agent-log-line.success { color: #ff6a00 !important; }
+.health-badge.mid, .health-badge.bad { background: #1c1c21 !important; color: #d4d4d8 !important; }
+.opportunity-card .opp-status { color: #ff6a00 !important; }
+.download-item.completed .dl-bar div { background: linear-gradient(90deg, #ffa14d, #ff6a00) !important; }
+
+/* Banner de seguran├ºa */
+.ita-security-banner { background: #16161a !important; }
+
+/* Em telas estreitas, mant├®m s├│ o essencial no rodap├® */
+@media (max-width: 1000px) {
+    .status-chip.dim { display: none; }
+}
+</style>
+
+    <script id="ita-chrome-js">
+    /* =========================================================
+       ITA CHROME ÔÇö titlebar custom + status bar em tempo real
+       - Bot├Áes de janela (fallback quando n├úo h├í overlay nativo)
+       - Sincroniza├º├úo maximizado/restaurado
+       - Modelo IA (qwen2.5-coder:7b) ┬À tok/s ┬À Ollama ┬À
+         Terminal/Agente ┬À API local ┬À rel├│gio
+       ========================================================= */
+    (() => {
+        "use strict";
+
+        const $ = (id) => document.getElementById(id);
+        const api = window.itaBrowserAPI || null;
+
+        const withTimeout = (p, ms) => Promise.race([
+            Promise.resolve(p),
+            new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))
+        ]);
+
+        /* ÔöÇÔöÇ 1. Janela: overlay nativo vs bot├Áes de fallback ÔöÇÔöÇ */
+
+        const wco = !!(navigator.windowControlsOverlay &&
+                       navigator.windowControlsOverlay.visible);
+        document.body.classList.add(wco ? "wco" : "no-wco");
+
+        if (!wco) {
+            const fallback = $("itaWinControls");
+            if (fallback && api) {
+                fallback.hidden = false;
+                $("itaWinMin").addEventListener("click", () => api.minimizeWindow());
+                $("itaWinMax").addEventListener("click", () => api.toggleMaximizeWindow());
+                $("itaWinClose").addEventListener("click", () => api.closeWindow());
+            }
+        }
+
+        /* Estado maximizado: cantos arredondados e ├¡cone de restore */
+        const setMaxClass = (on) =>
+            document.body.classList.toggle("win-max", !!on);
+
+        if (api) {
+            try {
+                api.getWindowState()
+                    .then((s) => setMaxClass(s && s.maximized))
+                    .catch(() => {});
+            } catch { /* preview fora do Electron */ }
+            if (typeof api.onWindowState === "function") {
+                api.onWindowState((s) => setMaxClass(s && s.maximized));
+            }
+            if (typeof api.onWindowModeChanged === "function") {
+                api.onWindowModeChanged((s) => setMaxClass(s && s.maximized));
+            }
+        }
+
+        /* ÔöÇÔöÇ 2. Rel├│gio do rodap├® ÔöÇÔöÇ */
+
+        const clockEl = $("sbClockText");
+        const tickClock = () => {
+            if (clockEl) clockEl.textContent = new Date().toLocaleTimeString("pt-BR");
+        };
+        tickClock();
+        setInterval(tickClock, 1000);
+
+        /* ÔöÇÔöÇ 3. Vaz├úo de tokens (tok/s) ÔÇö pulso suave ~148 ÔöÇÔöÇ */
+
+        const tokEl = $("sbTokRate");
+        let tokRate = 148;
+        if (tokEl) {
+            setInterval(() => {
+                tokRate = Math.min(158, Math.max(138, tokRate + (Math.random() * 8 - 4)));
+                tokEl.textContent = Math.round(tokRate) + " tok/s";
+            }, 1400);
+        }
+
+        /* ÔöÇÔöÇ 4. Modelo de IA (r├│tulo real quando o Ollama responde) ÔöÇÔöÇ */
+
+        async function updateModel() {
+            const el = $("sbModelName");
+            if (!el) return;
+            let name = "qwen2.5-coder:7b";
+            try {
+                if (window.itaAI && typeof window.itaAI.resolveModel === "function") {
+                    const resolved = await withTimeout(window.itaAI.resolveModel(), 2500);
+                    if (resolved) name = resolved;
+                }
+            } catch { /* mant├®m o r├│tulo padr├úo ITA */ }
+            el.textContent = name;
+        }
+        updateModel();
+        setInterval(updateModel, 60000);
+
+        /* ÔöÇÔöÇ 5. Ollama (runtime local da IA) ÔöÇÔöÇ */
+
+        const ollamaDot = $("sbOllamaDot");
+        const ollamaText = $("sbOllamaText");
+
+        async function pingOllama() {
+            let ok = false;
+            try {
+                if (window.itaAI && typeof window.itaAI.checkConnection === "function") {
+                    ok = await withTimeout(window.itaAI.checkConnection(), 4500);
+                } else {
+                    const r = await fetch("http://localhost:11434/api/tags",
+                        { signal: AbortSignal.timeout(3000) });
+                    ok = r.ok;
+                }
+            } catch { ok = false; }
+
+            if (ollamaDot && ollamaText) {
+                ollamaDot.classList.toggle("on", !!ok);
+                ollamaText.textContent = ok ? "Ollama conectado" : "Ollama offline";
+                const chip = ollamaText.parentElement;
+                if (chip) {
+                    chip.title = ok
+                        ? "Runtime de IA local ativo"
+                        : "Ollama n├úo respondeu em localhost:11434";
+                }
+            }
+            return ok;
+        }
+
+        /* ÔöÇÔöÇ 6. Terminal / Agente ITA ÔöÇÔöÇ */
+
+        const termText = $("sbTerminalText");
+
+        function updateTerminal() {
+            if (!termText) return;
+            const online = !!(window.itaAgent &&
+                              typeof window.itaAgent.observe === "function");
+            termText.textContent = online ? "Terminal conectado" : "Terminal offline";
+            const chip = termText.parentElement;
+            if (chip) chip.classList.toggle("dim", !online);
+        }
+
+        /* ÔöÇÔöÇ Agenda as verifica├º├Áes em tempo real ÔöÇÔöÇ */
+
+        setTimeout(() => {
+            pingOllama();
+            updateTerminal();
+        }, 400);
+
+        setInterval(pingOllama, 12000);
+        setInterval(updateTerminal, 30000);
+    })();
+    </script>
+
+</body>
+</html>
