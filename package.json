@@ -1,6 +1,6 @@
 {
   "name": "ita-navegador",
-  "version": "1.0.8",
+  "version": "1.0.12",
   "private": true,
   "description": "ITA Navegador - app desktop (Electron) com internet real (sem proxy e sem servidor local)",
   "main": "main.js",
@@ -20,7 +20,7 @@
   "author": "ITA Games Studios",
   "license": "MIT",
   "build": {
-    "appId": "top.itabrowser.app",
+    "appId": "com.itabraser.app",
     "productName": "ITA Navegador",
     "directories": {
       "output": "release",

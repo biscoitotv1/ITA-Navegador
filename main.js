@@ -108,6 +108,9 @@ const START_PAGE_URL = 'https://www.google.com'
 
 let mainWindow = null
 
+autoUpdater.autoDownload = true
+autoUpdater.autoInstallOnAppQuit = true
+
 autoUpdater.on('checking-for-update', () => {
   console.log('[ITA Updater] Checking for updates...')
 })
@@ -122,6 +125,10 @@ autoUpdater.on('update-not-available', (info) => {
 
 autoUpdater.on('update-downloaded', (info) => {
   console.log('[ITA Updater] Update downloaded:', info.version)
+})
+
+autoUpdater.on('download-progress', (progress) => {
+  console.log('[ITA Updater] Download progress:', Math.round(progress.percent) + '%')
 })
 
 autoUpdater.on('error', (error) => {
@@ -1642,99 +1649,3 @@ console.log(
 console.log(
   '========================================='
 )
-
-/*
-=========================================================
-  ATUALIZAÇÃO AUTOMÁTICA — electron-updater
-  - Só atua no app INSTALADO (packaged); no dev fica mudo.
-  - Verifica sozinho ao iniciar e a cada 1 hora.
-  - Baixa a nova versão automaticamente e, poucos segundos
-    depois, INSTALA SOZINHO (silencioso, sem janelas) e
-    REABRE o navegador já na nova versão — zero cliques.
-    Se o app for fechado antes, instala ao fechar
-    (autoInstallOnAppQuit).
-  - O feed é o GitHub Releases (biscoitotv1/ITA-Navegador);
-    enquanto não houver release publicado, falha em silêncio.
-=========================================================
-*/
-
-try {
-  if (app.isPackaged) {
-    const { autoUpdater } = require('electron-updater')
-
-    autoUpdater.autoDownload = true
-    autoUpdater.autoInstallOnAppQuit = true
-
-    autoUpdater.on('checking-for-update', () => {
-      console.log('Update: verificando nova versão...')
-    })
-
-    autoUpdater.on('update-available', (info) => {
-      console.log('Update: nova versão', info.version, 'disponível — baixando automaticamente')
-    })
-
-    autoUpdater.on('update-not-available', () => {
-      console.log('Update: navegador já está na versão mais recente')
-    })
-
-    autoUpdater.on('download-progress', (progress) => {
-      const pct = Math.round(progress.percent)
-
-      if (pct === 25 || pct === 50 || pct === 75 || pct === 100) {
-        console.log('Update: baixando', pct + '%')
-      }
-    })
-
-    /* Instalação TOTALMENTE automática: baixou → instala
-       sozinho (silencioso) → reabre o navegador na nova
-       versão. Janela de 8s para não cortar algo em uso. */
-
-    let updateInstalling = false
-
-    autoUpdater.on('update-downloaded', (info) => {
-
-      console.log('Update: versão', info.version, 'baixada — instalando automaticamente em segundos')
-
-      try {
-        sendToRenderer('update-status', {
-          status: 'downloaded',
-          version: info.version
-        })
-      } catch { /* sem janela ativa */ }
-
-      if (updateInstalling) {
-        return
-      }
-
-      updateInstalling = true
-
-      setTimeout(() => {
-        try {
-
-          /* (instalação silenciosa, reabrir após instalar) */
-
-          autoUpdater.quitAndInstall(true, true)
-
-        } catch (err) {
-
-          updateInstalling = false
-
-          console.log('Update: instalação adiada para o fechamento do app (' + (err && err.message ? err.message : err) + ')')
-        }
-      }, 8000)
-    })
-
-    autoUpdater.on('error', (error) => {
-      console.log('Update: verificação indisponível agora (' + (error && error.message ? error.message : error) + ')')
-    })
-
-    const checkForUpdates = () => {
-      try {
-        autoUpdater.checkForUpdates()
-      } catch { /* silencioso */ }
-    }
-
-    setTimeout(checkForUpdates, 8000)
-    setInterval(checkForUpdates, 60 * 60 * 1000)
-  }
-} catch { /* electron-updater indisponível — segue sem updater */ }
