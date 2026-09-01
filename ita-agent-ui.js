@@ -78,7 +78,7 @@ const AI_AGENT_UI = {
     this.appendLog('👁️ Observando o projeto...')
     const snapshot = await window.itaAgent.observe()
     if (snapshot) {
-      this.appendLog(`📊 ${snapshot.files.count} arquivos, ${snapshot.files.totalLines} linhas, Ollama ${snapshot.ollama.running ? 'online' : 'offline'}, servidor ${snapshot.localServer.running ? 'online' : 'offline'}`)
+      this.appendLog(`📊 ${snapshot.files.count} arquivos, ${snapshot.files.totalLines} linhas, Ollama ${snapshot.ollama.running ? 'online' : 'offline'}`)
     }
   },
 

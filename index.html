@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>ITA Browser</title>
+    <title>ITA Browser — ITA Games Studios</title>
+    <meta name="theme-color" content="#ff6a00">
 
     <style>
 
@@ -1730,9 +1731,8 @@
 
 
             <p>
-                Pronto para criar.
-                Navegador otimizado para alta velocidade
-                e desenvolvimento independente.
+                Digite um endereço ou escolha um dos seus sites favoritos —
+                internet real, direto na fonte.
             </p>
 
 
@@ -1757,17 +1757,61 @@
             </div>
 
 
-            <!-- Ferramentas rápidas: alternância fluida entre
-                 editor, IA e desenvolvimento (abas dinâmicas) -->
+            <!-- Sites favoritos: cards que navegam DIRETO para a URL real via navigateTo() -->
+
+            <div class="site-grid" aria-label="Sites favoritos">
+
+                <button type="button" class="site-card" title="Google" onclick="navigateTo('https://www.google.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#4285f4,#ea4335)">G</span>
+                    <span class="site-name">Google</span>
+                </button>
+
+                <button type="button" class="site-card" title="YouTube" onclick="navigateTo('https://www.youtube.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#ff0000,#c4302b)">▶</span>
+                    <span class="site-name">YouTube</span>
+                </button>
+
+                <button type="button" class="site-card" title="Instagram" onclick="navigateTo('https://www.instagram.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)">📷</span>
+                    <span class="site-name">Instagram</span>
+                </button>
+
+                <button type="button" class="site-card" title="WhatsApp Web" onclick="navigateTo('https://web.whatsapp.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#25d366,#128c7e)">💬</span>
+                    <span class="site-name">WhatsApp</span>
+                </button>
+
+                <button type="button" class="site-card" title="Twitch" onclick="navigateTo('https://www.twitch.tv')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#9146ff,#6441a5)">🎮</span>
+                    <span class="site-name">Twitch</span>
+                </button>
+
+                <button type="button" class="site-card" title="GitHub" onclick="navigateTo('https://github.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#30363d,#0d1117)">&lt;/&gt;</span>
+                    <span class="site-name">GitHub</span>
+                </button>
+
+                <button type="button" class="site-card" title="Wikipédia" onclick="navigateTo('https://www.wikipedia.org')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#636466,#202122)">W</span>
+                    <span class="site-name">Wikipédia</span>
+                </button>
+
+                <button type="button" class="site-card" title="Reddit" onclick="navigateTo('https://www.reddit.com')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#ff4500,#ff8717)">r/</span>
+                    <span class="site-name">Reddit</span>
+                </button>
+
+                <button type="button" class="site-card" title="ITA Cloud — itabrowser.top" onclick="navigateTo('https://itabrowser.top')">
+                    <span class="site-tile" style="background:linear-gradient(135deg,#ff6a00,#c94a00)">🔥</span>
+                    <span class="site-name">ITA Cloud</span>
+                </button>
+
+            </div>
+
+
+            <!-- Ferramentas rápidas: IA e desenvolvimento (abas dinâmicas) -->
 
             <div class="quick-tools">
-
-                <button
-                    class="quick-btn"
-                    onclick="navigateTo('ita://editor')"
-                >
-                    🎨 Editor 2D
-                </button>
 
                 <button
                     class="quick-btn"
@@ -1778,15 +1822,6 @@
 
             </div>
 
-
-            <!-- Status da conexão com o backend local (API 8080) -->
-
-            <div
-                class="local-status"
-                id="localApiStatus"
-            >
-                ⚙️ Verificando servidor local…
-            </div>
 
         </div>
 
@@ -3090,20 +3125,17 @@ body {
             }
 
 
-            /* Páginas internas do navegador: home e editor
-               (ferramentas de desenvolvimento) usam ita:// */
+            /* Página interna do navegador: home usa ita:// */
 
             const isInternalUrl =
                 formattedUrl ===
-                    "ita://home" ||
-                formattedUrl ===
-                    "ita://editor";
+                    "ita://home";
 
             if (
                 isInternalUrl
             ) {
 
-                // Mantém o esquema interno (ita://home | ita://editor)
+                // Mantém o esquema interno (ita://home)
 
             } else if (
 
@@ -3174,17 +3206,8 @@ body {
 
 
             /*
-             * Não aplica proxy novamente
-             * em URLs que já estão no proxy.
-             */
-
-
-            /*
-             * Nota: a versão desktop carrega as páginas direto nos webviews
-             * (o main.js remove X-Frame-Options globalmente), então aqui não
-             * há wrap de proxy. Antes havia um "if (" órfão nesta posição —
-             * resto de um bloco de proxy removido — que quebrava a sintaxe
-             * de todo o script. Corrigido.
+             * Versão desktop: a URL formatada é carregada direto no webview
+             * (internet real, sem intermediação).
              */
 
             currentTab.history =
@@ -3218,7 +3241,7 @@ body {
 
 
         /* =================================================
-           PONTE DO PROXY — mensagens do shim nas páginas
+           PONTE DAS PÁGINAS — mensagens dos webviews/iframes
            (título real + cliques dentro do site)
            ================================================= */
 
@@ -3640,30 +3663,13 @@ body {
            sem recarregar a página (estado preservado).
            ================================================= */
 
-        const LOCAL_EDITOR_URL =
-            "http://localhost:8080/src/editor/Editor2D.html";
-
         const tabWebViews =
             new Map();
-
-
-        function isLocalServerUrl(url) {
-
-            return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(
-                String(url || "")
-            );
-        }
 
 
         /* Converte a URL lógica da aba na URL real do frame */
 
         function resolveTabFrameUrl(url) {
-
-            if (url === "ita://editor") {
-
-                return LOCAL_EDITOR_URL;
-            }
-
 
             if (url === "ita://home") {
 
@@ -3675,8 +3681,67 @@ body {
         }
 
 
+        /* O portal itabrowser.top é servido localmente pelo
+           app via itaportal:// — a barra de endereço, o
+           histórico e os favoritos mostram sempre o domínio
+           real (https://itabrowser.top) */
+
+        function displayExternalUrl(url) {
+
+            if (
+                typeof url === "string" &&
+                url.toLowerCase().startsWith(
+                    "itaportal://itabrowser.top"
+                )
+            ) {
+
+                return (
+                    "https://" +
+                    url.slice("itaportal://".length)
+                );
+            }
+
+            return url;
+        }
+
+
         /* Garante que a aba possui webview e que ele aponta
            para a URL correta (criação preguiçosa por aba) */
+
+        /* =================================================
+           WINDOW.OPEN / TARGET=_BLANK → NOVA ABA ITA
+           O main nega popups externos e avisa por
+           'new-tab-request'; aqui viram abas de verdade.
+           ================================================= */
+
+        if (
+            window.itaBrowserAPI &&
+            typeof window.itaBrowserAPI.onNewTabRequest === "function"
+        ) {
+
+            window.itaBrowserAPI.onNewTabRequest(payload => {
+
+                try {
+
+                    const url =
+                        payload && payload.url;
+
+                    if (!url) return;
+
+                    addNewTab();
+
+                    setTimeout(() => navigateTo(url), 0);
+
+                } catch (err) {
+
+                    console.error(
+                        "Falha ao abrir popup em nova aba:",
+                        err
+                    );
+                }
+            });
+        }
+
 
         function ensureTabWebView(tab) {
 
@@ -3710,7 +3775,7 @@ body {
 
                 webview.setAttribute(
                     "webpreferences",
-                    "contextIsolation=yes, nodeIntegration=no"
+                    "contextIsolation=yes, nodeIntegration=no, plugins=yes, autoplayPolicy=no-user-gesture-required, spellcheck=yes"
                 );
 
 
@@ -3723,7 +3788,7 @@ body {
 
                         handleWebViewNavigate(
                             tab,
-                            event.url
+                            displayExternalUrl(event.url)
                         );
                     }
                 );
@@ -4394,7 +4459,7 @@ body {
 
 
                     status.style.color =
-                        "#38bdf8";
+                        "#ff6a00";
 
                 } else {
 
@@ -4733,8 +4798,6 @@ body {
             openDevTools:
                 openWebViewDevTools,
 
-            callLocalApi,
-
             getContext:
                 getITAIBrowserContext,
 
@@ -4780,76 +4843,6 @@ body {
 
 
         /* =================================================
-           INTEGRAÇÃO COM O BACKEND LOCAL (porta 8080)
-           A interface oficial (itabrowser.top) conversa com
-           o servidor local: API da IA, terminal e agentes.
-           ================================================= */
-
-        function getLocalApiBase() {
-
-            /* No app Electron o backend é sempre o servidor
-               local; em navegador comum (preview) usa a origem */
-
-            if (window.itaBrowserAPI) {
-
-                return "http://localhost:8080";
-            }
-
-            return window.location.origin;
-        }
-
-
-        async function callLocalApi(path, options) {
-
-            const response = await fetch(
-                getLocalApiBase() + path,
-                Object.assign(
-                    { headers: { "Content-Type": "application/json" } },
-                    options || {}
-                )
-            );
-
-            return response.json();
-        }
-
-
-        async function loadBackendStatus() {
-
-            const statusEl =
-                document.getElementById("localApiStatus");
-
-            if (!statusEl) return;
-
-            try {
-
-                const health =
-                    await callLocalApi("/api/health");
-
-                if (health && health.ok) {
-
-                    statusEl.textContent =
-                        "✅ Backend local online (porta " + health.port + ") — IA e sub-agentes prontos";
-
-                    statusEl.classList.add("online");
-                    statusEl.classList.remove("offline");
-
-                } else {
-
-                    throw new Error("Resposta inválida de /api/health");
-                }
-
-            } catch (error) {
-
-                statusEl.textContent =
-                    "⚠️ Backend local offline — abra pelo app Electron (servidor 8080) para IA e agentes";
-
-                statusEl.classList.add("offline");
-                statusEl.classList.remove("online");
-            }
-        }
-
-
-        /* =================================================
            INICIALIZAÇÃO
            ================================================= */
 
@@ -4858,8 +4851,6 @@ body {
             () => {
 
                 updateUI();
-
-                loadBackendStatus();
 
 
                 /* Atalho nativo do menu Electron:
@@ -5201,6 +5192,15 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:2px;backgroun
 .local-status.online{color:#38bdf8!important}
 .local-status.offline{color:#94a3b8!important}
 
+/* ── HOME · Cards de sites (navegação direta, internet real) ── */
+#homeView .site-grid{display:grid;grid-template-columns:repeat(4,minmax(96px,1fr));gap:12px;max-width:620px;margin:26px auto 0;width:100%;padding:0 8px}
+#homeView .site-card{display:flex;flex-direction:column;align-items:center;gap:9px;padding:14px 6px 12px;background:rgba(13,21,38,.85)!important;border:1px solid rgba(148,163,184,.16)!important;border-radius:14px!important;cursor:pointer;font-family:inherit;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease!important}
+#homeView .site-card:hover{transform:translateY(-3px);border-color:rgba(34,211,238,.55)!important;box-shadow:0 10px 26px rgba(2,6,18,.55),0 0 0 1px rgba(34,211,238,.16)!important}
+#homeView .site-card:active{transform:translateY(-1px)}
+#homeView .site-tile{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;font-size:19px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+#homeView .site-name{font-size:12.5px;font-weight:600;color:#dbe6f5;letter-spacing:.2px}
+@media (max-width:760px){#homeView .site-grid{grid-template-columns:repeat(3,minmax(88px,1fr));max-width:420px}}
+
 /* ── ABAS · ESTILO CHROME ── */
 .tab{background:transparent!important;border:1px solid transparent!important;border-radius:10px 10px 0 0!important;color:#93a3ba!important;margin:4px 3px 0!important;transition:background .15s ease,color .15s ease!important}
 .tab:hover{background:rgba(148,163,184,.08)!important;color:#dbe6f5!important}
@@ -5511,46 +5511,53 @@ header.ita-toolbar {
                 <span id="sbTerminalText">Terminal: verificando…</span>
             </span>
 
-            <span class="status-chip dim" id="sbApi" title="Backend local (ITA Core)">
-                <span class="status-dot" id="sbApiDot"></span>
-                <span id="sbApiText">API :8080</span>
-            </span>
-
             <span class="status-chip dim" id="sbClock" title="Hora local">
                 <span id="sbClockText">--:--:--</span>
+            </span>
+
+            <span class="status-chip forge-brand" id="sbForgeBrand" title="ITA Games Studios — criadora do ITA Browser">
+                <span class="forge-flame">🔥</span>
+                ITA Games Studios
             </span>
 
         </div>
 
     </footer>
 
-<style id="ita-nebula">
+<style id="ita-forge">
 /* ════════════════════════════════════════════════════════════
-   ITA NEBULA — TEMA OFICIAL DO ITA BROWSER (camada final)
+   ITA FORGE — IDENTIDADE OFICIAL DO ITA BROWSER (camada final)
    Última folha de estilo do documento: vence a cascata.
-   Dark Slate profundo + azul elétrico/ciano · Glassmorphism ·
-   Titlebar customizada · Abas estilo IDE · StatusBar pro.
+   LARANJA · PRETO · BRANCO — design único e exclusivo.
+   Substitui integralmente o tema anterior (azul/ciano).
    ════════════════════════════════════════════════════════════ */
 
 :root {
-    /* Paleta ITA */
-    --bg-main: #090d16;
-    --bg-sidebar: #0f172a;
-    --accent-color: #38bdf8;
-    --accent-soft: rgba(56, 189, 248, 0.16);
-    --text-main: #f8fafc;
-    --text-dim: #94a3b8;
-    --border-color: #1e293b;
-    --bg-status: #020617;
+    /* Paleta ITA FORGE */
+    --bg-main: #0a0a0c;
+    --bg-sidebar: #111114;
+    --accent-color: #ff6a00;
+    --accent-soft: rgba(255, 106, 0, 0.16);
+    --text-main: #f7f7f8;
+    --text-dim: #a3a3ad;
+    --border-color: #26262b;
+    --bg-status: #050506;
+
+    /* Variáveis legadas das camadas antigas → agora LARANJA
+       (faz as regras antigas que as usam renderizar em laranja) */
+    --ita-acc: #ff6a00;
+    --ita-grad: linear-gradient(135deg, #ffa14d, #ff6a00 55%, #e35200);
+    --ita-line: #26262b;
+    --au-glass: rgba(255, 255, 255, .05);
 
     /* Vidro fosco (Glassmorphism) */
-    --glass-bg: rgba(15, 23, 42, 0.75);
-    --glass-blur: blur(12px);
-    --glass-border: rgba(56, 189, 248, 0.18);
+    --glass-bg: rgba(17, 17, 20, 0.88);
+    --glass-blur: blur(14px);
+    --glass-border: rgba(255, 106, 0, 0.22);
 
     /* Sombras e brilhos */
-    --shadow-float: 0 4px 20px rgba(0, 0, 0, 0.5);
-    --glow-accent: 0 0 12px rgba(56, 189, 248, 0.45);
+    --shadow-float: 0 6px 24px rgba(0, 0, 0, 0.6);
+    --glow-accent: 0 0 14px rgba(255, 106, 0, 0.45);
 
     --titlebar-h: 38px;
     --statusbar-h: 26px;
@@ -5561,19 +5568,19 @@ html, body {
     color: var(--text-main) !important;
 }
 
-/* Linha de neon no topo da janela */
+/* Linha de fogo no topo da janela */
 body::before {
     background: linear-gradient(90deg, transparent, var(--accent-color), transparent) !important;
-    opacity: .8 !important;
+    opacity: .9 !important;
 }
 
-/* ── BARRA DE TÍTULOS CUSTOMIZADA ─────────────────────────── */
+/* ══ BARRA DE TÍTULOS — preto grafite com logotipo em brasa ══ */
 .ita-titlebar {
     flex: 0 0 var(--titlebar-h);
     height: var(--titlebar-h);
-    background: linear-gradient(180deg, #101c33 0%, var(--bg-sidebar) 100%);
+    background: linear-gradient(180deg, #16161a 0%, #0a0a0c 100%);
     border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-float);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, .55);
     border-radius: 8px 8px 0 0;
     -webkit-app-region: drag;
     app-region: drag;
@@ -5591,7 +5598,6 @@ body.win-max .ita-titlebar { border-radius: 0; }
     align-items: center;
     gap: 10px;
     padding-left: 12px;
-    /* Reserva o espaço dos botões nativos (Window Controls Overlay) */
     padding-right: calc(100vw - env(titlebar-area-width, 100vw) + 8px);
 }
 
@@ -5607,16 +5613,16 @@ body.win-max .ita-titlebar { border-radius: 0; }
     font-size: 8.5px;
     font-weight: 800;
     letter-spacing: .4px;
-    color: #04121c;
-    background: linear-gradient(135deg, var(--accent-color), #0ea5e9 55%, #6366f1);
-    box-shadow: 0 0 10px rgba(56, 189, 248, .5), inset 0 0 0 1px rgba(255, 255, 255, .18);
+    color: #0a0a0c !important;
+    background: linear-gradient(135deg, #ffa14d, #ff6a00 55%, #e35200) !important;
+    box-shadow: 0 0 12px rgba(255, 106, 0, .55), inset 0 0 0 1px rgba(255, 255, 255, .22) !important;
 }
 
 .ita-brand-name {
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .3px;
-    color: var(--text-dim);
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #ffffff !important;
 }
 
 .ita-titlebar-drag { flex: 1; height: 100%; }
@@ -5638,17 +5644,17 @@ body.win-max .ita-titlebar { border-radius: 0; }
     cursor: pointer;
     transition: background .12s ease, color .12s ease;
 }
-.win-btn:hover { background: rgba(248, 250, 252, .12); color: var(--text-main); }
-.win-btn.close:hover { background: #475569; color: #fff; }
+.win-btn:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.win-btn.close:hover { background: #e11d48; color: #fff; }
 
 /* Barra de abas também arrasta a janela (estilo VS Code);
    todo elemento interativo dentro dela continua clicável */
 .tabs-bar { -webkit-app-region: drag; }
 .tabs-bar > * { -webkit-app-region: no-drag; }
 
-/* ── BARRA DE ABAS · ESTILO IDE ───────────────────────────── */
+/* ══ BARRA DE ABAS · preto com aba ativa em brasa ════════════ */
 .tabs-bar {
-    background: linear-gradient(180deg, #101a30, #0c1322) !important;
+    background: linear-gradient(180deg, #121215, #0c0c0f) !important;
     border-bottom: 1px solid var(--border-color) !important;
 }
 
@@ -5663,38 +5669,36 @@ body.win-max .ita-titlebar { border-radius: 0; }
 }
 
 .tab:hover {
-    background: rgba(148, 163, 184, .08) !important;
+    background: rgba(255, 255, 255, .05) !important;
     color: var(--text-main) !important;
 }
 
-/* Borda superior iluminada quando selecionada (neon ITA) */
+/* Borda superior em brasa quando selecionada */
 .tab.active {
-    background: linear-gradient(180deg, #16223b, #101a2e) !important;
+    background: linear-gradient(180deg, #1c1c21, #121215) !important;
     border-color: var(--border-color) !important;
     border-top: 2px solid var(--accent-color) !important;
     border-bottom: none !important;
-    color: var(--text-main) !important;
+    color: #fff !important;
     font-weight: 600 !important;
     box-shadow:
-        0 -2px 14px rgba(56, 189, 248, .30),
-        inset 0 0 0 1px rgba(56, 189, 248, .10) !important;
+        0 -2px 16px rgba(255, 106, 0, .35),
+        inset 0 0 0 1px rgba(255, 106, 0, .12) !important;
 }
 
-/* Desativa o arco animado antigo — visual IDE limpo */
 .tab.active::before { display: none !important; }
 .tab.active::after {
-    background: linear-gradient(90deg, var(--accent-color), #0ea5e9) !important;
+    background: linear-gradient(90deg, #ffa14d, #ff6a00) !important;
 }
 
-/* Ícones minimalistas (SVG) de fechar e nova guia */
 .tab-close { color: var(--text-dim) !important; }
 .tab-close svg { display: block; }
-.tab-close:hover { color: #cbd5e1 !important; }
+.tab-close:hover { color: #fff !important; }
 .new-tab-btn svg { display: block; }
 
-/* ── TOOLBAR · VIDRO FOSCO ────────────────────────────────── */
+/* ══ TOOLBAR · preto fosco com detalhes laranja ══════════════ */
 .ita-header {
-    background: rgba(15, 23, 42, .55) !important;
+    background: rgba(10, 10, 12, .82) !important;
     -webkit-backdrop-filter: var(--glass-blur);
     backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--border-color) !important;
@@ -5703,11 +5707,11 @@ body.win-max .ita-titlebar { border-radius: 0; }
 .nav-icon-btn:hover { color: var(--accent-color) !important; }
 
 .ita-url-bar:focus-within {
-    border-color: rgba(56, 189, 248, .6) !important;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, .14), 0 6px 20px rgba(56, 189, 248, .10) !important;
+    border-color: rgba(255, 106, 0, .6) !important;
+    box-shadow: 0 0 0 3px rgba(255, 106, 0, .14), 0 6px 20px rgba(255, 106, 0, .10) !important;
 }
 
-/* ── GLASSMORPHISM · modais e painéis laterais ────────────── */
+/* ══ GLASSMORPHISM · modais e painéis laterais ══════════════ */
 .ai-modal .ai-card,
 .admin-modal .admin-card,
 .downloads-panel,
@@ -5716,7 +5720,7 @@ body.win-max .ita-titlebar { border-radius: 0; }
     -webkit-backdrop-filter: var(--glass-blur);
     backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border) !important;
-    box-shadow: var(--shadow-float), 0 0 0 1px rgba(56, 189, 248, .06) !important;
+    box-shadow: var(--shadow-float), 0 0 0 1px rgba(255, 106, 0, .06) !important;
 }
 
 .downloads-panel { border-radius: 12px; }
@@ -5726,61 +5730,72 @@ body.win-max .ita-titlebar { border-radius: 0; }
 .ita-security-banner { top: var(--titlebar-h) !important; }
 .security-toast { top: calc(var(--titlebar-h) + 12px) !important; }
 
-/* Modal Admin em vidro escuro */
-.admin-modal { background: rgba(2, 6, 23, .6) !important; }
-.admin-modal .admin-card h2 { color: var(--text-main) !important; }
+/* Modal Admin em vidro preto */
+.admin-modal { background: rgba(5, 5, 6, .66) !important; }
+.admin-modal .admin-card h2 { color: #fff !important; }
 .admin-modal .admin-card p,
 .admin-modal .admin-lbl { color: var(--text-dim) !important; }
 .admin-modal .admin-input {
-    background: rgba(2, 6, 23, .55) !important;
+    background: rgba(5, 5, 6, .55) !important;
     border: 1px solid var(--border-color) !important;
     color: var(--text-main) !important;
 }
 .admin-modal .admin-input:focus {
-    border-color: rgba(56, 189, 248, .55) !important;
+    border-color: rgba(255, 106, 0, .55) !important;
     box-shadow: 0 0 0 3px var(--accent-soft) !important;
 }
-.btn-close-admin { background: #1e293b !important; color: var(--text-main) !important; }
-.btn-close-admin:hover { background: #273449 !important; }
+.btn-close-admin { background: #1c1c21 !important; color: #fff !important; }
+.btn-close-admin:hover { background: #2a2a30 !important; }
 
-/* ── ACENTOS NEON · IA e estados ativos ───────────────────── */
+/* ══ ACENTOS · IA e estados ativos ══════════════════════════ */
 .ita-ai-trigger {
-    background: linear-gradient(135deg, rgba(56, 189, 248, .16), rgba(99, 102, 241, .16)) !important;
-    border: 1px solid rgba(56, 189, 248, .45) !important;
-    color: #bae6fd !important;
-    box-shadow: 0 0 12px rgba(56, 189, 248, .18) !important;
+    background: linear-gradient(135deg, rgba(255, 106, 0, .18), rgba(255, 161, 77, .10)) !important;
+    border: 1px solid rgba(255, 106, 0, .5) !important;
+    color: #ffb066 !important;
+    box-shadow: 0 0 12px rgba(255, 106, 0, .2) !important;
 }
 .ita-ai-trigger:hover {
     border-color: var(--accent-color) !important;
-    color: var(--text-main) !important;
+    color: #fff !important;
     box-shadow: var(--glow-accent) !important;
 }
 
 .local-status.online {
     color: var(--accent-color) !important;
-    text-shadow: 0 0 12px rgba(56, 189, 248, .5);
+    text-shadow: 0 0 12px rgba(255, 106, 0, .5);
 }
-.local-status.offline { color: #94a3b8 !important; }
+.local-status.offline { color: var(--text-dim) !important; }
 
-.search-go {
-    background: linear-gradient(135deg, #38bdf8, #0ea5e9 60%, #6366f1) !important;
-    box-shadow: 0 6px 20px rgba(56, 189, 248, .3) !important;
+.search-go, #homeView .search-go {
+    background: linear-gradient(135deg, #ffa14d, #ff6a00 60%, #e35200) !important;
+    color: #0a0a0c !important;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(255, 106, 0, .32) !important;
+}
+#homeView .search-go:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1) !important;
+}
+.quick-btn {
+    background: linear-gradient(135deg, #17171b, #101013) !important;
+    border: 1px solid rgba(255, 255, 255, .09) !important;
+    color: #f7f7f8 !important;
 }
 .quick-btn:hover {
-    border-color: rgba(56, 189, 248, .7) !important;
-    box-shadow: 0 6px 18px rgba(56, 189, 248, .18) !important;
+    border-color: rgba(255, 106, 0, .7) !important;
+    box-shadow: 0 6px 18px rgba(255, 106, 0, .18) !important;
 }
 .fast-input:focus {
     border-color: var(--accent-color) !important;
     box-shadow: 0 0 0 2px var(--accent-soft) !important;
 }
 #homeView h1 {
-    background: linear-gradient(120deg, #7dd3fc, #38bdf8 40%, #818cf8) !important;
+    background: linear-gradient(120deg, #ffd9b8, #ff9a3d 38%, #ff6a00 62%, #e35200) !important;
     -webkit-background-clip: text !important;
     background-clip: text !important;
 }
 
-/* ── STATUS BAR PROFISSIONAL ──────────────────────────────── */
+/* ══ STATUS BAR · preto com chips laranja/branco ════════════ */
 .status-bar {
     flex: 0 0 var(--statusbar-h);
     height: var(--statusbar-h);
@@ -5807,8 +5822,8 @@ body.win-max .ita-titlebar { border-radius: 0; }
     gap: 6px;
     padding: 2px 9px;
     border-radius: 999px;
-    border: 1px solid rgba(56, 189, 248, .22);
-    background: rgba(56, 189, 248, .06);
+    border: 1px solid rgba(255, 106, 0, .25);
+    background: rgba(255, 106, 0, .07);
     color: var(--accent-color);
     font-size: 10.5px;
     font-weight: 600;
@@ -5818,38 +5833,158 @@ body.win-max .ita-titlebar { border-radius: 0; }
 }
 .status-chip.dim {
     border-color: var(--border-color);
-    background: rgba(148, 163, 184, .05);
+    background: rgba(255, 255, 255, .04);
     color: var(--text-dim);
 }
 .status-chip:hover {
-    border-color: rgba(56, 189, 248, .55);
-    box-shadow: 0 0 10px rgba(56, 189, 248, .18);
+    border-color: rgba(255, 106, 0, .6);
+    box-shadow: 0 0 10px rgba(255, 106, 0, .18);
 }
 button.status-chip { cursor: pointer; font-family: inherit; }
-.status-strong { color: var(--text-main); font-weight: 700; }
+.status-strong { color: #fff; font-weight: 700; }
 .status-glyph { font-size: 10px; }
+
+/* Marca da criadora — assinatura no rodapé */
+.status-chip.forge-brand {
+    border-color: rgba(255, 106, 0, .55);
+    background: linear-gradient(135deg, rgba(255, 106, 0, .2), rgba(255, 106, 0, .05));
+    color: #ffb066;
+    font-weight: 700;
+    letter-spacing: .4px;
+}
+.status-chip.forge-brand:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 12px rgba(255, 106, 0, .3);
+    color: #fff;
+}
 
 .status-dot {
     flex: 0 0 auto;
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #64748b;
-    box-shadow: 0 0 6px rgba(100, 116, 139, .8);
+    background: #52525b;
+    box-shadow: 0 0 6px rgba(82, 82, 91, .8);
 }
 .status-dot.on {
     background: var(--accent-color);
-    box-shadow: 0 0 8px rgba(56, 189, 248, .9);
+    box-shadow: 0 0 8px rgba(255, 106, 0, .9);
 }
 .status-dot.pulse {
     background: var(--accent-color);
-    box-shadow: 0 0 8px rgba(56, 189, 248, .9);
+    box-shadow: 0 0 8px rgba(255, 106, 0, .9);
     animation: itaPulse 2s ease-in-out infinite;
 }
 @keyframes itaPulse {
-    0%, 100% { box-shadow: 0 0 4px rgba(56, 189, 248, .55); transform: scale(1); }
-    50% { box-shadow: 0 0 10px rgba(56, 189, 248, 1); transform: scale(1.15); }
+    0%, 100% { box-shadow: 0 0 4px rgba(255, 106, 0, .55); transform: scale(1); }
+    50% { box-shadow: 0 0 10px rgba(255, 106, 0, 1); transform: scale(1.15); }
 }
+
+/* ══ HOME · preto absoluto com brasa laranja ════════════════ */
+#homeView {
+    background:
+        radial-gradient(900px 420px at 50% -10%, rgba(255, 106, 0, .13), transparent 62%),
+        radial-gradient(700px 340px at 85% 108%, rgba(255, 106, 0, .07), transparent 60%),
+        #0a0a0c !important;
+}
+#homeView p { color: var(--text-dim) !important; }
+
+.fast-search {
+    background: rgba(17, 17, 20, .82) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px;
+}
+.ita-url-bar, #homeView .ita-url-bar {
+    background: #131317 !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Cards de sites — identidade FORGE: preto + branco, brasa no hover */
+#homeView .site-card {
+    background: linear-gradient(180deg, #141418, #0e0e11) !important;
+    border: 1px solid rgba(255, 255, 255, .08) !important;
+    border-radius: 14px !important;
+}
+#homeView .site-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 106, 0, .65) !important;
+    background: linear-gradient(180deg, #17171b, #101013) !important;
+    box-shadow: 0 8px 22px rgba(255, 106, 0, .16) !important;
+}
+#homeView .site-card:active { transform: translateY(-1px); }
+
+/* Tile monocromático (sobrepõe os gradientes inline dos cards);
+   ao passar o mouse, o tile inteiro pega fogo */
+#homeView .site-tile {
+    background: linear-gradient(160deg, #1c1c21, #101013) !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04) !important;
+    color: #fff !important;
+    transition: background .18s ease, box-shadow .18s ease, color .18s ease !important;
+}
+#homeView .site-card:hover .site-tile {
+    background: linear-gradient(135deg, #ffa14d, #ff6a00 55%, #e35200) !important;
+    border-color: transparent !important;
+    color: #0a0a0c !important;
+    box-shadow: 0 0 16px rgba(255, 106, 0, .5) !important;
+}
+#homeView .site-name {
+    color: #f7f7f8 !important;
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+/* Scrollbars — trilho preto, polegar grafite com brasa no hover */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: #2a2a30;
+    border-radius: 8px;
+    border: 2px solid var(--bg-main);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+/* ══ NEUTRALIZAÇÃO FINAL · qualquer azul remanescente ═══════ */
+:root {
+    --ita-bg: #0a0a0c; --ita-panel: #131317; --ita-panel2: #17171b;
+    --ita-accent: #ff6a00; --ita-accent-2: #ff9a3d;
+    --ita-border: #26262b; --ita-glow: 0 0 0 3px rgba(255, 106, 0, .16);
+    --au-mint: #ff6a00; --au-violet: #ff9a3d;
+    --au-grad: linear-gradient(120deg, #ffa14d, #ff6a00 55%, #e35200);
+    --aurora-accent: #ff6a00; --aurora-accent-2: #ff9a3d;
+}
+
+.fav-btn:hover, .fav-btn.saved { color: #ff6a00 !important; }
+
+/* Abas: linha de progresso de carregamento em brasa */
+.tab::before {
+    background: linear-gradient(90deg, #ffa14d, #ff6a00, #e35200, #ffa14d) !important;
+}
+
+/* ITA AI · avatares e painéis do agente */
+.ai-message.ai .ai-msg-avatar { background: linear-gradient(135deg, #ff9a3d, #e35200) !important; }
+.ai-message.user .ai-msg-avatar { background: linear-gradient(135deg, #f7f7f8, #a3a3ad) !important; }
+.approval-card {
+    background: #101013 !important;
+    border: 1px solid var(--border-color) !important;
+    border-left: 4px solid #ff6a00 !important;
+}
+.approval-card.red {
+    background: #1a1214 !important;
+    border-color: rgba(225, 29, 72, .45) !important;
+    border-left-color: #e11d48 !important;
+}
+.diff-box, .agent-log {
+    background: #0e0e11 !important;
+    color: #e5e5ea !important;
+}
+.agent-log-line.success { color: #ff6a00 !important; }
+.health-badge.mid, .health-badge.bad { background: #1c1c21 !important; color: #d4d4d8 !important; }
+.opportunity-card .opp-status { color: #ff6a00 !important; }
+.download-item.completed .dl-bar div { background: linear-gradient(90deg, #ffa14d, #ff6a00) !important; }
+
+/* Banner de segurança */
+.ita-security-banner { background: #16161a !important; }
 
 /* Em telas estreitas, mantém só o essencial no rodapé */
 @media (max-width: 1000px) {
@@ -5977,36 +6112,7 @@ button.status-chip { cursor: pointer; font-family: inherit; }
             return ok;
         }
 
-        /* ── 6. Backend local (ITA Core :8080) ── */
-
-        const apiDot = $("sbApiDot");
-        const apiText = $("sbApiText");
-
-        function localBase() {
-            try {
-                if (typeof getLocalApiBase === "function") return getLocalApiBase();
-            } catch { /* função da página ainda não carregada */ }
-            return api ? "http://localhost:8080" : window.location.origin;
-        }
-
-        async function pingLocalApi() {
-            let ok = false;
-            let port = "8080";
-            try {
-                const r = await fetch(localBase() + "/api/health",
-                    { signal: AbortSignal.timeout(3000) });
-                const data = await r.json().catch(() => null);
-                ok = !!(data && data.ok);
-                if (data && data.port) port = String(data.port);
-            } catch { ok = false; }
-
-            if (apiDot && apiText) {
-                apiDot.classList.toggle("on", ok);
-                apiText.textContent = ok ? "API :" + port : "API offline";
-            }
-        }
-
-        /* ── 7. Terminal / Agente ITA ── */
+        /* ── 6. Terminal / Agente ITA ── */
 
         const termText = $("sbTerminalText");
 
@@ -6023,12 +6129,10 @@ button.status-chip { cursor: pointer; font-family: inherit; }
 
         setTimeout(() => {
             pingOllama();
-            pingLocalApi();
             updateTerminal();
         }, 400);
 
         setInterval(pingOllama, 12000);
-        setInterval(pingLocalApi, 15000);
         setInterval(updateTerminal, 30000);
     })();
     </script>

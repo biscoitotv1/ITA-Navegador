@@ -9,22 +9,14 @@ function assert(condition, label) {
 }
 
 async function main() {
-  console.log('=== 1. Servidor serve a UI real ===')
-  const LocalServer = require('./src/server/LocalServer')
-  await LocalServer.start()
-  const res = await fetch('http://localhost:8080/')
-  const body = await res.text()
-  assert(res.status === 200, `GET / retornou 200 (recebido ${res.status})`)
-  assert(body.includes('aiModal') && body.includes('ita-agent-ui.js'), 'index.html contém o modal da IA e o script do agente')
-
-  console.log('=== 2. Módulos do agente carregam ===')
+  console.log('=== 1. Módulos do agente carregam ===')
   const Agent = require('./src/ai/agent')
   assert(['agent', 'memory', 'context', 'analyzer', 'optimizer', 'runner', 'editor', 'tester', 'errorAnalyzer'].every(k => k in Agent), 'todos os módulos exportados')
 
   console.log('=== 3. Observar ===')
   const snap = await Agent.agent.observe()
   assert(snap.files.count > 10, `projeto varrido: ${snap.files.count} arquivos, ${snap.files.totalLines} linhas`)
-  assert(typeof snap.ollama.running === 'boolean' && typeof snap.localServer.running === 'boolean', `Ollama: ${snap.ollama.running} | Servidor: ${snap.localServer.running}`)
+  assert(typeof snap.ollama.running === 'boolean', `Ollama: ${snap.ollama.running}`)
 
   console.log('=== 4. Analisar + Otimizador ===')
   const analysis = await Agent.analyzer.analyze(snap)

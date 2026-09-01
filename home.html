@@ -25,7 +25,7 @@ html, body {
   font-size: 56px;
   font-weight: 800;
   letter-spacing: 2px;
-  background: linear-gradient(90deg, #2a5298, #1e3c72);
+  background: linear-gradient(90deg, #ff6a00, #ffa14d);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 10px;
@@ -53,20 +53,21 @@ html, body {
   outline: none;
 }
 .search-form input:focus {
-  border-color: #2a5298;
-  box-shadow: 0 0 0 2px rgba(42, 82, 152, .35);
+  border-color: #ff6a00;
+  box-shadow: 0 0 0 2px rgba(255, 106, 0, .35);
 }
 .search-form button {
   padding: 14px 20px;
   border-radius: 999px;
   border: none;
-  background: #2a5298;
+  background: linear-gradient(135deg, #ff6a00, #e35200);
   color: #fff;
   font-weight: 600;
   cursor: pointer;
 }
 .search-form button:hover {
-  background: #1e3c72;
+  background: #e35200;
+  transform: translateY(-1px);
 }
 .shortcuts {
   display: flex;
@@ -90,8 +91,8 @@ html, body {
 }
 .shortcut:hover {
   transform: translateY(-3px);
-  border-color: #2a5298;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .6);
+  border-color: #ff6a00;
+  box-shadow: 0 10px 30px rgba(255, 106, 0, .35);
 }
 .shortcut-icon {
   font-size: 28px;
@@ -118,9 +119,21 @@ html, body {
     <button type="submit">Pesquisar</button>
   </form>
   <div class="shortcuts">
+    <div class="shortcut" data-url="https://itabrowser.top">
+      <div class="shortcut-icon">&#128293;</div>
+      <div class="shortcut-title">ITA Cloud</div>
+    </div>
+    <div class="shortcut" data-url="https://www.google.com">
+      <div class="shortcut-icon">&#128269;</div>
+      <div class="shortcut-title">Google</div>
+    </div>
     <div class="shortcut" data-url="https://www.youtube.com">
       <div class="shortcut-icon">&#9654;</div>
       <div class="shortcut-title">YouTube</div>
+    </div>
+    <div class="shortcut" data-url="https://www.instagram.com">
+      <div class="shortcut-icon">&#128247;</div>
+      <div class="shortcut-title">Instagram</div>
     </div>
     <div class="shortcut" data-url="https://www.twitch.tv">
       <div class="shortcut-icon">&#127918;</div>

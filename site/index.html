@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ff6a00">
+<meta name="description" content="ITA Browser — o navegador da ITA Games Studios. Internet 100% real, turbo Electron e IA local.">
+<title>ITA Browser — Navegador oficial · ITA Games Studios</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+<style>
+/* ══════════════════════════════════════════════════
+   ITA FORGE — PORTAL OFICIAL itabrowser.top
+   Paleta exclusiva: laranja · preto · branco
+   ══════════════════════════════════════════════════ */
+:root{
+  --orange:#ff6a00;
+  --orange-2:#ffa14d;
+  --orange-deep:#e35200;
+  --black:#0a0a0c;
+  --panel:#131317;
+  --line:#242428;
+  --white:#ffffff;
+  --dim:#a8a8b0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--black);
+  color:var(--white);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* Brasas de fundo */
+body::before{
+  content:"";
+  position:fixed;inset:0;
+  background:
+    radial-gradient(900px 420px at 50% -10%, rgba(255,106,0,.22), transparent 60%),
+    radial-gradient(600px 300px at 85% 15%, rgba(255,106,0,.08), transparent 60%),
+    radial-gradient(500px 260px at 8% 30%, rgba(255,106,0,.06), transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* ── HEADER ─────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,10,12,.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  max-width:1100px;margin:0 auto;padding:14px 24px;
+  display:flex;align-items:center;gap:14px;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:9px;
+  font-size:13px;font-weight:800;letter-spacing:.5px;color:#160800;
+  background:linear-gradient(135deg,var(--orange-2),var(--orange) 55%,var(--orange-deep));
+  box-shadow:0 0 18px rgba(255,106,0,.45), inset 0 0 0 1px rgba(255,255,255,.18);
+}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:.3px}
+.brand-name em{font-style:normal;color:var(--orange)}
+.nav-spacer{flex:1}
+.nav a{color:var(--dim);text-decoration:none;font-size:13.5px;font-weight:600;margin-left:22px;transition:color .15s}
+.nav a:hover{color:var(--white)}
+.nav a.cta{
+  color:#160800;background:linear-gradient(135deg,var(--orange-2),var(--orange-deep));
+  padding:9px 18px;border-radius:999px;box-shadow:0 6px 18px rgba(255,106,0,.35);
+}
+.nav a.cta:hover{filter:brightness(1.08);color:#160800}
+
+/* ── HERO ───────────────────────────────────────── */
+.hero{padding:96px 0 70px;text-align:center}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--orange-2);
+  border:1px solid rgba(255,106,0,.4);
+  background:rgba(255,106,0,.08);
+  padding:8px 16px;border-radius:999px;
+  margin-bottom:26px;
+}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 10px var(--orange);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.25)}}
+h1{
+  font-size:clamp(44px,7vw,78px);
+  line-height:1.02;font-weight:800;letter-spacing:-1.5px;
+  background:linear-gradient(180deg,#fff 30%,#ffb27a 75%,var(--orange));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:20px;
+}
+.hero p.lead{
+  font-size:clamp(16px,2.2vw,20px);color:var(--dim);
+  max-width:640px;margin:0 auto 40px;line-height:1.6;
+}
+.hero p.lead strong{color:var(--white)}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 30px;border-radius:999px;
+  font-size:15px;font-weight:700;text-decoration:none;
+  transition:transform .15s, box-shadow .15s, filter .15s;
+  border:1px solid transparent;cursor:pointer;
+}
+.btn-fire{
+  color:#160800;background:linear-gradient(135deg,var(--orange-2),var(--orange) 55%,var(--orange-deep));
+  box-shadow:0 10px 30px rgba(255,106,0,.4);
+}
+.btn-fire:hover{transform:translateY(-2px);filter:brightness(1.07);box-shadow:0 14px 36px rgba(255,106,0,.5)}
+.btn-ghost{
+  color:var(--white);border-color:var(--line);background:rgba(255,255,255,.03);
+}
+.btn-ghost:hover{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,106,0,.15);transform:translateY(-2px)}
+.hero-note{margin-top:18px;font-size:12.5px;color:#6f6f78}
+
+/* Banner "já está no ITA" (detectado via User-Agent) */
+.already{
+  display:none;margin:26px auto 0;max-width:560px;
+  border:1px solid rgba(255,106,0,.45);background:rgba(255,106,0,.08);
+  border-radius:14px;padding:14px 20px;font-size:14px;color:var(--orange-2);font-weight:600;
+}
+
+/* ── STATS ──────────────────────────────────────── */
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  margin:20px 0 0;
+}
+.stat{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:22px 18px;text-align:center;transition:border-color .2s, transform .2s;
+}
+.stat:hover{border-color:rgba(255,106,0,.55);transform:translateY(-3px)}
+.stat b{display:block;font-size:26px;color:var(--orange);letter-spacing:-.5px}
+.stat span{font-size:12px;color:var(--dim);letter-spacing:.6px;text-transform:uppercase}
+
+/* ── SEÇÕES ─────────────────────────────────────── */
+section{padding:64px 0}
+.sec-head{text-align:center;margin-bottom:44px}
+.sec-head h2{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-.8px}
+.sec-head h2 em{font-style:normal;color:var(--orange)}
+.sec-head p{color:var(--dim);margin-top:12px;font-size:15.5px}
+
+/* Recursos */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:28px 24px;transition:border-color .2s, transform .2s, box-shadow .2s;
+}
+.feature:hover{border-color:rgba(255,106,0,.6);transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.5), 0 0 24px rgba(255,106,0,.08)}
+.feature .ico{
+  width:46px;height:46px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  background:linear-gradient(135deg,rgba(255,106,0,.2),rgba(255,106,0,.06));
+  border:1px solid rgba(255,106,0,.35);
+  margin-bottom:16px;
+}
+.feature h3{font-size:16.5px;margin-bottom:8px}
+.feature p{font-size:13.5px;color:var(--dim);line-height:1.65}
+
+/* Abrir agora — deep links */
+.open-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.open-card{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:26px 14px;text-decoration:none;color:var(--white);
+  transition:transform .18s, border-color .18s, box-shadow .18s;
+}
+.open-card:hover{transform:translateY(-4px);border-color:var(--orange);box-shadow:0 14px 34px rgba(255,106,0,.18)}
+.open-card .tile{
+  width:54px;height:54px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:800;color:var(--white);
+  background:linear-gradient(135deg,#1b1b1f,#0d0d0f);
+  border:1px solid var(--line);
+  transition:background .2s, border-color .2s;
+}
+.open-card:hover .tile{background:linear-gradient(135deg,var(--orange),var(--orange-deep));border-color:var(--orange)}
+.open-card span.name{font-size:13px;font-weight:600;color:#d8d8dd}
+
+/* Como funciona o deep link */
+.codebox{
+  margin-top:34px;background:#0d0d10;border:1px solid var(--line);border-radius:14px;
+  padding:20px 22px;font-family:'Cascadia Code',Consolas,monospace;
+  font-size:13px;color:#d8d8dd;overflow-x:auto;line-height:1.7;
+}
+.codebox b{color:var(--orange)}
+.codebox .c{color:#6f6f78}
+
+/* ── DOWNLOAD CTA ───────────────────────────────── */
+.cta-final{
+  background:linear-gradient(135deg,rgba(255,106,0,.14),rgba(255,106,0,.03));
+  border:1px solid rgba(255,106,0,.4);
+  border-radius:24px;padding:54px 30px;text-align:center;
+}
+.cta-final h2{font-size:clamp(26px,3.6vw,38px);font-weight:800;letter-spacing:-.6px;margin-bottom:12px}
+.cta-final p{color:var(--dim);margin-bottom:30px;font-size:15.5px}
+
+/* ── RODAPÉ ─────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,106,0,.05),transparent);
+  padding:44px 0 34px;margin-top:40px;
+}
+.foot{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.studio{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:15px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--white);
+}
+.studio .flame{filter:drop-shadow(0 0 8px rgba(255,106,0,.8))}
+.studio b{color:var(--orange)}
+.foot .tag{font-size:12.5px;color:#6f6f78;letter-spacing:.4px}
+.foot .links{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.foot .links a{color:var(--dim);font-size:13px;text-decoration:none}
+.foot .links a:hover{color:var(--orange)}
+.copy{font-size:11.5px;color:#55555d}
+
+/* ── RESPONSIVO ─────────────────────────────────── */
+@media (max-width:900px){
+  .features{grid-template-columns:1fr 1fr}
+  .open-grid{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .features{grid-template-columns:1fr}
+  .open-grid{grid-template-columns:1fr 1fr}
+  .nav a:not(.cta){display:none}
+}
+</style>
+</head>
+<body>
+
+  <!-- ════════════════ HEADER ════════════════ -->
+  <header>
+    <nav class="nav">
+      <div class="brand">
+        <span class="brand-mark">ITA</span>
+        <span class="brand-name">ITA <em>Browser</em></span>
+      </div>
+      <div class="nav-spacer"></div>
+      <a href="#recursos">Recursos</a>
+      <a href="#abrir">Abrir no ITA</a>
+      <a href="#download">Download</a>
+      <a class="cta" href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest">🔥 Baixar</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+
+    <!-- ════════════════ HERO ════════════════ -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        ITA GAMES STUDIOS · FORGE
+      </div>
+
+      <h1>ITA Browser</h1>
+
+      <p class="lead">
+        O navegador da <strong>ITA Games Studios</strong>: internet
+        <strong>100% real e direta</strong>, motor turbo Electron,
+        abas persistentes e IA local. Sem proxy, sem nuvem no meio —
+        <strong>você no comando</strong>.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-fire" href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest">🔥 Baixar para Windows</a>
+        <a class="btn btn-ghost" href="itabrowser://open?url=https%3A%2F%2Fwww.youtube.com">▶ Abrir o YouTube no ITA</a>
+      </div>
+
+      <div class="already" id="itaWelcome">
+        🔥 Você já está navegando no ITA Browser — tudo funcionando!
+      </div>
+
+      <p class="hero-note">Grátis · Código aberto (MIT) · Sem instalação de conta</p>
+
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stat"><b>100%</b><span>Internet real</span></div>
+        <div class="stat"><b>0</b><span>Proxies no meio</span></div>
+        <div class="stat"><b>536 MB</b><span>Cache turbo</span></div>
+        <div class="stat"><b>MIT</b><span>Código aberto</span></div>
+      </div>
+    </section>
+    <!-- ════════════════ RECURSOS ════════════════ -->
+    <section id="recursos">
+      <div class="sec-head">
+        <h2>Feito para <em>navegar sério</em></h2>
+        <p>Tudo que o ITA Browser entrega — direto na sua máquina.</p>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="ico">⚡</div>
+          <h3>Motor Turbo Electron</h3>
+          <p>GPU acelerada, scroll suave, áudio liberado e cache inteligente: YouTube, jogos e WebGL voam.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">🌐</div>
+          <h3>Internet 100% real</h3>
+          <p>Navegação direta, sem proxy e sem servidor intermediário. O site que você pediu é o site que abre.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">🗂️</div>
+          <h3>Abas persistentes</h3>
+          <p>Cada aba tem o próprio webview com sessão persistente — feche e reabra o app exatamente onde parou.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">⬇️</div>
+          <h3>Downloads em tempo real</h3>
+          <p>Progresso, velocidade e cancelamento direto na interface — sem pop-ups atrapalhando.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">🛡️</div>
+          <h3>Proteção de URLs</h3>
+          <p>Credenciais ocultas e links perigosos são detectados e bloqueados antes de abrir.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">🤖</div>
+          <h3>Agente ITA AI</h3>
+          <p>Assistente integrado ao navegador para ajudar você a navegar, criar e organizar seu trabalho.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════ ABRIR NO ITA ════════════════ -->
+    <section id="abrir">
+      <div class="sec-head">
+        <h2>Abra direto <em>no ITA</em></h2>
+        <p>Com o app instalado, um clique no deep link abre o site em nova aba do ITA Browser.</p>
+      </div>
+
+      <div class="open-grid">
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fwww.youtube.com">
+          <span class="tile">▶</span><span class="name">YouTube</span>
+        </a>
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fwww.google.com">
+          <span class="tile">G</span><span class="name">Google</span>
+        </a>
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fgithub.com">
+          <span class="tile">&lt;/&gt;</span><span class="name">GitHub</span>
+        </a>
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fstore.steampowered.com">
+          <span class="tile">🎮</span><span class="name">Steam</span>
+        </a>
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fwww.twitch.tv">
+          <span class="tile">📺</span><span class="name">Twitch</span>
+        </a>
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fwww.instagram.com">
+          <span class="tile">📷</span><span class="name">Instagram</span>
+        </a>
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fwww.reddit.com">
+          <span class="tile">r/</span><span class="name">Reddit</span>
+        </a>
+        <a class="open-card" href="itabrowser://open?url=https%3A%2F%2Fwww.wikipedia.org">
+          <span class="tile">W</span><span class="name">Wikipédia</span>
+        </a>
+      </div>
+
+      <div class="codebox">
+        <b>itabrowser://open?url=</b>https%3A%2F%2Fyoutube.com<br>
+        <span class="c">↑ cole em qualquer lugar do Windows — o ITA Browser abre o site em nova aba</span>
+      </div>
+    </section>
+    <!-- ════════════════ DOWNLOAD ════════════════ -->
+    <section id="download">
+      <div class="cta-final">
+        <h2>Pronto para navegar no fogo? 🔥</h2>
+        <p>Baixe o ITA Navegador, instale e o portal itabrowser.top passa a viver dentro do app.</p>
+        <a class="btn btn-fire" href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest">⬇ Baixar a versão mais recente</a>
+        <p class="hero-note">Windows x64 · Instalador NSIS oficial · Código aberto no GitHub</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ════════════════ RODAPÉ ════════════════ -->
+  <footer>
+    <div class="wrap">
+      <div class="foot">
+        <div class="studio">
+          <span class="flame">🔥</span> ITA <b>GAMES</b> STUDIOS
+        </div>
+        <div class="links">
+          <a href="https://github.com/biscoitotv1/ITA-Navegador">GitHub</a>
+          <a href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest">Releases</a>
+          <a href="#recursos">Recursos</a>
+          <a href="#download">Download</a>
+        </div>
+        <div class="tag">ITA Browser · itabrowser.top · Navegação direta, privada e turbo</div>
+        <div class="copy">© <span id="itaYear">2026</span> ITA Games Studios — todos os direitos reservados · Licença MIT</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict'
+
+    /* Ano dinâmico no rodapé */
+    try {
+      var yearEl = document.getElementById('itaYear')
+      if (yearEl) yearEl.textContent = String(new Date().getFullYear())
+    } catch (e) { /* decorativo */ }
+
+    /*
+      Detecção do ITA Browser — o app envia o User-Agent
+      "… ITABrowser/1.0.0 (ITA Games Studios)". Quando o
+      portal abre dentro do app, mostramos o banner.
+    */
+    try {
+      var ua = navigator.userAgent || ''
+      if (/ITABrowser\//i.test(ua)) {
+        var welcome = document.getElementById('itaWelcome')
+        if (welcome) welcome.style.display = 'block'
+
+        document.documentElement.setAttribute('data-ita-app', '1')
+      }
+    } catch (e) { /* detecção é opcional */ }
+  })()
+  </script>
+</body>
+</html>
+
+
+

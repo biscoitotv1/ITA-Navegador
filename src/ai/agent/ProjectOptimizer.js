@@ -125,7 +125,6 @@ class ProjectOptimizer {
 
     let score = 100
     score -= penalty
-    if (snapshot.localServer && !snapshot.localServer.running) score -= 3
     if (snapshot.ollama && !snapshot.ollama.running) score -= 2
     score = Math.max(5, Math.min(100, Math.round(score)))
 

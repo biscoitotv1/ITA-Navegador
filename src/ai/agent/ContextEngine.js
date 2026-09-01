@@ -163,9 +163,8 @@ class ContextEngine {
       }
     }
 
-    const [git, server, ollama] = await Promise.all([
+    const [git, ollama] = await Promise.all([
       this.gitInfo(),
-      this.httpGetJson('http://localhost:8080/'),
       this.httpGetJson('http://localhost:11434/api/tags')
     ])
 
@@ -184,7 +183,6 @@ class ContextEngine {
         codeFiles: codeFiles.map(f => ({ path: f.path, ext: f.ext, lines: f.lines }))
       },
       git,
-      localServer: { url: 'http://localhost:8080', running: server.ok },
       ollama: {
         url: 'http://localhost:11434',
         running: ollama.ok,

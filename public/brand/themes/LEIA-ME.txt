@@ -28,9 +28,9 @@ Sem arquivo para o mês atual, o navegador mantém a logo padrão e
 aplica apenas o brilho e a etiqueta embutidos no
 public/ui/ita-ui.js (mapa MONTH_THEMES).
 
-No site (itabrowser.top) e no app desktop a troca é automática —
-não é preciso mexer em código nenhum para publicar um tema:
-envie o PNG para esta pasta e faça push (ou reinicie o app).
+No app desktop a troca é automática — não é preciso mexer em
+código nenhum para publicar um tema: envie o PNG para esta pasta
+e reinicie o app.
 
 DATAS ESPECIAIS (sobrepõem o tema do mês)
 =========================================

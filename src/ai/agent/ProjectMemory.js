@@ -8,7 +8,7 @@ const path = require('path')
 
 const DEFAULT_MEMORY = {
   project: 'ITA Browser',
-  architecture: 'Electron (main.js) + AppCore (browser, studio, editor, build, physics, audio, network, ai) + LocalServer :8080 + ITA AI via Ollama',
+  architecture: 'Electron (main.js) + AppCore (browser, studio, editor, build, physics, audio, network, ai) + ITA AI via Ollama',
   decisions: [],
   knownProblems: [],
   completedFeatures: [],

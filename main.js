@@ -1,884 +1,1461 @@
+/*
+=========================================================
+  ITA BROWSER — MAIN PROCESS
+  Navegação DIRETA na Internet. Google, YouTube,
+  Instagram, GitHub, Steam e qualquer site real
+  funcionam de verdade.
+
+  UI: index.html (local)  •  Home: home.html (local)
+  Tudo é carregado do app — internet 100% real.
+
+  Portal oficial: itabrowser.top — integrado ao app via
+  protocolo itabrowser://open?url=... e User-Agent ITA.
+=========================================================
+*/
+
+'use strict'
+
+const {
+  app,
+  BrowserWindow,
+  session,
+  shell,
+  ipcMain,
+  protocol
+} = require('electron')
+
 const path = require('path')
 const fs = require('fs')
 const http = require('http')
-const https = require('https')
-const electron = require('electron')
 
-if (process.defaultApp) {
-  if (process.argv.length >= 3) {
-    electron.app.setAppPath(process.argv[2])
-  }
-}
+/*
+=========================================================
+  PORTAL OFICIAL LOCAL — itabrowser.top na nova interface
+  O portal FORGE (pasta site/) é servido de dentro do app
+  via itaportal:// — funciona 100%, até offline.
+=========================================================
+*/
 
-const userDataPath = electron.app.getPath('userData')
-const favoritesPath = path.join(userDataPath, 'favorites.json')
-let favorites = []
+const {
+  registerPortalScheme,
+  installPortalBridge
+} = require('./src/portal/PortalBridge')
 
-function loadFavorites() {
-  try {
-    if (fs.existsSync(favoritesPath)) {
-      favorites = JSON.parse(fs.readFileSync(favoritesPath, 'utf-8'))
-    }
-  } catch {
-    favorites = []
-  }
-}
+registerPortalScheme()
 
-function saveFavorites() {
-  try {
-    fs.writeFileSync(favoritesPath, JSON.stringify(favorites, null, 2))
-  } catch {
-    // ignore
-  }
-}
 
-loadFavorites()
+/*
+=========================================================
+  TURBO ELETRON — GPU · SCROLL · ÁUDIO · CACHE
+  Flags aplicadas antes do app.ready para acelerar
+  TODOS os sites (YouTube, Google, Instagram, jogos,
+  WebGL, vídeo 4K, animações) no máximo de desempenho.
+=========================================================
+*/
 
-const AppCore = require('./src/core/AppCore')
-const BrowserModule = require('./src/browser/BrowserModule')
-const StudioModule = require('./src/studio/StudioModule')
-const EditorModule = require('./src/editor/EditorModule')
-const ProjectManager = require('./src/studio/ProjectManager')
-const ITAAI = require('./src/ai/ITA_AI')
-const NetworkManager = require('./src/networking/NetworkManager')
-const BuildSystem = require('./src/build/BuildSystem')
-const PhysicsEngine = require('./src/physics/PhysicsEngine')
-const AudioSystem = require('./src/audio/AudioSystem')
-const ScriptEditor = require('./src/editor/ScriptEditor')
-const LocalServer = require('./src/server/LocalServer')
-const Agent = require('./src/ai/agent')
+app.commandLine.appendSwitch('ignore-gpu-blocklist')
+app.commandLine.appendSwitch('enable-gpu-rasterization')
+app.commandLine.appendSwitch('enable-zero-copy')
+app.commandLine.appendSwitch('enable-smooth-scrolling')
+app.commandLine.appendSwitch('force_high_performance_gpu')
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
+app.commandLine.appendSwitch('disk-cache-size', '536870912')
 
-AppCore.register('browser', BrowserModule)
-AppCore.register('studio', StudioModule)
-AppCore.register('editor', EditorModule)
-AppCore.register('project', ProjectManager)
-AppCore.register('ai', ITAAI)
-AppCore.register('network', NetworkManager)
-AppCore.register('build', BuildSystem)
-AppCore.register('physics', PhysicsEngine)
-AppCore.register('audio', AudioSystem)
-AppCore.register('scriptEditor', ScriptEditor)
+/*
+=========================================================
+  CONFIGURAÇÃO
+=========================================================
+*/
 
-// ===== ITA AI — Agent Core (Observar → Analisar → Planejar → Executar → Verificar) =====
-Agent.setAiProvider(ITAAI)
+const APP_NAME = 'ITA Browser'
 
-let mainWindow
-let localServerUrl = 'http://localhost:8080'
+/*
+  Site oficial do navegador — integrado ao app via deep
+  link itabrowser://open?url=... e via User-Agent ITA.
+*/
+
+const SITE_URL = 'https://itabrowser.top'
+
+/*
+  Home local: start page do navegador (cards com sites reais).
+  A interface e a home vivem dentro do app — sem site remoto,
+  sem proxy e sem servidor local. Internet direta.
+*/
+
+const HOME_FILE = path.join(__dirname, 'home.html')
+
+const HOME_URL =
+
+  'file:///' + HOME_FILE.replace(/\\/g, '/')
+
+let mainWindow = null
+
+/*
+=========================================================
+  DOWNLOADS
+=========================================================
+*/
 
 const downloads = []
-
-// Referências aos DownloadItems ativos (para cancelamento)
 const downloadItems = new Map()
 
+/*
+=========================================================
+  ENVIO IPC
+=========================================================
+*/
+
 function sendToRenderer(channel, payload) {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send(channel, payload)
+  if (
+    mainWindow &&
+    !mainWindow.isDestroyed()
+  ) {
+    mainWindow.webContents.send(
+      channel,
+      payload
+    )
   }
 }
 
-// ===== Proteção contra páginas maliciosas (avaliação de URL) =====
-// Modelo: safe (bloqueia) | warn (só avisa) — sem falsos positivos
-const BLOCKED_URL_PATTERNS = [
-  { pattern: /\.(exe|bat|cmd|scr|vbs|msi|ps1)(\?|$)/i, reason: 'Arquivo executável potencialmente perigoso' },
-  { pattern: /(login|signin|secure|account|update|verify|bank|banco)[^\s]*(\.xyz|\.top|\.buzz|\.click|\.gq|\.tk)/i, reason: 'Padrão comum de página de phishing' }
-]
+/*
+=========================================================
+  URL
+=========================================================
+*/
 
-const WARN_URL_PATTERNS = [
-  { pattern: /^(bit\.ly|tinyurl\.com|shorturl\.at|is\.gd|cutt\.ly|rebrand\.ly)$/i, reason: 'Encurtador de URL (destino oculto)' }
+function isWebUrl(url) {
+  return (
+    typeof url === 'string' &&
+    /^https?:\/\//i.test(url)
+  )
+}
+
+function normalizeUrl(input) {
+
+  let value =
+    String(input || '')
+      .trim()
+
+  if (!value) {
+    return null
+  }
+
+  /*
+  -------------------------------------------------------
+    Páginas internas
+  -------------------------------------------------------
+  */
+
+  if (
+    value === 'ita://home' ||
+    value === 'ita://editor'
+  ) {
+    return value
+  }
+
+  /*
+  -------------------------------------------------------
+    URL completa
+  -------------------------------------------------------
+  */
+
+  if (
+    /^https?:\/\//i.test(value)
+  ) {
+    return value
+  }
+
+  /*
+  -------------------------------------------------------
+    localhost
+  -------------------------------------------------------
+  */
+
+  if (
+    /^localhost(?::\d+)?(?:\/.*)?$/i.test(value)
+  ) {
+    return `http://${value}`
+  }
+
+  /*
+  -------------------------------------------------------
+    IP local
+  -------------------------------------------------------
+  */
+
+  if (
+    /^(127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(?::\d+)?(?:\/.*)?$/i.test(value)
+  ) {
+    return `http://${value}`
+  }
+
+  /*
+  -------------------------------------------------------
+    Domínio
+  -------------------------------------------------------
+  */
+
+  if (
+    value.includes('.') &&
+    !value.includes(' ')
+  ) {
+    return `https://${value}`
+  }
+
+  /*
+  -------------------------------------------------------
+    Pesquisa
+  -------------------------------------------------------
+  */
+
+  return (
+    'https://www.google.com/search?q=' +
+    encodeURIComponent(value)
+  )
+}
+
+/*
+=========================================================
+  SEGURANÇA BÁSICA DE URL
+=========================================================
+*/
+
+const BLOCKED_URL_PATTERNS = [
+
+  /\.(exe|bat|cmd|scr|vbs|msi|ps1)(\?|$)/i,
+
+  /(login|signin|secure|account|update|verify|bank|banco)[^\s]*(\.xyz|\.buzz|\.click|\.gq|\.tk)/i
+
 ]
 
 function evaluateUrlSafety(targetUrl) {
-  const verdict = { url: targetUrl, safe: true, warn: false, reason: null, checkedAt: new Date().toISOString() }
+
+  const result = {
+    url: targetUrl,
+    safe: true,
+    warn: false,
+    reason: null,
+    checkedAt:
+      new Date().toISOString()
+  }
+
   try {
-    const parsed = new URL(targetUrl)
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      return verdict // esquemas internos (ita://, about:, file:) passam
+
+    const parsed =
+      new URL(targetUrl)
+
+    if (
+      parsed.protocol !== 'http:' &&
+      parsed.protocol !== 'https:'
+    ) {
+      return result
     }
 
-    const host = parsed.hostname.toLowerCase()
+    /*
+    -------------------------------------------------------
+      Credenciais escondidas
+      https://google.com@site-malicioso.com
+    -------------------------------------------------------
+    */
 
-    // IP cru em vez de domínio (comum em phishing)
-    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) {
-      verdict.safe = false
-      verdict.reason = 'Endereço IP cru em vez de domínio (comum em phishing)'
-      return verdict
-    }
-
-    // Truque de credenciais: https://google.com@evil.com/
     if (parsed.username) {
-      verdict.safe = false
-      verdict.reason = 'URL disfarçada com credenciais (@) — destino oculto'
-      return verdict
+
+      result.safe = false
+
+      result.reason =
+        'URL contém credenciais ocultas'
+
+      return result
     }
 
-    const target = host + parsed.pathname
-    for (const rule of BLOCKED_URL_PATTERNS) {
-      if (rule.pattern.test(target)) {
-        verdict.safe = false
-        verdict.reason = rule.reason
-        return verdict
+    const target =
+      parsed.hostname +
+      parsed.pathname
+
+    for (
+      const pattern of BLOCKED_URL_PATTERNS
+    ) {
+
+      if (
+        pattern.test(target)
+      ) {
+
+        result.safe = false
+
+        result.reason =
+          'URL bloqueada pelo sistema de proteção'
+
+        return result
       }
     }
 
-    for (const rule of WARN_URL_PATTERNS) {
-      if (rule.pattern.test(host)) {
-        verdict.warn = true
-        verdict.reason = rule.reason
-        return verdict
+  } catch {
+
+    result.safe = false
+
+    result.reason =
+      'URL inválida'
+  }
+
+  return result
+}
+
+/*
+=========================================================
+  (Servidor local removido — a navegação é sempre direta)
+=========================================================
+*/
+
+/*
+=========================================================
+  JANELA PRINCIPAL
+=========================================================
+*/
+
+function createWindow() {
+
+  mainWindow =
+    new BrowserWindow({
+
+      width: 1400,
+
+      height: 900,
+
+      minWidth: 900,
+
+      minHeight: 600,
+
+      title:
+        APP_NAME,
+
+      backgroundColor:
+        '#0a0a0c',
+
+      /*
+      -----------------------------------------------------
+        Ícone
+      -----------------------------------------------------
+      */
+
+      icon:
+        path.join(
+          __dirname,
+          'public',
+          'brand',
+          'ita-logo.ico'
+        ),
+
+      /*
+      -----------------------------------------------------
+        Barra de título
+      -----------------------------------------------------
+      */
+
+      titleBarStyle:
+        'hidden',
+
+      titleBarOverlay: {
+
+        color:
+          '#0a0a0c',
+
+        symbolColor:
+          '#f7f7f8',
+
+        height:
+          38
+      },
+
+      /*
+      -----------------------------------------------------
+        Segurança
+      -----------------------------------------------------
+      */
+
+      webPreferences: {
+
+        preload:
+          path.join(
+            __dirname,
+            'preload.js'
+          ),
+
+        contextIsolation:
+          true,
+
+        nodeIntegration:
+          false,
+
+        sandbox:
+          false,
+
+        webviewTag:
+          true,
+
+        spellcheck:
+          true,
+
+        webSecurity:
+          true,
+
+        plugins:
+          true,
+
+        backgroundThrottling:
+          false,
+
+        autoplayPolicy:
+          'no-user-gesture-required'
+      }
+    })
+
+  /*
+  =======================================================
+    CARREGA A INTERFACE DO ITA BROWSER
+  =======================================================
+  */
+
+  const indexPath =
+    path.join(
+      __dirname,
+      'index.html'
+    )
+
+  if (
+    fs.existsSync(indexPath)
+  ) {
+
+    mainWindow.loadFile(
+      indexPath
+    )
+
+  } else {
+
+    mainWindow.loadFile(
+      HOME_FILE
+    )
+  }
+
+  /*
+  =======================================================
+    DEVTOOLS
+  =======================================================
+  */
+
+  mainWindow.webContents.on(
+    'before-input-event',
+    (_event, input) => {
+
+      if (
+        input.key === 'F12'
+      ) {
+
+        mainWindow.webContents
+          .toggleDevTools()
       }
     }
+  )
 
-    if (parsed.protocol === 'http:' && !['localhost', '127.0.0.1'].includes(host)) {
-      verdict.warn = true
-      verdict.reason = 'Conexão sem criptografia (HTTP)'
+  /*
+  =======================================================
+    ERROS DA INTERFACE
+  =======================================================
+  */
+
+  mainWindow.webContents.on(
+    'did-fail-load',
+    (
+      event,
+      errorCode,
+      errorDescription,
+      validatedURL
+    ) => {
+
+      console.error(
+        'Falha ao carregar interface:',
+        {
+          errorCode,
+          errorDescription,
+          validatedURL
+        }
+      )
     }
-  } catch {
-    // URLs inválidas/internas: permitir
-  }
-  return verdict
-}
+  )
 
-function evaluateRequestSafety(details) {
-  // Requisições ao proxy carregam o destino real em ?url=
+/*
+  =======================================================
+    DOWNLOADS
+  =======================================================
+  */
+
+  const ses =
+    mainWindow.webContents.session
+
+  ses.on(
+    'will-download',
+    (
+      event,
+      item
+    ) => {
+
+      const id =
+        `dl-${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 8)}`
+
+      const download = {
+
+        id,
+
+        filename:
+          item.getFilename(),
+
+        url:
+          item.getURL(),
+
+        path:
+          item.getSavePath(),
+
+        state:
+          'progressing',
+
+        received:
+          0,
+
+        total:
+          item.getTotalBytes(),
+
+        startedAt:
+          new Date().toISOString()
+      }
+
+      downloads.push(
+        download
+      )
+
+      downloadItems.set(
+        id,
+        item
+      )
+
+      item.on(
+        'updated',
+        (
+          _event,
+          state
+        ) => {
+
+          download.state =
+            state === 'interrupted'
+              ? 'interrupted'
+              : 'progressing'
+
+          download.received =
+            item.getReceivedBytes()
+
+          download.total =
+            item.getTotalBytes()
+
+          sendToRenderer(
+            'download-progress',
+            download
+          )
+        }
+      )
+
+      item.once(
+        'done',
+        (
+          _event,
+          state
+        ) => {
+
+          download.state =
+            state
+
+          download.finishedAt =
+            new Date().toISOString()
+
+          download.path =
+            item.getSavePath()
+
+          downloadItems.delete(
+            id
+          )
+
+          sendToRenderer(
+            'download-done',
+            download
+          )
+        }
+      )
+    }
+  )
+
+  /*
+  =======================================================
+    NOVAS JANELAS / TARGET BLANK
+
+    Não abrir Chrome/Edge.
+
+    O renderer pode decidir criar uma nova aba.
+  =======================================================
+  */
+
+  /*
+  =======================================================
+    SESSÃO TURBO — UA ITA · PERMISSÕES · SPELLCHECK
+    - User-Agent com token ITABrowser (o site oficial
+      itabrowser.top detecta o navegador sozinho).
+    - Permissões liberadas (câmera, microfone, notifi-
+      cações, tela, clipboard...) em TODAS as sessões
+      (UI + webviews persist:ita-tabs).
+    - Corretor ortográfico pt-BR/en-US.
+  =======================================================
+  */
+
+  const itaUA =
+    ses.getUserAgent() +
+    ' ITABrowser/1.0.0 (ITA Games Studios)'
+
   try {
-    const parsed = new URL(details.url)
-    if (parsed.pathname === '/proxy') {
-      const target = parsed.searchParams.get('url')
-      if (target) return evaluateUrlSafety(target)
-    }
-  } catch {
-    // segue para avaliação padrão
-  }
-  return evaluateUrlSafety(details.url)
-}
+    ses.setUserAgent(itaUA)
+    session.defaultSession.setUserAgent(itaUA)
+    session.fromPartition('persist:ita-tabs').setUserAgent(itaUA)
+  } catch { /* preview fora do Electron */ }
 
-// ===== Restauração de sessão (abas da última execução) =====
-const sessionPath = path.join(electron.app.getPath('userData'), 'ita-session.json')
-
-function readSessionFile() {
   try {
-    if (fs.existsSync(sessionPath)) {
-      return JSON.parse(fs.readFileSync(sessionPath, 'utf-8'))
-    }
-  } catch {
-    // arquivo corrompido: recomeçar
+    ses.setSpellCheckEnabled(true)
+    ses.setSpellCheckLanguages(['pt-BR', 'en-US'])
+  } catch { /* opcional */ }
+
+  const grantAllPermission = (_webContents, _permission, callback) => {
+    callback(true)
   }
-  return { tabs: [], savedAt: null }
-}
 
-function saveSessionFile(data) {
-  try {
-    fs.writeFileSync(sessionPath, JSON.stringify(data, null, 2))
-  } catch {
-    // falha silenciosa: não deve quebrar o navegador
-  }
-}
+  const allowPermissionCheck = () => true
 
-// ===== UI PRINCIPAL — deploy da Vercel com fallback para o arquivo local =====
-// A janela principal carrega a interface hospedada no deploy da branch main
-// (Vercel). Se o deploy estiver inacessível — sem internet, proteção SSO da
-// Vercel ativa ou erro do servidor — o app cai automaticamente para o
-// index.html local, evitando tela branca ou a página de login da Vercel.
-//   ITA_UI_URL=<url>   → usa outra URL remota (ex.: .../ui/ para a UI do navegador)
-//   ITA_UI_URL=local   → força sempre o arquivo local (ignora a rede)
-const DEFAULT_REMOTE_UI_URL = 'https://ita-navegador-g6jv-git-main-biscoitotv1-1912s-projects.vercel.app'
-
-function getRemoteUiUrl() {
-  const configured = process.env.ITA_UI_URL
-  if (!configured || configured === 'default') return DEFAULT_REMOTE_UI_URL
-  return configured === 'local' ? null : configured
-}
-
-// Sonda: o deploy responde com a nossa UI (e não com o muro de login da Vercel)?
-function probeRemoteUi(remoteUrl) {
-  return new Promise((resolve) => {
-    let settled = false
-    let req = null
-    const done = (ok) => {
-      if (settled) return
-      settled = true
-      try { if (req) req.destroy() } catch { /* conexão já encerrada */ }
-      resolve(ok)
-    }
+  ;[
+    ses,
+    session.fromPartition('persist:ita-tabs')
+  ].forEach((targetSession) => {
     try {
-      const lib = remoteUrl.startsWith('http://') ? http : https
-      req = lib.request(remoteUrl, { method: 'GET', timeout: 8000 }, (res) => {
-        // Deploy protegido por SSO redireciona para vercel.com → não é a nossa UI
-        if (res.statusCode < 200 || res.statusCode >= 400) {
-          res.resume()
-          done(false)
-          return
-        }
-        let body = ''
-        res.setEncoding('utf-8')
-        res.on('data', (chunk) => {
-          body += chunk
-          // Marcador da nossa interface aparece no início do HTML
-          if (/ITA Navegador|itaBrowser|ita-ui/i.test(body)) done(true)
-        })
-        res.on('end', () => done(/ITA Navegador|itaBrowser|ita-ui/i.test(body)))
-        res.on('error', () => done(false))
-      })
-      req.on('timeout', () => done(false))
-      req.on('error', () => done(false))
-      req.end()
-    } catch {
-      resolve(false)
-    }
-  })
-}
-
-async function loadMainUi() {
-  let restored = false
-  const restoreOnce = () => {
-    if (restored) return
-    restored = true
-    sendToRenderer('restore-session', readSessionFile())
-  }
-  const loadLocalUi = () => mainWindow.loadFile(path.join(__dirname, 'index.html'))
-
-  mainWindow.webContents.once('did-finish-load', restoreOnce)
-
-  const remoteUrl = getRemoteUiUrl()
-  if (remoteUrl && await probeRemoteUi(remoteUrl)) {
-    // Se a rede cair durante o uso (falha no quadro principal), cai para o local
-    mainWindow.webContents.once('did-fail-load', (_event, errorCode, _desc, _url, isMainFrame) => {
-      if (!isMainFrame || restored || errorCode === -3) return // -3 = carga substituída
-      loadLocalUi()
-    })
-    mainWindow.loadURL(remoteUrl)
-  } else {
-    loadLocalUi()
-  }
-}
-
-async function createWindow() {
-  try {
-    const serverResult = await LocalServer.start()
-    localServerUrl = serverResult.url
-    console.log('Local server ready at', localServerUrl)
-  } catch (err) {
-    console.error('Failed to start local server:', err)
-    localServerUrl = 'http://localhost:8080'
-  }
-
-  mainWindow = new electron.BrowserWindow({
-    width: 1400,
-    height: 900,
-    minWidth: 900,
-    minHeight: 600,
-    title: 'ITA Browser',
-    // ===== ITA CHROME: moldura nativa removida =====
-    // A barra de títulos é desenhada pelo próprio app (index.html).
-    // O overlay mantém os botões nativos (min/max/fechar) integrados
-    // ao tema escuro — mesma técnica do VS Code no Windows.
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#161616',
-      symbolColor: '#e8eef9',
-      height: 38
-    },
-    backgroundColor: '#0d0d0d',
-    // Ícone oficial da marca (gerado por scripts/generate-brand.py)
-    icon: path.join(__dirname, 'public', 'brand', 'ita-logo.ico'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      webviewTag: true
-    }
+      targetSession.setPermissionRequestHandler(grantAllPermission)
+      targetSession.setPermissionCheckHandler(allowPermissionCheck)
+    } catch { /* sessão indisponível */ }
   })
 
-  // Sincroniza o estado da janela com a barra de títulos customizada
-  // (ícone maximizar/restaurar e cantos arredondados no renderer)
-  const pushWindowState = () => sendToRenderer('window-state-changed', {
-    maximized: mainWindow.isMaximized(),
-    fullscreen: mainWindow.isFullScreen()
-  })
-  ;['maximize', 'unmaximize', 'enter-full-screen', 'leave-full-screen']
-    .forEach(ev => mainWindow.on(ev, pushWindowState))
+  /*
+  =======================================================
+    CONTROLE DE WINDOW.OPEN
+  =======================================================
+  */
 
-  AppCore.init(mainWindow)
-  EditorModule.setMainWindow(mainWindow)
-  Agent.setMainWindow(mainWindow)
+  mainWindow.webContents.setWindowOpenHandler(
+    ({ url }) => {
 
-  const session = mainWindow.webContents.session
-  session.webRequest.onHeadersReceived({ urls: ['<all_urls>'] }, (details, callback) => {
-    const headers = Object.assign({}, details.responseHeaders)
-    delete headers['x-frame-options']
-    delete headers['X-Frame-Options']
-    delete headers['frame-ancestors']
-    delete headers['content-security-policy']
-    callback({ responseHeaders: headers })
-  })
+      if (
+        isWebUrl(url)
+      ) {
 
-  // ===== Gerenciador de downloads com progresso =====
-  session.on('will-download', (event, item) => {
-    const download = {
-      id: `dl-${Date.now()}`,
-      filename: item.getFilename(),
-      url: item.getURL(),
-      path: item.getSavePath(),
-      state: 'progressing',
-      received: 0,
-      total: item.getTotalBytes(),
-      startedAt: new Date().toISOString()
-    }
-    downloads.push(download)
-    downloadItems.set(download.id, item)
+        /*
+        ---------------------------------------------------
+          Envia para o renderer.
+          O renderer poderá transformar em nova aba.
+        ---------------------------------------------------
+        */
 
-    item.on('updated', (_e, state) => {
-      download.state = state === 'interrupted' ? 'interrupted' : 'progressing'
-      download.received = item.getReceivedBytes()
-      download.total = item.getTotalBytes()
-      sendToRenderer('download-progress', download)
-    })
+        sendToRenderer(
+          'new-tab-request',
+          {
+            url
+          }
+        )
 
-    item.once('done', (_e, state) => {
-      download.state = state
-      download.finishedAt = new Date().toISOString()
-      downloadItems.delete(download.id)
-      sendToRenderer('download-done', download)
-    })
-
-    sendToRenderer('download-started', download)
-  })
-
-  // ===== Proteção contra páginas maliciosas =====
-  // will-navigate: protege a janela principal
-  mainWindow.webContents.on('will-navigate', (event, targetUrl) => {
-    const verdict = evaluateUrlSafety(targetUrl)
-    if (!verdict.safe) {
-      event.preventDefault()
-      sendToRenderer('security-block', verdict)
-    }
-  })
-
-  // onBeforeRequest: protege também os webviews (navegação real via proxy)
-  session.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (details, callback) => {
-    if (details.resourceType === 'mainFrame') {
-      const verdict = evaluateRequestSafety(details)
-      if (!verdict.safe) {
-        sendToRenderer('security-block', verdict)
-        callback({ cancel: true })
-        return
       }
-      if (verdict.warn) {
-        sendToRenderer('security-warning', verdict)
+
+      return {
+        action:
+          'deny'
       }
     }
-    callback({})
-  })
+  )
 
-  // ===== UI PRINCIPAL: Vercel (branch main) com fallback local offline =====
-  await loadMainUi()
+  /*
+  =======================================================
+    NAVEGAÇÃO
+  =======================================================
+  */
+
+  mainWindow.webContents.on(
+    'will-navigate',
+    (
+      event,
+      url
+    ) => {
+
+      /*
+      -----------------------------------------------------
+        A interface principal não deve sair para outro site.
+        Sites externos ficam nos webviews.
+      -----------------------------------------------------
+      */
+
+      if (
+        mainWindow &&
+        url !==
+          mainWindow.webContents.getURL()
+      ) {
+
+        /*
+        Não bloqueamos navegação da própria interface
+        quando ela for necessária.
+        */
+
+      }
+    }
+  )
+
+  /*
+  =======================================================
+    ESTADO DA JANELA
+  =======================================================
+  */
+
+  const sendWindowState = () => {
+
+    sendToRenderer(
+      'window-state-changed',
+      {
+        maximized:
+          mainWindow.isMaximized(),
+
+        fullscreen:
+          mainWindow.isFullScreen()
+      }
+    )
+  }
+
+  ;[
+    'maximize',
+    'unmaximize',
+    'enter-full-screen',
+    'leave-full-screen'
+  ].forEach(
+    eventName => {
+
+      mainWindow.on(
+        eventName,
+        sendWindowState
+      )
+    }
+  )
+
+  mainWindow.on(
+    'closed',
+    () => {
+
+      mainWindow =
+        null
+    }
+  )
 }
 
-// ===== Barra de Menus Electron =====
-function buildAppMenu() {
-  const { Menu, dialog, shell } = electron
+/*
+=========================================================
+  WEBVIEWS — WINDOW.OPEN / TARGET=_BLANK → NOVA ABA
+  Popups dos sites (OAuth, compartilhar, chat) abrem
+  como aba ITA em vez de janela externa.
+=========================================================
+*/
 
-  const template = [
-    {
-      label: 'Arquivo',
-      submenu: [
-        {
-          label: 'Abrir Pasta de Projeto',
-          accelerator: 'CmdOrCtrl+Shift+O',
-          async click() {
-            const result = await dialog.showOpenDialog(mainWindow, {
-              title: 'Abrir Pasta de Projeto',
-              properties: ['openDirectory'],
-              buttonLabel: 'Abrir Projeto'
-            })
-            if (!result.canceled && result.filePaths.length > 0) {
-              const projectPath = result.filePaths[0]
-              sendToRenderer('open-project-folder', { path: projectPath })
-            }
-          }
-        },
-        {
-          label: 'Build Universal',
-          accelerator: 'CmdOrCtrl+Shift+B',
-          async click() {
-            if (!mainWindow) return
-            sendToRenderer('menu-build-universal', {})
-            // Dispara build para todas as plataformas via BuildSystem
-            const platforms = ['windows', 'linux', 'web', 'android', 'ios']
-            for (const platform of platforms) {
-              try {
-                await BuildSystem.build(
-                  electron.app.getPath('documents'),
-                  { platform }
-                )
-              } catch (err) {
-                console.error(`Build ${platform} falhou:`, err.message)
-              }
-            }
-          }
-        },
-        {
-          label: 'Gerenciador de Dependências',
-          accelerator: 'CmdOrCtrl+Shift+D',
-          click() {
-            sendToRenderer('menu-dep-manager', {})
-          }
-        },
-        { type: 'separator' },
-        {
-          label: 'Sair',
-          accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Alt+F4',
-          click() {
-            electron.app.quit()
-          }
-        }
-      ]
-    },
+app.on(
+  'web-contents-created',
+  (_event, contents) => {
 
-    // ===== Edit — roles nativas do Electron (sem implementação manual) =====
-    {
-      label: 'Editar',
-      submenu: [
-        { label: 'Desfazer',      role: 'undo',      accelerator: 'CmdOrCtrl+Z' },
-        { label: 'Refazer',       role: 'redo',       accelerator: 'CmdOrCtrl+Y' },
-        { type: 'separator' },
-        { label: 'Recortar',      role: 'cut',        accelerator: 'CmdOrCtrl+X' },
-        { label: 'Copiar',        role: 'copy',       accelerator: 'CmdOrCtrl+C' },
-        { label: 'Colar',         role: 'paste',      accelerator: 'CmdOrCtrl+V' },
-        { label: 'Selecionar Tudo', role: 'selectAll', accelerator: 'CmdOrCtrl+A' }
-      ]
-    },
+    if (
+      contents.getType() ===
+      'webview'
+    ) {
 
-    // ===== View — navegação, zoom e ferramentas de desenvolvimento =====
-    {
-      label: 'Exibir',
-      submenu: [
-        {
-          label: 'Recarregar Aba Atual',
-          accelerator: 'CmdOrCtrl+R',
-          click() {
-            // Recarrega apenas a aba ativa (webview) — o renderer decide o alvo
-            sendToRenderer('tab-reload', { hard: false })
-          }
-        },
-        {
-          label: 'Recarregar Aba Atual (F5)',
-          accelerator: 'F5',
-          click() {
-            sendToRenderer('tab-reload', { hard: false })
-          }
-        },
-        {
-          label: 'Forçar Recarregamento',
-          accelerator: 'CmdOrCtrl+Shift+R',
-          click() {
-            if (mainWindow) mainWindow.webContents.reloadIgnoringCache()
-          }
-        },
-        {
-          label: 'Inspecionar Elemento (Aba Atual)',
-          accelerator: 'F12',
-          click() {
-            // Abre o DevTools da aba ativa (webview) ou da janela principal
-            sendToRenderer('tab-devtools', {})
-          }
-        },
-        { type: 'separator' },
-        {
-          label: 'Aproximar',
-          role: 'zoomIn',
-          accelerator: 'CmdOrCtrl+Plus'
-        },
-        {
-          label: 'Afastar',
-          role: 'zoomOut',
-          accelerator: 'CmdOrCtrl+-'
-        },
-        {
-          label: 'Zoom Padrão',
-          role: 'resetZoom',
-          accelerator: 'CmdOrCtrl+0'
-        },
-        { type: 'separator' },
-        {
-          label: 'Tela Cheia',
-          accelerator: 'F11',
-          click() {
-            if (mainWindow) mainWindow.setFullScreen(!mainWindow.isFullScreen())
-          }
-        }
-      ]
-    },
+      contents.setWindowOpenHandler(
+        ({ url }) => {
 
-    // ===== IA — atalhos de produtividade assistida =====
-    {
-      label: 'IA',
-      submenu: [
-        {
-          label: 'Comandos Rápidos da IA (Otimizar Código)',
-          accelerator: 'CmdOrCtrl+Shift+I',
-          async click() {
-            if (!mainWindow) return
-            // Captura o texto selecionado no renderer e envia ao AgentCore
-            const selectedText = await mainWindow.webContents.executeJavaScript(
-              'window.getSelection ? window.getSelection().toString() : ""'
+          if (
+            isWebUrl(url)
+          ) {
+
+            sendToRenderer(
+              'new-tab-request',
+              { url }
             )
-            if (!selectedText || !selectedText.trim()) {
-              electron.dialog.showMessageBox(mainWindow, {
-                type: 'info',
-                title: 'IA — Otimizar Código',
-                message: 'Selecione um trecho de código no editor antes de usar este atalho.'
-              })
-              return
-            }
-            sendToRenderer('ai-optimize-code', { code: selectedText })
-            // Dispara análise diretamente no AgentCore
-            try {
-              Agent.agent.runCycle(
-                `Analise e otimize o seguinte trecho de código:\n\n${selectedText}`
-              ).then(result => sendToRenderer('ai-optimize-result', result))
-               .catch(err => sendToRenderer('ai-optimize-error', { message: err.message }))
-            } catch (err) {
-              console.error('AgentCore — otimização falhou:', err.message)
-            }
-          }
-        },
-        {
-          label: 'Inserir Log de Diagnóstico',
-          accelerator: 'CmdOrCtrl+Shift+L',
-          click() {
-            if (!mainWindow) return
-            // Injeta console.log de diagnóstico na posição do cursor no editor
-            sendToRenderer('editor-insert-diagnostic-log', {
-              snippet: `console.log('[ITA-DIAG]', { ts: Date.now(), state: typeof window !== 'undefined' ? window.__ITA_STATE__ : null });`,
-              timestamp: new Date().toISOString()
-            })
-          }
-        },
-        {
-          label: 'Limpar Cache / Estado Local',
-          accelerator: 'CmdOrCtrl+Shift+K',
-          async click() {
-            if (!mainWindow) return
-            const { response } = await electron.dialog.showMessageBox(mainWindow, {
-              type: 'question',
-              title: 'Limpar Cache / Estado Local',
-              message: 'Isso vai limpar localStorage, sessionStorage e recarregar a janela. Continuar?',
-              buttons: ['Cancelar', 'Limpar e Recarregar'],
-              defaultId: 1,
-              cancelId: 0
-            })
-            if (response === 1) {
-              await mainWindow.webContents.executeJavaScript(
-                'localStorage.clear(); sessionStorage.clear();'
+
+          } else {
+
+            /*
+              Deep link itabrowser://open?url=... aberto via
+              popup → vira nova aba ITA com o site de destino.
+            */
+
+            const deepLinkUrl =
+              extractDeepLinkUrl([url])
+
+            if (deepLinkUrl) {
+
+              sendToRenderer(
+                'new-tab-request',
+                { url: deepLinkUrl }
               )
-              await mainWindow.webContents.session.clearCache()
-              await mainWindow.webContents.session.clearStorageData({
-                storages: ['cookies', 'filesystem', 'indexdb', 'localstorage', 'shadercache', 'websql', 'serviceworkers', 'cachestorage']
-              })
-              mainWindow.webContents.reload()
-              sendToRenderer('cache-cleared', { clearedAt: new Date().toISOString() })
             }
           }
-        },
-        { type: 'separator' },
-        {
-          label: 'Alternar Painel do Agente Automação',
-          accelerator: 'CmdOrCtrl+Shift+A',
-          click() {
-            if (!mainWindow) return
-            // Abre ou fecha o painel do Agente Automação
-            sendToRenderer('toggle-ai-sidebar', {})
+
+          return {
+            action:
+              'deny'
           }
         }
-      ]
-    },
+      )
 
-    // ===== Window — controle da janela do aplicativo =====
-    {
-      label: 'Janela',
-      submenu: [
-        {
-          label: 'Minimizar',
-          accelerator: 'CmdOrCtrl+M',
-          click() {
-            if (mainWindow) mainWindow.minimize()
-          }
-        },
-        {
-          label: 'Fechar',
-          accelerator: 'CmdOrCtrl+W',
-          click() {
-            if (mainWindow) mainWindow.close()
-          }
-        },
-        { type: 'separator' },
-        {
-          label: 'Sempre no Topo',
-          accelerator: 'CmdOrCtrl+Shift+T',
-          type: 'checkbox',
-          checked: false,
-          click(menuItem) {
-            if (!mainWindow) return
-            const onTop = menuItem.checked
-            mainWindow.setAlwaysOnTop(onTop)
-            // Notifica o renderer para exibir indicador visual se houver
-            sendToRenderer('always-on-top-changed', { enabled: onTop })
-          }
-        },
-        { type: 'separator' },
-        {
-          label: 'Alternar Modo de Janela',
-          accelerator: 'CmdOrCtrl+Shift+F',
-          click() {
-            if (!mainWindow) return
-            if (mainWindow.isFullScreen()) {
-              // Sai do fullscreen e restaura modo janela normal
-              mainWindow.setFullScreen(false)
-              mainWindow.unmaximize()
-            } else if (mainWindow.isMaximized()) {
-              // Estava maximizado — restaura tamanho anterior
-              mainWindow.unmaximize()
-            } else {
-              // Estava em janela normal — maximiza
-              mainWindow.maximize()
+      /*
+      -----------------------------------------------------
+        DEEP LINKS DENTRO DAS ABAS — itabrowser://open?url=
+        Clicar em um card do portal oficial dentro de uma
+        aba abre o site em NOVA ABA ITA (a webview em si
+        não navega para esquemas desconhecidos).
+      -----------------------------------------------------
+      */
+
+      contents.on(
+        'will-navigate',
+        (event, url) => {
+
+          if (
+            typeof url === 'string' &&
+            url.toLowerCase().startsWith(PROTOCOL + '://')
+          ) {
+
+            event.preventDefault()
+
+            const deepLinkUrl =
+              extractDeepLinkUrl([url])
+
+            if (deepLinkUrl) {
+
+              sendToRenderer(
+                'new-tab-request',
+                { url: deepLinkUrl }
+              )
             }
-            sendToRenderer('window-mode-changed', {
-              fullscreen: mainWindow.isFullScreen(),
-              maximized: mainWindow.isMaximized()
-            })
           }
         }
-      ]
-    }
-  ]
-
-  const menu = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(menu)
-}
-
-electron.app.whenReady().then(async () => {
-  await createWindow()
-  buildAppMenu()
-})
-
-electron.app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') electron.app.quit()
-})
-
-electron.app.on('activate', () => {
-  if (electron.BrowserWindow.getAllWindows().length === 0) createWindow()
-})
-
-// Informa ao renderer o estado atual do 'Sempre no Topo'
-electron.ipcMain.handle('get-always-on-top', async () => {
-  return { enabled: mainWindow ? mainWindow.isAlwaysOnTop() : false }
-})
-
-// Informa ao renderer o estado atual da janela (fullscreen / maximized)
-// Alterna o DevTools da janela principal (usado como fallback do F12
-// quando nenhuma aba com webview está ativa)
-electron.ipcMain.handle('toggle-main-devtools', async () => {
-  if (mainWindow) {
-    mainWindow.webContents.toggleDevTools()
-  }
-  return { success: true }
-})
-
-electron.ipcMain.handle('get-window-state', async () => {
-  if (!mainWindow) return { fullscreen: false, maximized: false }
-  return {
-    fullscreen: mainWindow.isFullScreen(),
-    maximized: mainWindow.isMaximized()
-  }
-})
-
-// ===== Controles de janela via barra de títulos customizada =====
-// (usados como fallback quando o Window Controls Overlay nativo
-//  não está disponível — ex.: Linux)
-electron.ipcMain.on('window-minimize', () => {
-  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.minimize()
-})
-
-electron.ipcMain.on('window-maximize-toggle', () => {
-  if (!mainWindow || mainWindow.isDestroyed()) return
-  if (mainWindow.isMaximized()) {
-    mainWindow.unmaximize()
-  } else {
-    mainWindow.maximize()
-  }
-  sendToRenderer('window-state-changed', {
-    maximized: mainWindow.isMaximized(),
-    fullscreen: mainWindow.isFullScreen()
-  })
-})
-
-electron.ipcMain.on('window-close', () => {
-  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close()
-})
-
-electron.ipcMain.handle('navigate', async (_event, url) => {
-  if (!mainWindow) return
-  const handler = BrowserModule.getIpcHandlers()['browser-navigate']
-  if (handler) {
-    const target = await handler(_event, url)
-    if (target) {
-      await mainWindow.webContents.loadURL(target)
+      )
     }
   }
-})
+)
 
-electron.ipcMain.handle('go-back', async () => {
-  if (mainWindow && mainWindow.webContents.canGoBack()) {
-    await mainWindow.webContents.goBack()
+
+/*
+=========================================================
+  ITABROWSER:// — PORTAL OFICIAL ↔ APP (DEEP LINK)
+  itabrowser.top usa links itabrowser://open?url=...
+  para abrir sites direto no navegador desktop.
+  Ex.: itabrowser://open?url=https%3A%2F%2Fyoutube.com
+=========================================================
+*/
+
+const PROTOCOL = 'itabrowser'
+
+function extractDeepLinkUrl(argv) {
+
+  const arg =
+    (argv || []).find(
+      candidate =>
+        typeof candidate === 'string' &&
+        candidate.toLowerCase().startsWith(
+          PROTOCOL + '://'
+        )
+    )
+
+  if (!arg) {
+    return null
   }
-})
 
-electron.ipcMain.handle('go-forward', async () => {
-  if (mainWindow && mainWindow.webContents.canGoForward()) {
-    await mainWindow.webContents.goForward()
-  }
-})
-
-electron.ipcMain.handle('reload', async () => {
-  if (mainWindow) {
-    await mainWindow.webContents.reload()
-  }
-})
-
-electron.ipcMain.handle('load-local-file', async (_event, filePath) => {
-  if (!mainWindow) return
-  const fullPath = path.join(__dirname, filePath)
-  await mainWindow.webContents.loadFile(fullPath)
-})
-
-electron.ipcMain.handle('get-local-server-url', async () => {
-  return localServerUrl || 'http://localhost:8080'
-})
-
-// =========================================================
-//  NAVEGADOR PADRÃO DO SISTEMA (Chrome, Edge, etc.)
-//  Abre a URL real em nova aba do navegador do usuário —
-//  via IPC (botão ↗ da UI) ou via window.open/target=_blank.
-// =========================================================
-
-function isWebUrl(target) {
-  return typeof target === 'string' && /^https?:\/\//i.test(target)
-}
-
-electron.ipcMain.handle('open-external', async (_event, url) => {
-  if (!isWebUrl(url)) return { success: false, error: 'URL inválida' }
-  await electron.shell.openExternal(url)
-  return { success: true }
-})
-
-// window.open / target="_blank" dentro do app abrem no navegador
-// padrão do sistema em vez de criar uma nova janela Electron.
-electron.app.on('web-contents-created', (_event, contents) => {
-  contents.setWindowOpenHandler(({ url }) => {
-    if (isWebUrl(url)) {
-      electron.shell.openExternal(url).catch(() => {})
-    }
-    return { action: 'deny' }
-  })
-})
-
-electron.ipcMain.handle('switch-module', async (_event, moduleName) => {
-  AppCore.switchModule(moduleName)
-})
-
-electron.ipcMain.handle('get-modules', async () => {
-  return Array.from(AppCore.modules.keys())
-})
-
-electron.ipcMain.handle('get-current-module', async () => {
-  return AppCore.get('currentModule') || 'browser'
-})
-
-electron.ipcMain.handle('get-favorites', async () => {
-  return favorites
-})
-
-electron.ipcMain.handle('save-session', async (_event, data) => {
-  saveSessionFile({ tabs: Array.isArray(data && data.tabs) ? data.tabs : [], savedAt: new Date().toISOString() })
-  return { success: true }
-})
-
-electron.ipcMain.handle('get-session', async () => readSessionFile())
-
-electron.ipcMain.handle('get-downloads', async () => downloads)
-
-electron.ipcMain.handle('cancel-download', async (_event, id) => {
-  const item = downloadItems.get(id)
-  if (!item) {
-    return { success: false, error: 'Download não encontrado ou já finalizado' }
-  }
   try {
-    item.cancel()
-    return { success: true }
-  } catch (err) {
-    return { success: false, error: err.message }
+
+    const parsed =
+      new URL(arg)
+
+    const queryUrl =
+      parsed.searchParams.get('url')
+
+    if (
+      isWebUrl(queryUrl)
+    ) {
+      return queryUrl
+    }
+
+    const rest =
+      arg.slice((PROTOCOL + '://').length)
+
+    const pathMatch =
+      rest.match(/^open\/(https?:\/\/.+)$/i)
+
+    if (pathMatch) {
+      return pathMatch[1]
+    }
+  } catch {
+    return null
   }
-})
 
-electron.ipcMain.handle('save-favorite', async (_event, item) => {
-  favorites.push(item)
-  saveFavorites()
-  return favorites
-})
+  return null
+}
 
-electron.ipcMain.handle('remove-favorite', async (_event, index) => {
-  favorites.splice(index, 1)
-  saveFavorites()
-  return favorites
-})
+const gotSingleInstanceLock =
+  app.requestSingleInstanceLock()
 
-const studioHandlers = StudioModule.getIpcHandlers()
-Object.entries(studioHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+if (!gotSingleInstanceLock) {
 
-const editorHandlers = EditorModule.getIpcHandlers()
-Object.entries(editorHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+  app.quit()
 
-const projectHandlers = ProjectManager.getIpcHandlers()
-Object.entries(projectHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+} else {
 
-const aiHandlers = ITAAI.getIpcHandlers ? ITAAI.getIpcHandlers() : {}
-Object.entries(aiHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+  app.on(
+    'second-instance',
+    (_event, argv) => {
 
-const networkHandlers = NetworkManager.getIpcHandlers ? NetworkManager.getIpcHandlers() : {}
-Object.entries(networkHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+      if (mainWindow) {
 
-const buildHandlers = BuildSystem.getIpcHandlers ? BuildSystem.getIpcHandlers() : {}
-Object.entries(buildHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore()
+        }
 
-const physicsHandlers = PhysicsEngine.getIpcHandlers ? PhysicsEngine.getIpcHandlers() : {}
-Object.entries(physicsHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+        mainWindow.focus()
+      }
 
-const audioHandlers = AudioSystem.getIpcHandlers ? AudioSystem.getIpcHandlers() : {}
-Object.entries(audioHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+      const deepLinkUrl =
+        extractDeepLinkUrl(argv)
 
-const scriptHandlers = ScriptEditor.getIpcHandlers ? ScriptEditor.getIpcHandlers() : {}
-Object.entries(scriptHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+      if (deepLinkUrl) {
+        sendToRenderer(
+          'new-tab-request',
+          { url: deepLinkUrl }
+        )
+      }
+    }
+  )
+}
 
-const agentHandlers = Agent.getIpcHandlers()
-Object.entries(agentHandlers).forEach(([channel, handler]) => {
-  electron.ipcMain.handle(channel, async (event, ...args) => handler(event, ...args))
-})
+app.setAsDefaultProtocolClient(PROTOCOL)
+
+app.on(
+  'open-url',
+  (event, url) => {
+
+    event.preventDefault()
+
+    const target =
+      extractDeepLinkUrl([url])
+
+    if (target) {
+      sendToRenderer(
+        'new-tab-request',
+        { url: target }
+      )
+    }
+  }
+)
+
+/*
+=========================================================
+  APP READY
+=========================================================
+*/
+
+app.whenReady()
+  .then(
+    async () => {
+
+      /*
+      -----------------------------------------------------
+        Identidade do app no Windows (notificações, barra)
+      -----------------------------------------------------
+      */
+
+      app.setAppUserModelId('top.itabrowser.app')
+
+      /*
+      -----------------------------------------------------
+        PORTAL OFICIAL — itabrowser.top dentro do app
+        Instala itaportal:// + redirect https→portal local
+        nas duas sessões (interface e abas/webviews).
+      -----------------------------------------------------
+      */
+
+      const portalInstalled =
+        installPortalBridge(session.defaultSession)
+
+      installPortalBridge(
+        session.fromPartition('persist:ita-tabs')
+      )
+
+      console.log(
+        'Portal itabrowser.top local:',
+        portalInstalled ? 'ATIVADO (itaportal://)' : 'usando domínio remoto'
+      )
+
+      createWindow()
+
+
+      /*
+      -----------------------------------------------------
+        macOS
+      -----------------------------------------------------
+      */
+
+      app.on(
+        'activate',
+        () => {
+
+          if (
+            BrowserWindow.getAllWindows()
+              .length === 0
+          ) {
+
+            createWindow()
+          }
+        }
+      )
+    }
+  )
+
+/*
+=========================================================
+  FECHAR APP
+=========================================================
+*/
+
+app.on(
+  'window-all-closed',
+  () => {
+
+    if (
+      process.platform !==
+      'darwin'
+    ) {
+
+      app.quit()
+    }
+  }
+)
+
+/*
+=========================================================
+  IPC — NAVEGAR
+=========================================================
+*/
+
+ipcMain.handle(
+  'browser-normalize-url',
+  async (
+    _event,
+    value
+  ) => {
+
+    return normalizeUrl(
+      value
+    )
+  }
+)
+
+/*
+=========================================================
+  IPC — VERIFICAR URL
+=========================================================
+*/
+
+ipcMain.handle(
+  'browser-check-url',
+  async (
+    _event,
+    url
+  ) => {
+
+    return evaluateUrlSafety(
+      url
+    )
+  }
+)
+
+/*
+=========================================================
+  IPC — HOME
+=========================================================
+*/
+
+ipcMain.handle(
+  'browser-home-url',
+  async () => {
+
+    return HOME_URL
+  }
+)
+
+/*
+=========================================================
+  IPC — ABRIR URL EXTERNA
+=========================================================
+
+  Usar SOMENTE quando o usuário realmente escolher
+  "Abrir no navegador do sistema".
+
+=========================================================
+*/
+
+ipcMain.handle(
+  'open-external',
+  async (
+    _event,
+    url
+  ) => {
+
+    if (
+      !isWebUrl(url)
+    ) {
+
+      return {
+        success: false,
+        error:
+          'URL inválida'
+      }
+    }
+
+    try {
+
+      await shell.openExternal(
+        url
+      )
+
+      return {
+        success: true
+      }
+
+    } catch (error) {
+
+      return {
+        success: false,
+        error:
+          error.message
+      }
+    }
+  }
+)
+
+/*
+=========================================================
+  IPC — VOLTAR
+=========================================================
+*/
+
+ipcMain.handle(
+  'go-back',
+  async () => {
+
+    if (
+      !mainWindow
+    ) {
+      return false
+    }
+
+    if (
+      mainWindow.webContents
+        .canGoBack()
+    ) {
+
+      mainWindow.webContents
+        .goBack()
+
+      return true
+    }
+
+    return false
+  }
+)
+
+/*
+=========================================================
+  IPC — AVANÇAR
+=========================================================
+*/
+
+ipcMain.handle(
+  'go-forward',
+  async () => {
+
+    if (
+      !mainWindow
+    ) {
+      return false
+    }
+
+    if (
+      mainWindow.webContents
+        .canGoForward()
+    ) {
+
+      mainWindow.webContents
+        .goForward()
+
+      return true
+    }
+
+    return false
+  }
+)
+
+/*
+=========================================================
+  IPC — RECARREGAR
+=========================================================
+*/
+
+ipcMain.handle(
+  'reload',
+  async () => {
+
+    if (
+      mainWindow
+    ) {
+
+      mainWindow.webContents
+        .reload()
+
+      return true
+    }
+
+    return false
+  }
+)
+
+/*
+=========================================================
+  IPC — MINIMIZAR
+=========================================================
+*/
+
+ipcMain.on(
+  'window-minimize',
+  () => {
+
+    if (
+      mainWindow &&
+      !mainWindow.isDestroyed()
+    ) {
+
+      mainWindow.minimize()
+    }
+  }
+)
+
+/*
+=========================================================
+  IPC — MAXIMIZAR
+=========================================================
+*/
+
+ipcMain.on(
+  'window-maximize-toggle',
+  () => {
+
+    if (
+      !mainWindow ||
+      mainWindow.isDestroyed()
+    ) {
+      return
+    }
+
+    if (
+      mainWindow.isMaximized()
+    ) {
+
+      mainWindow.unmaximize()
+
+    } else {
+
+      mainWindow.maximize()
+    }
+
+    sendToRenderer(
+      'window-state-changed',
+      {
+        maximized:
+          mainWindow.isMaximized(),
+
+        fullscreen:
+          mainWindow.isFullScreen()
+      }
+    )
+  }
+)
+
+/*
+=========================================================
+  IPC — FECHAR
+=========================================================
+*/
+
+ipcMain.on(
+  'window-close',
+  () => {
+
+    if (
+      mainWindow &&
+      !mainWindow.isDestroyed()
+    ) {
+
+      mainWindow.close()
+    }
+  }
+)
+
+/*
+=========================================================
+  IPC — DOWNLOAD CANCEL
+=========================================================
+*/
+
+ipcMain.handle(
+  'cancel-download',
+  async (
+    _event,
+    downloadId
+  ) => {
+
+    const item =
+      downloadItems.get(
+        downloadId
+      )
+
+    if (!item) {
+
+      return {
+        success: false
+      }
+    }
+
+    try {
+
+      item.cancel()
+
+      return {
+        success: true
+      }
+
+    } catch {
+
+      return {
+        success: false
+      }
+    }
+  }
+)
+
+/*
+=========================================================
+  IPC — LISTAR DOWNLOADS
+=========================================================
+*/
+
+ipcMain.handle(
+  'get-downloads',
+  async () => {
+
+    return downloads
+  }
+)
+
+/*
+=========================================================
+  IPC — DEVTOOLS
+=========================================================
+*/
+
+ipcMain.handle(
+  'toggle-main-devtools',
+  async () => {
+
+    if (
+      !mainWindow
+    ) {
+      return false
+    }
+
+    mainWindow.webContents
+      .toggleDevTools()
+
+    return true
+  }
+)
+
+/*
+=========================================================
+  SEGURANÇA DE CERTIFICADOS
+
+  Não ignorar certificados SSL globalmente.
+=========================================================
+*/
+
+app.on(
+  'certificate-error',
+  (
+    event,
+    webContents,
+    url,
+    error,
+    certificate,
+    callback
+  ) => {
+
+    /*
+    -----------------------------------------------------
+      Só permitir certificados válidos.
+    -----------------------------------------------------
+    */
+
+    event.preventDefault()
+
+    callback(false)
+  }
+)
+
+/*
+=========================================================
+  LOG
+=========================================================
+*/
+
+console.log(
+  '========================================='
+)
+
+console.log(
+  'ITA Browser iniciado'
+)
+
+console.log(
+  'Home:',
+  HOME_URL
+)
+
+console.log(
+  'Internet direta:',
+  'ATIVADA'
+)
+
+console.log(
+  'Internet:',
+  '100% DIRETA (google.com, youtube.com e toda a web)'
+)
+
+console.log(
+  '========================================='
+)

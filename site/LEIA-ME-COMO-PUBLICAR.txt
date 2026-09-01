@@ -1,0 +1,59 @@
+══════════════════════════════════════════════════════════
+ PORTAL OFICIAL — itabrowser.top
+ ITA Games Studios 🔥
+══════════════════════════════════════════════════════════
+
+Esta pasta (site/) contém o portal estático do ITA Browser,
+100% na identidade FORGE (laranja · preto · branco), pronto
+para publicar no seu domínio itabrowser.top.
+
+── O QUE ELE FAZ ──────────────────────────────────────────
+
+1. APRESENTA o navegador (recursos, turbo Electron, IA).
+2. DETECTA quando o visitante já usa o ITA Browser
+   (o app envia o User-Agent "…ITABrowser/1.0.0 (ITA
+   Games Studios)") e mostra o banner de boas-vindas.
+3. ABRE SITES DIRETO NO APP via deep link:
+       itabrowser://open?url=https%3A%2F%2Fyoutube.com
+   O navegador desktop registra o protocolo itabrowser://
+   (setAsDefaultProtocolClient + protocols no electron-
+   builder) e abre a URL em nova aba ITA.
+4. APONTA O DOWNLOAD para a release oficial:
+       https://github.com/biscoitotv1/ITA-Navegador/releases/latest
+
+── COMO PUBLICAR NO SEU DOMÍNIO ──────────────────────────
+
+Opção A — Hospedagem simples (Hostinger, cPanel, etc.)
+   1. Copie TODO o conteúdo de site/ para a pasta pública
+      do domínio (public_html / www).
+   2. Pronto: index.html é a página inicial.
+
+Opção B — Vercel / Netlify
+   1. Importe o repositório.
+   2. Configure:
+        Root Directory: site
+        Build Command: (vazio — é estático)
+        Output Directory: . (raiz do site/)
+   3. Domínio: aponte itabrowser.top para o projeto.
+
+── PORTAL DENTRO DO APP (NOVO) ────────────────────────────
+
+· A partir de agora o ITA Navegador desktop também SERVE este
+  portal localmente (esquema itaportal://, via
+  src/portal/PortalBridge.js): qualquer aba que abrir
+  https://itabrowser.top mostra o portal FORGE 100% das vezes,
+  mesmo offline ou antes da publicação do domínio.
+· Publicar o domínio continua recomendado para visitantes
+  externos (quem usa Chrome/Edge, por exemplo).
+
+── ATENÇÃO ───────────────────────────────────────────────
+
+· Não há build, dependências nem servidor — é HTML/CSS/JS
+  puro e estático (rápido em qualquer CDN).
+· O rodapé "🔥 ITA GAMES STUDIOS" deve ser mantido — é a
+  assinatura oficial da criadora.
+· Para trocar o link de download, edite os hrefs do botão
+  "Baixar" (procure por releases/latest).
+
+ITA Games Studios © 2026
+══════════════════════════════════════════════════════════

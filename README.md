@@ -1,104 +1,60 @@
 # ITA Navegador
 
-Aplicação Next.js configurada para deploy na Vercel.
+Navegador desktop (Electron) com navegação **direta e real** na Internet.
+Digite qualquer endereço na barra (google.com, youtube.com, instagram.com...)
+ou clique nos cards da página inicial e o site abre de verdade.
 
-## Desenvolvimento local
+## Como rodar
 
-```bash
+```
 npm install
-copy .env.example .env.local
-npm run dev
+npm start
 ```
 
-Abra [http://localhost:3000](http://localhost:3000). A rota
-`/api/health` confirma que a aplicação está disponível.
+## Como gerar o instalador (Windows)
 
-## Deploy na Vercel
+```
+npm run dist
+```
 
-1. Envie este repositório para o GitHub.
-2. Na [Vercel](https://vercel.com/new), importe o repositório
-   `biscoitotv1/ITA-Navegador`.
-3. Em **Settings > Environment Variables**, defina
-   `NEXT_PUBLIC_APP_URL` com a URL de cada ambiente.
-4. Faça o deploy. A Vercel detecta automaticamente o Next.js e aplica as
-   configurações em `vercel.json`.
+## Como funciona
 
-Todo push para a branch de produção configurada na Vercel gera um deploy de
-produção; os demais branches recebem Preview Deployments.
+- **UI:** `index.html` — interface completa (abas, favoritos, downloads, histórico)
+- **Home:** `home.html` — cards que abrem sites reais (YouTube, Twitch, Steam, Reddit, GitHub)
+- **Webviews:** cada aba tem o próprio `<webview>` com partição persistente (`persist:ita-tabs`)
+- **Sessão:** abas e histórico são restaurados ao reabrir o app
+- **Barra de endereço:** `normalizeUrl` padroniza HTTPS e busca na web quando não é URL
+- **Portal oficial:** `site/` — itabrowser.top é servido de dentro do app via `itaportal://`,
+  então o card **ITA Cloud** abre o portal FORGE na nova interface 100% das vezes (até offline)
 
-## Interface remota no app desktop (fallback local)
+## Portal itabrowser.top na interface
 
-O app desktop (Electron) carrega a interface principal direto do deploy da
-branch main na Vercel (`DEFAULT_REMOTE_UI_URL` em `main.js`). Antes de abrir,
-uma sonda verifica se o deploy responde com a nossa UI. Se estiver inacessível
-(sem internet, proteção SSO da Vercel ativa ou erro do servidor), o app cai
-automaticamente para o `index.html` local — sem tela branca nem página de
-login da Vercel. Uma falha de rede durante o uso também retorna ao arquivo
-local.
+- `src/portal/PortalBridge.js` registra o esquema privilegiado `itaportal://` e serve a pasta
+  `site/` (MIME correto + proteção contra path traversal)
+- Navegar para `https://itabrowser.top` (ou www) em qualquer aba redireciona para o portal local
+  — a barra de endereço continua mostrando `https://itabrowser.top`
+- Deep links do portal (`itabrowser://open?url=...`) clicados dentro das abas viram nova aba ITA
+- Se a pasta `site/` não existir na instalação, o domínio remoto é usado normalmente
 
-> **Importante:** com a *Deployment Protection* (SSO) ativa na Vercel, a URL
-> `*.vercel.app` exige login e o app usa o arquivo local. Para que a UI
-> hospedada seja carregada, desative a proteção em **Project Settings →
-> Deployment Protection** (ou libere o acesso público ao deploy).
+## Testes
 
-Variável de ambiente opcional (defina antes de abrir o app):
+```
+npm test            # sintaxe de todos os .js
+npm run test:agent  # validação do agente IA
+npm run test:portal # smoke test do portal com Electron real
+```
 
-| Valor | Comportamento |
+
+## Estrutura principal
+
+| Arquivo | Papel |
 | --- | --- |
-| *(não definida)* | usa o deploy da branch main na Vercel (padrão) |
-| `ITA_UI_URL=<url>` | usa outra URL remota (ex.: `https://…/ui/` para abrir direto a UI do navegador) |
-| `ITA_UI_URL=local` | força sempre o arquivo local, ignorando a rede |
+| `main.js` | Processo principal do Electron (janela, sessão, downloads, IPC) |
+| `preload.js` | Ponte segura (`contextBridge`) entre a UI e o Electron |
+| `index.html` | Interface do navegador (abas, barra, favoritos, status) |
+| `home.html` | Página inicial com cards de sites reais |
+| `site/` | Portal oficial itabrowser.top (servido localmente pelo app) |
+| `src/portal/PortalBridge.js` | Esquema `itaportal://` + redirect do portal nas sessões |
 
-## Navegação web: HTTPS por padrão e proxy de conteúdo
-
-### 1. HTTPS por padrão (evita bloqueio de Mixed Content)
-
-Todo endereço digitado na barra é convertido para `https://` antes de
-carregar. Se o usuário digitar apenas `google.com` — ou até `http://google.com`
-— a URL é formatada como `https://google.com`. Isso evita o bloqueio de
-*Mixed Content* dos navegadores modernos, que recusam carregar conteúdo `http://`
-dentro de uma página servida em `https://` (caso do deploy na Vercel).
-
-Exceção: hosts locais e de rede privada (`localhost`, `127.0.0.1`, `::1`,
-`10.*`, `192.168.*`, `172.16–31.*`, `*.local`) mantêm `http://`, pois não
-dispõem de TLS.
-
-Pontos aplicados: `normalizeInput` em `public/ui/ita-ui.js` e
-`public/ide/ita-ide.js`, `navigateTo` em `public/index.html` e `index.html`
-(desktop) e o handler IPC `browser-navigate` em
-`src/browser/BrowserModule.js`.
-
-### 2. Proxy de navegação (contorna X-Frame-Options de iframes)
-
-Sites grandes (Google, YouTube, redes sociais) enviam o cabeçalho
-`X-Frame-Options` / `frame-ancestors` e se recusam a ser exibidos dentro de
-iframes de outros sites. O ITA Navegador contorna isso com um **proxy reverso**
-em vez de carregar as páginas diretamente:
-
-- **Desktop (Electron):** o servidor local (`src/server/LocalServer.js`) busca
-  a página, remove os cabeçalhos de bloqueio de frame, reescreve HTML/CSS para
-  que links e recursos passem pelo proxy e injeta um shim de navegação.
-- **Web (Vercel):** a rota serverless **`/proxy`** (`app/proxy/route.ts` +
-  `app/proxy/rewrite.ts`) faz o mesmo papel. As UIs web montam as URLs com a
-  própria origem HTTPS (mesma origem = sem Mixed Content), e o IDE web
-  (`public/ide/ita-ide.js`) detecta a rota automaticamente e exibe
-  “🛡 Proxy ITA ativo”.
-
-A rota `/proxy` também aplica proteção contra SSRF (bloqueia localhost/rede
-privada), transmite binários (imagens, mídia, downloads) sem alteração e
-devolve uma página de erro amigável quando o site de destino falha — a
-navegação nunca quebra com exceção não tratada.
-
-### 3. Abrir no navegador padrão (Chrome, Edge, etc.)
-
-O botão **↗** ao lado da barra de endereço (em todas as interfaces) abre a
-página atual em uma nova aba do navegador padrão do sistema. A URL é
-normalizada antes (`https://` por padrão, texto livre vira busca Google) e,
-no desktop, é enviada via IPC `open-external` → `shell.openExternal`.
-`window.open`/`target="_blank"` dentro do app também são interceptados
-(`setWindowOpenHandler` em `main.js`) e despachados para o navegador real do
-usuário em vez de criar uma nova janela Electron.
-
-> **Limitação conhecida:** alguns sites detectam e bloqueiam proxies
-> (Cloudflare, logins com proteção anti-bot). Nesses casos a página de erro do
-> proxy é exibida, e o site continua acessível abrindo direto no app desktop.
+> O app é 100% desktop e navega direto na Internet — tudo carregado do
+> próprio aplicativo.

@@ -66,7 +66,7 @@ function seedBuiltInFeatures() {
       }
     }
 
-    memory.addDecision('Arquitetura: Electron com IPC via módulos em src/, servidor local :8080 servindo a raiz do projeto, IA via Ollama e Agent Core com níveis de segurança verde/amarelo/vermelho')
+    memory.addDecision('Arquitetura: Electron com IPC via módulos em src/, navegação 100% direta na internet (sem proxy e sem servidor local), IA via Ollama e Agent Core com níveis de segurança verde/amarelo/vermelho')
   } catch {
     // sem main.js legível: memória continua vazia, sem erro
   }

@@ -284,15 +284,11 @@ class AgentCore {
       const ollama =
         snapshot?.ollama || {};
 
-      const localServer =
-        snapshot?.localServer || {};
-
       this.log(
         `👁️ Observado: ${files.count ?? 0} arquivos, ` +
         `${files.totalLines ?? 0} linhas, ` +
         `Git: ${git.isRepo ? git.branch : 'não inicializado'}, ` +
-        `Ollama: ${ollama.running ? 'online' : 'offline'}, ` +
-        `Servidor: ${localServer.running ? 'online' : 'offline'}`
+        `Ollama: ${ollama.running ? 'online' : 'offline'}`
       );
 
       this.emitEvent(
