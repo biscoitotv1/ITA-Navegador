@@ -1,6 +1,6 @@
 {
   "name": "ita-navegador",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "private": true,
   "description": "ITA Navegador - app desktop (Electron) com internet real (sem proxy e sem servidor local)",
   "main": "main.js",
@@ -10,10 +10,12 @@
     "app": "electron .",
     "lint": "eslint .",
     "dist": "electron-builder --win",
+    "predist": "node Scripts/bump-version.js",
+    "release": "node Scripts/bump-version.js && electron-builder --win --publish always",
+    "publish": "electron-builder --win --publish always",
     "dist:dir": "electron-builder --win --dir",
     "test": "node validate-project.js",
-    "test:agent": "node validate-agent.js",
-    "test:portal": "electron Scripts/smoke-portal.js"
+    "test:agent": "node validate-agent.js"
   },
   "author": "ITA Games Studios",
   "license": "MIT",
@@ -28,36 +30,49 @@
       "main.js",
       "preload.js",
       "index.html",
-      "home.html",
       "ita-ai.js",
       "ita-agent-ui.js",
       "src/**/*",
-      "site/**/*",
       "public/brand/**/*",
       "package.json"
     ],
     "win": {
       "icon": "public/brand/ita-logo.ico",
       "target": [
-        { "target": "nsis", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "nsis": {
-      "oneClick": false,
+      "oneClick": true,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
+      "allowToChangeInstallationDirectory": false,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
       "shortcutName": "ITA Navegador",
       "artifactName": "ITA-Navegador-Setup-${version}.${ext}"
     },
     "protocols": [
       {
         "name": "ITA Browser",
-        "schemes": ["itabrowser"]
+        "schemes": [
+          "itabrowser"
+        ]
       }
-    ]
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "biscoitotv1",
+      "repo": "ITA-Navegador"
+    }
   },
   "dependencies": {
-    "electron-store": "^11.0.2"
+    "electron-store": "^11.0.2",
+    "electron-updater": "^6.8.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",

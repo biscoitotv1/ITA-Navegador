@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITA Games Studios - Engine Central</title>
+    <title>ITA IDE — FORGE (ITA Games Studios)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <script>
+        /* Fallback de CDN: garante a engine 2D mesmo sem acesso
+           ao cdnjs (o Play 2D continua funcionando) */
+        if (typeof PIXI === "undefined") {
+            document.write('<script src="https://unpkg.com/pixi.js@7.3.2/dist/pixi.min.js"><\/script>');
+        }
+    </script>
     <style>
         * {
             box-sizing: border-box;
@@ -23,15 +30,6 @@
             overflow: hidden;
         }
 
-        .top-nav {
-            background-color: #121212;
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            border-bottom: 1px solid #222;
-            gap: 10px;
-        }
-
         .nav-btn {
             background-color: #1a1a1a;
             color: #ccc;
@@ -45,8 +43,19 @@
         }
 
         .nav-btn:hover { background-color: #252525; color: #fff; }
-        .nav-btn.active { background-color: #f08c00; border-color: #f59f00; color: #000; }
-        .nav-btn.browser-logo { color: #63e6be; border-color: #2b8a3e; }
+        .nav-btn.active { background-color: #ff6a00; border-color: #ffa14d; color: #000; }
+
+        .forge-brand-tag {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            color: #ff9a3d;
+            opacity: .9;
+        }
 
         .sub-nav {
             background-color: #0f0f0f;
@@ -127,7 +136,7 @@
             cursor: pointer;
         }
         .hierarchy-item:hover { background-color: #151515; color: #fff; }
-        .hierarchy-item.selected { background-color: #332714; color: #f59f00; border-left: 3px solid #f08c00; }
+        .hierarchy-item.selected { background-color: #332714; color: #ffa14d; border-left: 3px solid #ff6a00; }
 
         .viewport-panel {
             grid-column: 2;
@@ -165,41 +174,27 @@
             font-weight: bold;
             cursor: pointer;
         }
-        .tab-btn.active { color: #fff; border-bottom: 2px solid #f08c00; background-color: #0b0b0b; }
+        .tab-btn.active { color: #fff; border-bottom: 2px solid #ff6a00; background-color: #0b0b0b; }
         .tab-content {
             flex: 1;
             overflow-y: auto;
             padding: 8px 12px;
             font-family: monospace;
             font-size: 11px;
-            color: #f59f00;
+            color: #ffa14d;
             display: none;
             background-color: #070707;
         }
         .tab-content.active { display: block; }
-
-        .browser-home-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, #151515 0%, #080808 100%);
-            gap: 20px;
-        }
     </style>
 </head>
 <body>
-
-    <div class="top-nav">
-        <button class="nav-btn browser-logo" onclick="switchMainView('browser')">ITA BROWSER</button>
-        <button class="nav-btn active" onclick="switchMainView('2d-studio')">ITA GAMES STUDIOS</button>
-    </div>
 
     <div class="sub-nav">
         <button class="nav-btn active" onclick="switchMainView('2d-studio')">2D GAME STUDIO</button>
         <button class="nav-btn" onclick="switchMainView('sim-studio')">SIMULATOR STUDIO</button>
         <button class="nav-btn" onclick="switchMainView('avia-studio')">AVIATION STUDIO</button>
+        <span class="forge-brand-tag">FORGE · ITA Games Studios</span>
     </div>
 
     <div id="view-2d-studio" class="view-pane active">
@@ -260,14 +255,6 @@
         </div>
     </div>
 
-    <div id="view-browser" class="view-pane">
-        <div class="browser-home-screen">
-            <h1 style="color: #3b5bdb; font-size: 36px;">ITA Browser</h1>
-            <p style="color: #777;">ITA Games Studios Hub</p>
-            <input type="text" placeholder="Pesquisar ou digitar URL..." style="width: 500px; padding: 12px; background: #151515; border: 1px solid #333; color: #fff; border-radius: 6px;">
-        </div>
-    </div>
-
     <div id="view-sim-studio" class="view-pane">
         <div class="studio-toolbar">
             <span style="color: #888; font-weight: bold; font-size: 11px;">ITA SIMULATOR STUDIO - Painel de Física e Veículos</span>
@@ -295,10 +282,8 @@
     <script>
         function switchMainView(viewId) {
             document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
-            if (viewId === 'browser') document.getElementById('view-browser').classList.add('active');
-            if (viewId === '2d-studio') document.getElementById('view-2d-studio').classList.add('active');
-            if (viewId === 'sim-studio') document.getElementById('view-sim-studio').classList.add('active');
-            if (viewId === 'avia-studio') document.getElementById('view-avia-studio').classList.add('active');
+            const target = document.getElementById('view-' + viewId);
+            if (target) target.classList.add('active');
         }
 
         function switchBottomTab(evt, tabId) {
@@ -322,7 +307,7 @@
             if (name === 'Main Camera 2D') {
                 inspector.innerHTML = `<strong>Main Camera 2D</strong><br>Pos X: 0 | Pos Y: 0<br>Zoom: 1.0<br>Background: #111111`;
             } else if (name === 'Player Sprite') {
-                inspector.innerHTML = `<strong>Player Sprite</strong><br>PosX: Centralizado<br>PosY: Centralizado<br>Scale: (1.0, 1.0)<br>Cor: #f08c00`;
+                inspector.innerHTML = `<strong>Player Sprite</strong><br>PosX: Centralizado<br>PosY: Centralizado<br>Scale: (1.0, 1.0)<br>Cor: #ff6a00`;
             } else {
                 inspector.innerHTML = `<strong>${name}</strong><br>Status: Ativo na Cena 2D<br>Camada: Padrão`;
             }
@@ -362,7 +347,7 @@
                 worldStage.addChild(gridGraphics);
 
                 const player = new PIXI.Graphics();
-                player.beginFill(0xf08c00);
+                player.beginFill(0xff6a00);
                 player.drawRect(-25, -25, 50, 50);
                 player.endFill();
                 player.x = app2D.screen.width / 2;

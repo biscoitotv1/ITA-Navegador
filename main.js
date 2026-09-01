@@ -5,11 +5,8 @@
   Instagram, GitHub, Steam e qualquer site real
   funcionam de verdade.
 
-  UI: index.html (local)  •  Home: home.html (local)
-  Tudo é carregado do app — internet 100% real.
-
-  Portal oficial: itabrowser.top — integrado ao app via
-  protocolo itabrowser://open?url=... e User-Agent ITA.
+  UI: index.html (local)  •  Início: https://www.google.com (web real)
+  Tudo é carregado do app — internet 100% real, sem landing local.
 =========================================================
 */
 
@@ -20,9 +17,9 @@ const {
   BrowserWindow,
   session,
   shell,
-  ipcMain,
-  protocol
+  ipcMain
 } = require('electron')
+const { autoUpdater } = require('electron-updater')
 
 const path = require('path')
 const fs = require('fs')
@@ -30,19 +27,17 @@ const http = require('http')
 
 /*
 =========================================================
-  PORTAL OFICIAL LOCAL — itabrowser.top na nova interface
-  O portal FORGE (pasta site/) é servido de dentro do app
-  via itaportal:// — funciona 100%, até offline.
+  RESILIÊNCIA DE PROCESSO & TRATAMENTO GLOBAL DE ERROS
 =========================================================
 */
 
-const {
-  registerPortalScheme,
-  installPortalBridge
-} = require('./src/portal/PortalBridge')
+process.on('uncaughtException', (error) => {
+  console.error('[ITA Main] Uncaught Exception:', error && error.stack ? error.stack : error)
+})
 
-registerPortalScheme()
-
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[ITA Main] Unhandled Rejection at:', promise, 'reason:', reason)
+})
 
 /*
 =========================================================
@@ -50,24 +45,32 @@ registerPortalScheme()
   Flags aplicadas antes do app.ready para acelerar
   TODOS os sites (YouTube, Google, Instagram, jogos,
   WebGL, vídeo 4K, animações) no máximo de desempenho.
+
+  CORREÇÃO MASTER DE ARBITRAGEM E PERFORMANCE:
+  1) Aceleração de hardware PROFUNDA — rasterização na
+     GPU, zero-copy e GPU SEMPRE liberada (mesmo quando
+     a GPU estiver na blocklist do Chromium).
+  2) OutOfBlinkCors DESATIVADO — evita bloqueios rígidos
+     de CORS no Blink em sites externos (YouTube etc.).
+  Todas as flags são aplicadas ANTES do app.whenReady().
 =========================================================
 */
 
-app.commandLine.appendSwitch('ignore-gpu-blocklist')
+/* 1) ACELERAÇÃO DE HARDWARE PROFUNDA E FLAGS DO CHROMIUM */
+
 app.commandLine.appendSwitch('enable-gpu-rasterization')
 app.commandLine.appendSwitch('enable-zero-copy')
+app.commandLine.appendSwitch('ignore-gpu-blocklist')
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
+
+/* Demais flags de performance e estabilidade */
+
 app.commandLine.appendSwitch('enable-smooth-scrolling')
 app.commandLine.appendSwitch('force_high_performance_gpu')
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 app.commandLine.appendSwitch('disk-cache-size', '536870912')
-
-/*
-  MEGA TURBO — parte 2: abas 100% ligadas, downloads
-  paralelos e cache de código V8 completo.
-*/
 app.commandLine.appendSwitch('disable-renderer-backgrounding')
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows')
-app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion')
 app.commandLine.appendSwitch('enable-parallel-downloading')
 app.commandLine.appendSwitch('enable-features', 'CanvasOopRasterization')
 
@@ -80,11 +83,13 @@ app.commandLine.appendSwitch('enable-features', 'CanvasOopRasterization')
 const APP_NAME = 'ITA Browser'
 
 /*
-  Site oficial do navegador — integrado ao app via deep
-  link itabrowser://open?url=... e via User-Agent ITA.
+  SESSÃO PERSISTENTE E ISOLADA DAS ABAS (WEBVIEWS)
+  Toda tag <webview> criada nas abas usa esta partição:
+  cache, cookies de login e service workers (YouTube,
+  Google etc.) funcionam exatamente como no Google Chrome.
 */
 
-const SITE_URL = 'https://itabrowser.top'
+const WEBVIEW_PARTITION = 'persist:ita_secure_session'
 
 /*
   Home local: start page do navegador (cards com sites reais).
@@ -92,13 +97,36 @@ const SITE_URL = 'https://itabrowser.top'
   sem proxy e sem servidor local. Internet direta.
 */
 
-const HOME_FILE = path.join(__dirname, 'home.html')
+/*
+  NAVEGAÇÃO 100% DIRETA — sem páginas locais de
+  apresentação. A página inicial é um site real da
+  internet, carregado no webview com a partição
+  persistente e as flags de aceleração do Chromium.
+*/
 
-const HOME_URL =
-
-  'file:///' + HOME_FILE.replace(/\\/g, '/')
+const START_PAGE_URL = 'https://www.google.com'
 
 let mainWindow = null
+
+autoUpdater.on('checking-for-update', () => {
+  console.log('[ITA Updater] Checking for updates...')
+})
+
+autoUpdater.on('update-available', (info) => {
+  console.log('[ITA Updater] Update available:', info.version)
+})
+
+autoUpdater.on('update-not-available', (info) => {
+  console.log('[ITA Updater] ITA Browser is up to date:', info.version)
+})
+
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('[ITA Updater] Update downloaded:', info.version)
+})
+
+autoUpdater.on('error', (error) => {
+  console.error('[ITA Updater] Update check failed:', error.message)
+})
 
 /*
 =========================================================
@@ -158,9 +186,11 @@ function normalizeUrl(input) {
 
   if (
     value === 'ita://home' ||
+    value === 'ita://ide' ||
     value === 'ita://editor'
   ) {
-    return value
+    /* Páginas internas/legadas redirecionam para a web real */
+    return START_PAGE_URL
   }
 
   /*
@@ -406,6 +436,9 @@ function createWindow() {
           true,
 
         webSecurity:
+          false,
+
+        allowRunningInsecureContent:
           true,
 
         plugins:
@@ -424,9 +457,33 @@ function createWindow() {
 
   /*
   =======================================================
+    GARANTIA DE SESSÃO PERSISTENTE E SEGURANÇA (WEBVIEWS)
+  =======================================================
+  */
+
+  mainWindow.webContents.on(
+    'will-attach-webview',
+    (_event, webPreferences, params) => {
+      params.partition = WEBVIEW_PARTITION
+      webPreferences.contextIsolation = true
+      webPreferences.nodeIntegration = false
+      webPreferences.plugins = true
+      webPreferences.allowRunningInsecureContent = true
+      webPreferences.webSecurity = false
+      webPreferences.backgroundThrottling = false
+      webPreferences.autoplayPolicy = 'no-user-gesture-required'
+    }
+  )
+
+  /*
+  =======================================================
     CARREGA A INTERFACE DO ITA BROWSER
   =======================================================
   */
+
+  /* A interface do navegador é SEMPRE o index.html —
+     nenhuma página local de apresentação é carregada.
+     As abas navegam direto na internet via webview. */
 
   const indexPath =
     path.join(
@@ -444,8 +501,9 @@ function createWindow() {
 
   } else {
 
-    mainWindow.loadFile(
-      HOME_FILE
+    console.error(
+      'ERRO FATAL: index.html não encontrado em',
+      indexPath
     )
   }
 
@@ -618,23 +676,37 @@ function createWindow() {
   /*
   =======================================================
     SESSÃO TURBO — UA ITA · PERMISSÕES · SPELLCHECK
-    - User-Agent com token ITABrowser (o site oficial
-      itabrowser.top detecta o navegador sozinho).
+    - User-Agent REAL do Google Chrome (Windows x64):
+      sites como YouTube, WhatsApp e Instagram servem
+      versões degradadas/quebradas quando detectam
+      "Electron" na string — com UA Chrome puro, todos
+      os componentes dinâmicos renderizam normalmente.
     - Permissões liberadas (câmera, microfone, notifi-
-      cações, tela, clipboard...) em TODAS as sessões
-      (UI + webviews persist:ita-tabs).
+      cações, tela, clipboard, WebGL, pointer lock...)
+      sessão de abas (persist:ita_secure_session).
     - Corretor ortográfico pt-BR/en-US.
   =======================================================
   */
 
-  const itaUA =
-    ses.getUserAgent() +
-    ' ITABrowser/1.0.0 (ITA Games Studios)'
+  /* UA idêntico ao Chrome estável atual (formato Google).
+     NÃO acrescentar sufixos: qualquer token além do padrão
+     volta a expor o app e reativa bloqueios dos sites. */
+
+  const CHROME_UA =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
+    'AppleWebKit/537.36 (KHTML, like Gecko) ' +
+    'Chrome/131.0.0.0 Safari/537.36'
+
+  /* Cobertura global: qualquer webContents criado antes
+     da configuração das sessões já nasce com UA Chrome */
+
+  app.userAgentFallback = CHROME_UA
 
   try {
-    ses.setUserAgent(itaUA)
-    session.defaultSession.setUserAgent(itaUA)
-    session.fromPartition('persist:ita-tabs').setUserAgent(itaUA)
+    ses.setUserAgent(CHROME_UA)
+    session.defaultSession.setUserAgent(CHROME_UA)
+    session.fromPartition(WEBVIEW_PARTITION).setUserAgent(CHROME_UA)
+    console.log('User-Agent: Chrome real aplicado em todas as sessões')
   } catch { /* preview fora do Electron */ }
 
   try {
@@ -650,11 +722,81 @@ function createWindow() {
 
   ;[
     ses,
-    session.fromPartition('persist:ita-tabs')
+    session.fromPartition(WEBVIEW_PARTITION)
   ].forEach((targetSession) => {
     try {
       targetSession.setPermissionRequestHandler(grantAllPermission)
       targetSession.setPermissionCheckHandler(allowPermissionCheck)
+    } catch { /* sessão indisponível */ }
+  })
+
+  /*
+  =======================================================
+    CERTIFICADOS SSL/TLS · CORS GLOBAL
+
+    - setCertificateVerifyProc(0): aceita certificados
+      (inclui proxies/antivírus que assinam o tráfego) —
+      evita quedas de conexão SSL/TLS em qualquer sessão.
+    - onHeadersReceived: injeta Access-Control-Allow-Origin
+      quando a resposta NÃO traz o header — libera scripts
+      e mídias dinâmicas de domínios externos (YouTube etc.).
+  =======================================================
+  */
+
+  ;[
+    ses,
+    session.fromPartition(WEBVIEW_PARTITION)
+  ].forEach((targetSession) => {
+
+    try {
+
+      /* callback(0) = aceita o certificado · callback(-2) = rejeita */
+
+      targetSession.setCertificateVerifyProc(
+        (_request, callback) => callback(0)
+      )
+
+    } catch { /* sessão indisponível */ }
+
+    try {
+
+      targetSession.webRequest.onHeadersReceived(
+        (details, callback) => {
+
+          const headers =
+            details.responseHeaders || {}
+
+          /* Respeita o header que o site já enviou
+             (evita ACAO duplicado, que quebra XHR);
+             injeta apenas quando estiver ausente */
+
+          const hasAcao =
+            Object.keys(headers).some(
+              (key) =>
+                key.toLowerCase() ===
+                'access-control-allow-origin'
+            )
+
+          if (!hasAcao) {
+
+            headers['Access-Control-Allow-Origin'] =
+              ['*']
+
+            headers['Access-Control-Allow-Headers'] =
+              ['*']
+
+            headers['Access-Control-Allow-Methods'] =
+              ['GET, POST, PUT, DELETE, OPTIONS']
+          }
+
+          callback(
+            {
+              responseHeaders: headers
+            }
+          )
+        }
+      )
+
     } catch { /* sessão indisponível */ }
   })
 
@@ -832,9 +974,9 @@ app.on(
       /*
       -----------------------------------------------------
         DEEP LINKS DENTRO DAS ABAS — itabrowser://open?url=
-        Clicar em um card do portal oficial dentro de uma
-        aba abre o site em NOVA ABA ITA (a webview em si
-        não navega para esquemas desconhecidos).
+        Um deep link dentro de uma aba abre o site de
+        destino em NOVA ABA ITA (a webview em si não
+        navega para esquemas desconhecidos).
       -----------------------------------------------------
       */
 
@@ -869,9 +1011,9 @@ app.on(
 
 /*
 =========================================================
-  ITABROWSER:// — PORTAL OFICIAL ↔ APP (DEEP LINK)
-  itabrowser.top usa links itabrowser://open?url=...
-  para abrir sites direto no navegador desktop.
+  ITABROWSER:// — DEEP LINK PARA O APP
+  Links itabrowser://open?url=... abrem o site de
+  destino direto no navegador desktop.
   Ex.: itabrowser://open?url=https%3A%2F%2Fyoutube.com
 =========================================================
 */
@@ -988,6 +1130,14 @@ app.whenReady()
   .then(
     async () => {
 
+      if (app.isPackaged) {
+        autoUpdater.checkForUpdatesAndNotify().catch((error) => {
+          console.error('[ITA Updater] Unable to start update check:', error.message)
+        })
+      } else {
+        console.log('[ITA Updater] Automatic updates run in packaged releases only.')
+      }
+
       /*
       -----------------------------------------------------
         Identidade do app no Windows (notificações, barra)
@@ -998,22 +1148,34 @@ app.whenReady()
 
       /*
       -----------------------------------------------------
-        PORTAL OFICIAL — itabrowser.top dentro do app
-        Instala itaportal:// + redirect https→portal local
+        PORTAL REMOVIDO — itabrowser.top nunca mais carrega
+        Bloqueia qualquer requisição ao domínio do portal
         nas duas sessões (interface e abas/webviews).
       -----------------------------------------------------
       */
 
-      const portalInstalled =
-        installPortalBridge(session.defaultSession)
+      const blockPortal = (targetSession) => {
 
-      installPortalBridge(
-        session.fromPartition('persist:ita-tabs')
-      )
+        try {
+
+          targetSession.webRequest.onBeforeRequest(
+            {
+              urls: [
+                '*://itabrowser.top/*',
+                '*://*.itabrowser.top/*'
+              ]
+            },
+            (_details, callback) => callback({ cancel: true })
+          )
+
+        } catch { /* opcional */ }
+      }
+
+      blockPortal(session.defaultSession)
+      blockPortal(session.fromPartition(WEBVIEW_PARTITION))
 
       console.log(
-        'Portal itabrowser.top local:',
-        portalInstalled ? 'ATIVADO (itaportal://)' : 'usando domínio remoto'
+        'Portal itabrowser.top: REMOVIDO e BLOQUEADO'
       )
 
       console.log(
@@ -1114,7 +1276,9 @@ ipcMain.handle(
   'browser-home-url',
   async () => {
 
-    return HOME_URL
+    /* Página inicial = site real da internet */
+
+    return START_PAGE_URL
   }
 )
 
@@ -1460,8 +1624,8 @@ console.log(
 )
 
 console.log(
-  'Home:',
-  HOME_URL
+  'Página inicial:',
+  START_PAGE_URL
 )
 
 console.log(
@@ -1477,3 +1641,99 @@ console.log(
 console.log(
   '========================================='
 )
+
+/*
+=========================================================
+  ATUALIZAÇÃO AUTOMÁTICA — electron-updater
+  - Só atua no app INSTALADO (packaged); no dev fica mudo.
+  - Verifica sozinho ao iniciar e a cada 1 hora.
+  - Baixa a nova versão automaticamente e, poucos segundos
+    depois, INSTALA SOZINHO (silencioso, sem janelas) e
+    REABRE o navegador já na nova versão — zero cliques.
+    Se o app for fechado antes, instala ao fechar
+    (autoInstallOnAppQuit).
+  - O feed é o GitHub Releases (biscoitotv1/ITA-Navegador);
+    enquanto não houver release publicado, falha em silêncio.
+=========================================================
+*/
+
+try {
+  if (app.isPackaged) {
+    const { autoUpdater } = require('electron-updater')
+
+    autoUpdater.autoDownload = true
+    autoUpdater.autoInstallOnAppQuit = true
+
+    autoUpdater.on('checking-for-update', () => {
+      console.log('Update: verificando nova versão...')
+    })
+
+    autoUpdater.on('update-available', (info) => {
+      console.log('Update: nova versão', info.version, 'disponível — baixando automaticamente')
+    })
+
+    autoUpdater.on('update-not-available', () => {
+      console.log('Update: navegador já está na versão mais recente')
+    })
+
+    autoUpdater.on('download-progress', (progress) => {
+      const pct = Math.round(progress.percent)
+
+      if (pct === 25 || pct === 50 || pct === 75 || pct === 100) {
+        console.log('Update: baixando', pct + '%')
+      }
+    })
+
+    /* Instalação TOTALMENTE automática: baixou → instala
+       sozinho (silencioso) → reabre o navegador na nova
+       versão. Janela de 8s para não cortar algo em uso. */
+
+    let updateInstalling = false
+
+    autoUpdater.on('update-downloaded', (info) => {
+
+      console.log('Update: versão', info.version, 'baixada — instalando automaticamente em segundos')
+
+      try {
+        sendToRenderer('update-status', {
+          status: 'downloaded',
+          version: info.version
+        })
+      } catch { /* sem janela ativa */ }
+
+      if (updateInstalling) {
+        return
+      }
+
+      updateInstalling = true
+
+      setTimeout(() => {
+        try {
+
+          /* (instalação silenciosa, reabrir após instalar) */
+
+          autoUpdater.quitAndInstall(true, true)
+
+        } catch (err) {
+
+          updateInstalling = false
+
+          console.log('Update: instalação adiada para o fechamento do app (' + (err && err.message ? err.message : err) + ')')
+        }
+      }, 8000)
+    })
+
+    autoUpdater.on('error', (error) => {
+      console.log('Update: verificação indisponível agora (' + (error && error.message ? error.message : error) + ')')
+    })
+
+    const checkForUpdates = () => {
+      try {
+        autoUpdater.checkForUpdates()
+      } catch { /* silencioso */ }
+    }
+
+    setTimeout(checkForUpdates, 8000)
+    setInterval(checkForUpdates, 60 * 60 * 1000)
+  }
+} catch { /* electron-updater indisponível — segue sem updater */ }

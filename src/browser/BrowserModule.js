@@ -51,10 +51,7 @@ class BrowserModule {
       'browser-navigate': async (_event, url) => {
         let target = url.trim()
         if (!/^https?:\/\//i.test(target)) {
-          if (target === 'home.html') {
-            const homeTemplate = fs.readFileSync(path.join(__dirname, '..', '..', 'home.html'), 'utf-8')
-            target = 'data:text/html;charset=utf-8;base64,' + Buffer.from(homeTemplate).toString('base64')
-          } else if (target.startsWith('file://')) {
+          if (target.startsWith('file://')) {
             target = target
           } else {
             target = 'https://' + target
@@ -84,9 +81,9 @@ class BrowserModule {
     }
   }
 
-  getHomeHtml() {
-    return fs.readFileSync(path.join(__dirname, '..', '..', 'home.html'), 'utf-8')
-  }
+  /* UI PADRÃO FORGE: sem página local de home — o método
+     getHomeHtml() foi removido. A página inicial é a web
+     real (START_PAGE_URL no main.js / index.html). */
 }
 
 module.exports = new BrowserModule()

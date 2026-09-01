@@ -377,52 +377,20 @@ const AI_AGENT_UI = {
     this.appendLog('🗑️ Memória do projeto resetada', 'warn')
   },
 
-  /* ---------- Downloads ---------- */
+  /* ---------- Downloads (Background) ---------- */
 
   async loadDownloads() {
-    const list = document.getElementById('downloadsList')
-    if (!list || !window.itaBrowserAPI) return
-    const downloads = await window.itaBrowserAPI.getDownloads()
-    list.innerHTML = ''
-
-    if (!downloads || downloads.length === 0) {
-      list.innerHTML = '<div class="agent-log-line">Nenhum download ainda.</div>'
-      return
-    }
-
-    for (const download of downloads) {
-      const card = document.createElement('div')
-      card.className = 'download-item'
-
-      const name = document.createElement('strong')
-      name.textContent = download.filename
-      card.appendChild(name)
-
-      const meta = document.createElement('span')
-      meta.textContent = `${download.sizeText || ''} — ${download.state} — ${new Date(download.startedAt || Date.now()).toLocaleTimeString()}`
-      card.appendChild(meta)
-
-      if (download.state === 'progressing') {
-        const bar = document.createElement('progress')
-        bar.max = 100
-        bar.value = Math.round((download.receivedBytes / Math.max(1, download.totalBytes)) * 100)
-        card.appendChild(bar)
-      }
-
-      list.appendChild(card)
-    }
+    // Downloads são executados em background sem elementos estáticos poluindo a interface
   },
 
   onDownloadStarted(data) {
     this.downloadItems.set(data.id, { ...data, state: 'progressing' })
-    this.updateDownloadsBadge(this.activeDownloadCount())
     this.appendLog(`⬇️ Download iniciado: ${data.filename}`)
   },
 
   onDownloadProgress(data) {
     const item = this.downloadItems.get(data.id)
     if (item) Object.assign(item, data)
-    this.loadDownloads()
   },
 
   onDownloadDone(data) {
@@ -430,13 +398,11 @@ const AI_AGENT_UI = {
     if (item) {
       item.state = data.state || 'completed'
     }
-    this.updateDownloadsBadge(this.activeDownloadCount())
     const filename = item ? item.filename : (data.filename || data.id)
     this.appendLog(
       data.state === 'completed' ? `✅ Download concluído: ${filename}` : `⚠️ Download ${data.state || 'interrompido'}: ${filename}`,
       data.state === 'completed' ? 'success' : 'warn'
     )
-    this.loadDownloads()
   },
 
   activeDownloadCount() {
@@ -486,12 +452,8 @@ const AI_AGENT_UI = {
     }
   },
 
-  updateDownloadsBadge(count) {
-    const badge = document.getElementById('downloadsBadge')
-    if (badge) badge.textContent = count > 0 ? String(count) : ''
-    // Compatível com o badge da barra principal do navegador
-    const mainBadge = document.getElementById('downloadsCount')
-    if (mainBadge) mainBadge.textContent = count > 0 ? String(count) : '0'
+  updateDownloadsBadge(_count) {
+    // UI minimalista: sem badges ou barras estáticas poluindo a interface
   },
 
   showSecurityBanner(verdict) {

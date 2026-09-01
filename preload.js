@@ -65,7 +65,9 @@ let restoreScheduled = false
 function readSession() {
   try {
     const raw = window.localStorage.getItem(SESSION_KEY)
-    return raw ? JSON.parse(raw) : null
+    if (!raw) return null
+    const session = JSON.parse(raw)
+    return session
   } catch {
     return null
   }

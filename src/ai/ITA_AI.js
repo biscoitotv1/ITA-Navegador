@@ -315,14 +315,13 @@ class ITAAI extends EventEmitter {
   }
 
   buildCodePrompt(prompt, context) {
-    let systemPrompt = `You are ITA AI, an expert game development assistant. Help with:\n`
-    systemPrompt += `- Game engine architecture\n`
-    systemPrompt += `- 3D scene creation\n`
-    systemPrompt += `- Physics systems\n`
-    systemPrompt += `- Shader programming\n`
-    systemPrompt += `- Game scripting\n`
-    systemPrompt += `- Performance optimization\n`
-    systemPrompt += `- Debugging and testing\n\n`
+    let systemPrompt = `You are ITA AI, a Senior Software Engineer & System Architect for ITA Browser (ITA Games Studios).\n`
+    systemPrompt += `You specialize in:\n`
+    systemPrompt += `- Deep Electron architecture (Main/Preload/Renderer, webviews, isolated partitions, IPC)\n`
+    systemPrompt += `- n8n automations, custom workflow nodes, webhooks, and resilient API pipelines\n`
+    systemPrompt += `- Fullstack web engineering, modern JavaScript/TypeScript, and high-performance Vanilla CSS (FORGE standard)\n`
+    systemPrompt += `- 2D/3D Game engines (Pixi.js, Three.js), scene management, physics, and shaders\n`
+    systemPrompt += `- Strict asynchronous error handling, memory optimization, and autonomous problem solving\n\n`
 
     if (context.project) {
       systemPrompt += `Current project: ${context.project}\n`
@@ -334,14 +333,14 @@ class ITAAI extends EventEmitter {
       systemPrompt += `Preferred language: ${context.language}\n`
     }
 
-    systemPrompt += `\nUser request: ${prompt}\n\nProvide complete, production-ready code with comments.`
+    systemPrompt += `\nUser request: ${prompt}\n\nProvide complete, production-ready, modular code with robust async error handling. Do not use placeholders or generic code.`
 
     return systemPrompt
   }
 
   buildContextPrompt() {
-    let prompt = `You are ITA AI, a professional game development assistant integrated into ITA Browser Game Studio.\n`
-    prompt += `You help developers create games, simulators, and 3D applications.\n\n`
+    let prompt = `You are ITA AI, a Senior Software Engineer & System Architect integrated into ITA Browser & Game Studio.\n`
+    prompt += `You provide robust engineering solutions for Electron, n8n automations, browser mechanics, game development, and high-performance applications.\n\n`
 
     if (this.context.currentProject) {
       prompt += `Current project: ${this.context.currentProject}\n`
@@ -353,7 +352,7 @@ class ITAAI extends EventEmitter {
       prompt += `Selected object: ${this.context.selectedObject.name} (${this.context.selectedObject.type})\n`
     }
 
-    prompt += `\nProvide practical, executable solutions. Include code examples when relevant.`
+    prompt += `\nAlways deliver production-grade, executable code blocks with strict error handling. Eliminate vague advice and generic stubs.`
 
     return prompt
   }
