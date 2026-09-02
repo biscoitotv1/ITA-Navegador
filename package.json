@@ -1,6 +1,6 @@
 {
   "name": "ita-navegador",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "private": true,
   "description": "ITA Navegador - app desktop (Electron) com internet real (sem proxy e sem servidor local)",
   "main": "main.js",
@@ -20,7 +20,7 @@
   "author": "ITA Games Studios",
   "license": "MIT",
   "build": {
-    "appId": "com.itabraser.app",
+    "appId": "com.itnavegador.app",
     "productName": "ITA Navegador",
     "directories": {
       "output": "release",
@@ -64,11 +64,13 @@
         ]
       }
     ],
-    "publish": {
-      "provider": "github",
-      "owner": "biscoitotv1",
-      "repo": "ITA-Navegador"
-    }
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "biscoitotv1",
+        "repo": "ITA-Navegador"
+      }
+    ]
   },
   "dependencies": {
     "electron-store": "^11.0.2",
