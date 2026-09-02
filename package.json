@@ -29,7 +29,6 @@
     "files": [
       "main.js",
       "preload.js",
-      "index.html",
       "src/browser/index.html",
       "ita-ai.js",
       "ita-agent-ui.js",
