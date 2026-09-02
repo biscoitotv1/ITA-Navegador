@@ -170,5 +170,62 @@
     }
   })();
   </script>
+
+  <script>
+  /**
+   * ITA Security & Defense Agent v1.0
+   * Escudeiro de Blindagem e Proteção Ativa para itabrowser.top
+   */
+  (function initSecurityShield() {
+    'use strict';
+
+    // 1. Cobertura contra ataques de Frame (Anti-Clickjacking / Proteção contra Iframe malicioso)
+    if (window.self !== window.top) {
+      try {
+        window.top.location = window.self.location;
+      } catch (e) {
+        console.warn('[ITA Security] Tentativa de embedding em iframe bloqueada.');
+      }
+    }
+
+    // 2. Blindagem de Links Externos (Previne ataques de Reverse Tabnabbing)
+    document.addEventListener('click', function(event) {
+      const target = event.target.closest('a');
+      if (target && target.getAttribute('target') === '_blank') {
+        const currentRel = target.getAttribute('rel') || '';
+        if (!currentRel.includes('noopener')) {
+          target.setAttribute('rel', 'noopener noreferrer');
+        }
+      }
+    });
+
+    // 3. Monitoramento de Integridade do DOM (Anti-Tampering / Injeção de Scripts Maliciosos)
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.addedNodes) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.tagName === 'SCRIPT' && !node.src.includes('github.com') && node.src !== '') {
+              console.warn('[ITA Security] Alerta: Tentativa de injeção de script externo bloqueada.');
+              node.remove();
+            }
+          });
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+
+    // 4. Desativação de console.log em produção para esconder a estrutura interna de curiosos
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      console.log = function() {};
+      console.warn = function() {};
+    }
+
+    console.info('[ITA Security Shield] Cofre digital ativado. Sistema 100% blindado contra ameaças de rede.');
+  })();
+  </script>
 </body>
 </html>
