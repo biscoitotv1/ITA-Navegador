@@ -15,6 +15,7 @@
 const {
   app,
   BrowserWindow,
+  dialog,
   session,
   shell,
   ipcMain
@@ -488,8 +489,13 @@ function createWindow() {
   =======================================================
   */
 
-  /* A UI do Electron é separada da landing pública raiz.
-     As abas navegam direto na internet via webview. */
+  /*
+    A janela principal carrega SEMPRE a interface interna
+    do navegador (src/browser/index.html): abas, barra de
+    endereço e webviews navegando na internet real.
+    A landing page pública (index.html na raiz) é o site
+    de vendas/download e NUNCA é aberta pelo aplicativo.
+  */
 
   const browserInterfacePath =
     path.join(
@@ -509,10 +515,28 @@ function createWindow() {
 
   } else {
 
+    /*
+      Falha visível em vez de janela branca silenciosa:
+      sem a interface interna o app não é um navegador.
+    */
+
     console.error(
       'ERRO FATAL: interface interna não encontrada em',
       browserInterfacePath
     )
+
+    try {
+
+      dialog.showErrorBox(
+        'ITA Browser',
+        'A interface interna do navegador não foi encontrada:\n' +
+          browserInterfacePath +
+          '\n\nReinstale o aplicativo para corrigir a instalação.'
+      )
+
+    } catch { /* ambiente sem suporte a diálogo */ }
+
+    app.quit()
   }
 
   /*
@@ -846,7 +870,7 @@ function createWindow() {
 
   /*
   =======================================================
-    NAVEGAÇÃO
+    NAVEGAÇÃO — BLINDAGEM DA INTERFACE INTERNA
   =======================================================
   */
 
@@ -859,22 +883,50 @@ function createWindow() {
 
       /*
       -----------------------------------------------------
-        A interface principal não deve sair para outro site.
-        Sites externos ficam nos webviews.
+        A janela principal é SEMPRE a UI local do navegador
+        (src/browser/index.html). A landing page pública
+        (index.html na raiz) e qualquer site externo NUNCA
+        substituem a interface: URLs da web viram nova aba
+        no webview, tratadas pelo próprio renderer.
       -----------------------------------------------------
       */
 
+      const normalizedUrl =
+        String(url || '')
+          .split('#')[0]
+          .replace(/\\/g, '/')
+          .toLowerCase()
+
+      const isInterfaceUrl =
+        normalizedUrl.startsWith('file://') &&
+        normalizedUrl.includes('/src/browser/index.html')
+
       if (
-        mainWindow &&
-        url !==
-          mainWindow.webContents.getURL()
+        isInterfaceUrl
       ) {
 
-        /*
-        Não bloqueamos navegação da própria interface
-        quando ela for necessária.
-        */
+        /* Recarregar a própria interface é permitido. */
 
+        return
+      }
+
+      event.preventDefault()
+
+      console.warn(
+        '[ITA Main] Navegação da janela principal bloqueada:',
+        url
+      )
+
+      if (
+        isWebUrl(url)
+      ) {
+
+        sendToRenderer(
+          'new-tab-request',
+          {
+            url
+          }
+        )
       }
     }
   )

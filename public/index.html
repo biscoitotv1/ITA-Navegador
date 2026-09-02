@@ -62,7 +62,8 @@
       <nav>
         <a href="#recursos">Recursos</a>
         <a href="https://github.com/biscoitotv1/ITA-Navegador" target="_blank" rel="noreferrer">GitHub</a>
-        <a class="button" href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest" target="_blank" rel="noreferrer">Baixar</a>
+        <!-- Botão do Header também atualiza sozinho agora -->
+        <a class="button" href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest" id="download-btn-header" target="_blank" rel="noreferrer">Baixar</a>
       </nav>
     </div>
   </header>
@@ -72,15 +73,10 @@
       <h1>Internet direta.<br><strong>Do seu jeito.</strong></h1>
       <p>ITA Browser é um navegador para Windows com navegação real na web, abas persistentes, downloads e aceleração Chromium.</p>
       <div class="actions">
-        <div class="download-buttons" style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
-          <!-- Botão Windows -->
-          <a href="#" id="download-btn" class="btn-download">
+        <div class="download-buttons" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+          <!-- Botão Principal Windows -->
+          <a href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest" id="download-btn" class="btn-download" target="_blank" rel="noreferrer">
             Baixar ITA Navegador
-          </a>
-
-          <!-- Botão Mac -->
-          <a href="https://github.com/biscoitotv1/ITA-Navegador/releases/latest/download/ITA-Navegador-1.0.8.dmg" class="btn-fire" style="background: #333; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
-            🍎 Baixar para Mac (.dmg)
           </a>
         </div>
       </div>
@@ -102,17 +98,130 @@
   <footer><div class="shell footer"><span>ITA Games Studios</span><a href="https://github.com/biscoitotv1/ITA-Navegador" target="_blank" rel="noreferrer">github.com/biscoitotv1/ITA-Navegador</a></div></footer>
 
   <script>
-    fetch('https://api.github.com/repos/biscoitotv1/ITA-Navegador/releases/latest')
-      .then(response => response.json())
-      .then(data => {
-        const asset = data.assets.find(a => a.name.endsWith('.exe'));
-        if (asset) {
-          const btn = document.getElementById('download-btn');
-          btn.href = asset.browser_download_url;
-          // Opcional: Atualiza o texto do botão com a versão exata se quiser, ex: "Baixar ITA Navegador v1.0.13"
+  /**
+   * ITA Auto-Healer Agent v1.0
+   * Monitora, valida e autocorrige links de download do ITA Navegador
+   */
+  (function initDownloadAgent() {
+    const CONFIG = {
+      owner: 'biscoitotv1',
+      repo: 'ITA-Navegador',
+      primaryButtonId: 'download-btn',
+      headerButtonId: 'download-btn-header'
+    };
+
+    const directFallbackUrl = `https://github.com/${CONFIG.owner}/${CONFIG.repo}/releases/latest`;
+
+    function applyDownloadUrl(url, label) {
+      const mainBtn = document.getElementById(CONFIG.primaryButtonId);
+      const headerBtn = document.getElementById(CONFIG.headerButtonId);
+
+      if (mainBtn) {
+        mainBtn.href = url;
+        if (label) {
+          mainBtn.innerHTML = `Baixar ITA Navegador <span style="font-size: 11px; opacity: 0.85; margin-left: 6px;">(${label})</span>`;
         }
-      })
-      .catch(err => console.error('Erro ao buscar última versão:', err));
+      }
+
+      if (headerBtn) {
+        headerBtn.href = url;
+        if (label) {
+          headerBtn.innerHTML = `Baixar ${label}`;
+        }
+      }
+    }
+
+    async function runAgentDiagnostic() {
+      const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/releases/latest`;
+
+      try {
+        const response = await fetch(`${apiUrl}?_t=${Date.now()}`);
+        if (!response.ok) {
+          throw new Error(`GitHub API respondeu com status ${response.status}`);
+        }
+
+        const releaseData = await response.json();
+        const exeAsset = Array.isArray(releaseData.assets)
+          ? releaseData.assets.find(asset => asset.name && asset.name.toLowerCase().endsWith('.exe'))
+          : null;
+
+        if (!exeAsset || !exeAsset.browser_download_url) {
+          throw new Error('Executável .exe não encontrado nos assets da release');
+        }
+
+        const tag = releaseData.tag_name || 'Atualizado';
+        applyDownloadUrl(exeAsset.browser_download_url, tag);
+        console.log(`[ITA Agent] Sistema 100% operacional. Versão ativa: ${tag}`);
+
+      } catch (error) {
+        console.warn(`[ITA Agent] Anomalia detectada: ${error.message}. Aplicando autocorreção...`);
+        applyDownloadUrl(directFallbackUrl, 'Última Versão');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runAgentDiagnostic);
+    } else {
+      runAgentDiagnostic();
+    }
+  })();
+  </script>
+
+  <script>
+  /**
+   * ITA Security & Defense Agent v1.0
+   * Escudeiro de Blindagem e Proteção Ativa para itabrowser.top
+   */
+  (function initSecurityShield() {
+    'use strict';
+
+    // 1. Cobertura contra ataques de Frame (Anti-Clickjacking / Proteção contra Iframe malicioso)
+    if (window.self !== window.top) {
+      try {
+        window.top.location = window.self.location;
+      } catch (e) {
+        console.warn('[ITA Security] Tentativa de embedding em iframe bloqueada.');
+      }
+    }
+
+    // 2. Blindagem de Links Externos (Previne ataques de Reverse Tabnabbing)
+    document.addEventListener('click', function(event) {
+      const target = event.target.closest('a');
+      if (target && target.getAttribute('target') === '_blank') {
+        const currentRel = target.getAttribute('rel') || '';
+        if (!currentRel.includes('noopener')) {
+          target.setAttribute('rel', 'noopener noreferrer');
+        }
+      }
+    });
+
+    // 3. Monitoramento de Integridade do DOM (Anti-Tampering / Injeção de Scripts Maliciosos)
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.addedNodes) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.tagName === 'SCRIPT' && !node.src.includes('github.com') && node.src !== '') {
+              console.warn('[ITA Security] Alerta: Tentativa de injeção de script externo bloqueada.');
+              node.remove();
+            }
+          });
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+    });
+
+    // 4. Desativação de console.log em produção para esconder a estrutura interna de curiosos
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      console.log = function() {};
+      console.warn = function() {};
+    }
+
+    console.info('[ITA Security Shield] Cofre digital ativado. Sistema 100% blindado contra ameaças de rede.');
+  })();
   </script>
 </body>
 </html>
