@@ -100,6 +100,7 @@
     </section>
   </main>
   <footer><div class="shell footer"><span>ITA Games Studios</span><a href="https://github.com/biscoitotv1/ITA-Navegador" target="_blank" rel="noreferrer">github.com/biscoitotv1/ITA-Navegador</a></div></footer>
+
   <script>
     fetch('https://api.github.com/repos/biscoitotv1/ITA-Navegador/releases/latest')
       .then(response => response.json())
@@ -108,6 +109,7 @@
         if (asset) {
           const btn = document.getElementById('download-btn');
           btn.href = asset.browser_download_url;
+          // Opcional: Atualiza o texto do botão com a versão exata se quiser, ex: "Baixar ITA Navegador v1.0.13"
         }
       })
       .catch(err => console.error('Erro ao buscar última versão:', err));
