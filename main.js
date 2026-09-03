@@ -20,6 +20,14 @@ const {
   shell,
   ipcMain
 } = require('electron')
+/*
+  AUTO-UPDATE ENGINE — electron-updater (provider "github" no package.json).
+  O autoUpdater nativo do Electron exige Squirrel.Windows e não é
+  compatível com o instalador NSIS do ITA Navegador; além disso,
+  importá-lo do 'electron' junto com app/BrowserWindow/dialog criaria
+  uma declaração duplicada. Esta engine consome o GitHub Releases
+  automaticamente e expõe os mesmos eventos (update-downloaded etc.).
+*/
 const { autoUpdater } = require('electron-updater')
 
 const path = require('path')
@@ -124,9 +132,22 @@ autoUpdater.on('update-not-available', (info) => {
   console.log('[ITA Updater] ITA Browser is up to date:', info.version)
 })
 
-autoUpdater.on('update-downloaded', (info) => {
-  console.log('[ITA Updater] Update downloaded:', info.version)
-})
+/*
+  ATUALIZAÇÃO BAIXADA COM SUCESSO — diálogo nativo estilo Chrome.
+  "Depois" continua seguro: autoInstallOnAppQuit aplica ao fechar.
+*/
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Atualização Pronta',
+    message: 'Uma nova versão do ITA Navegador foi baixada. O aplicativo será reiniciado para aplicar a melhoria.',
+    buttons: ['Reiniciar Agora', 'Depois']
+  }).then((result) => {
+    if (result.response === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  });
+});
 
 autoUpdater.on('download-progress', (progress) => {
   console.log('[ITA Updater] Download progress:', Math.round(progress.percent) + '%')
@@ -1190,14 +1211,6 @@ app.whenReady()
   .then(
     async () => {
 
-      if (app.isPackaged) {
-        autoUpdater.checkForUpdatesAndNotify().catch((error) => {
-          console.error('[ITA Updater] Unable to start update check:', error.message)
-        })
-      } else {
-        console.log('[ITA Updater] Automatic updates run in packaged releases only.')
-      }
-
       /*
       -----------------------------------------------------
         Identidade do app no Windows (notificações, barra)
@@ -1244,6 +1257,21 @@ app.whenReady()
       )
 
       createWindow()
+
+      /*
+        VERIFICA ATUALIZAÇÕES AUTOMATICAMENTE EM SEGUNDO PLANO
+        (estilo Google Chrome). Somente em produção — em
+        desenvolvimento a checagem é ignorada para não travar
+        o ciclo de testes.
+      */
+      if (app.isPackaged) {
+        /* Verifica atualizações automaticamente em segundo plano */
+        autoUpdater.checkForUpdatesAndNotify().catch((error) => {
+          console.error('[ITA Updater] Falha na checagem de atualização:', error.message)
+        })
+      } else {
+        console.log('[ITA Updater] Automatic updates run in packaged releases only.')
+      }
 
 
       /*
